@@ -1,4 +1,8 @@
-package Amadey;
+package AmadeyLogicGame;
 
 public class Controller {
+
+
+
+
 }

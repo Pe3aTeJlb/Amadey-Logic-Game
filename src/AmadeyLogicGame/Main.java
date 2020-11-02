@@ -1,4 +1,4 @@
-package Amadey;
+package AmadeyLogicGame;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;

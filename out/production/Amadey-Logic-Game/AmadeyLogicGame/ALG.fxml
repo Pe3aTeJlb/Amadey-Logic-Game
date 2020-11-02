@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.canvas.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane fx:id="root" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="AmadeyLogicGame.Controller">
+   <children>
+      <MenuBar prefHeight="25.0" prefWidth="600.0">
+        <menus>
+          <Menu fx:id="editMenu" mnemonicParsing="false" text="Edit">
+            <items>
+                  <MenuItem fx:id="centerCircItem" mnemonicParsing="false" onAction="#centreCircuit" text="Center circuit" />
+              <MenuItem fx:id="zoomItem" mnemonicParsing="false" onAction="#setCircuitScale" text="Zoom100%" />
+                  <MenuItem fx:id="zoomInItem" mnemonicParsing="false" text="Zoom In" />
+                  <MenuItem fx:id="zoomOutItem" mnemonicParsing="false" text="Zoom Out" />
+            </items>
+          </Menu>
+          <Menu fx:id="optionsMenu" mnemonicParsing="false" text="Options">
+            <items>
+                  <RadioMenuItem fx:id="alternativeColorCheckItem" mnemonicParsing="false" text="White back" />
+                  <RadioMenuItem fx:id="printableCheckItem" mnemonicParsing="false" text="Alt color" />
+            </items>
+          </Menu>
+          <Menu fx:id="toolsMenu" mnemonicParsing="false" text="Tools">
+            <items>
+              <MenuItem fx:id="lvlUpItem" mnemonicParsing="false" text="Level up" />
+                  <MenuItem fx:id="regenCircItem" mnemonicParsing="false" text="Regen circ" />
+            </items>
+          </Menu>
+            <Menu fx:id="aboutMenu" mnemonicParsing="false" text="About">
+              <items>
+                <MenuItem fx:id="rulesItem" mnemonicParsing="false" text="Rules" />
+                  <MenuItem fx:id="devItem" mnemonicParsing="false" text="Developers" />
+              </items>
+            </Menu>
+            <Menu fx:id="backToMenu" mnemonicParsing="false" text="Back to menu" />
+            <Menu fx:id="infoMenu" mnemonicParsing="false" text="Score" />
+        </menus>
+      </MenuBar>
+      <Canvas fx:id="cv" height="378.0" layoutX="200.0" layoutY="100.0" width="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="25.0" />
+   </children>
+</AnchorPane>
