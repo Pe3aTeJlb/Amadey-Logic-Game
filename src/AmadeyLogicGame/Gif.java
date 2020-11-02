@@ -91,8 +91,8 @@ public class Gif extends Image {
 		if(!isPlaying) {
 			isPlaying = true;
 			gifEnded = false;
+			//timer.
 			timer.scheduleRepeating(frameDelay);
-
 		}
 		
 	}

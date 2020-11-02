@@ -27,12 +27,9 @@ Copyright (C) Paul Falstad and Iain Sharp
 
 package AmadeyLogicGame;
 
-import java.util.Vector;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 import java.lang.Math;
+/*
 import com.google.gwt.canvas.client.Canvas;
 import com.google.gwt.user.client.ui.DockLayoutPanel;
 import com.google.gwt.user.client.ui.Label;
@@ -59,6 +56,18 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.user.client.ui.MenuItem;
+*/
+
+
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.fxml.FXML;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.control.*;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+
 
 /*
  Скрипт расчёта схемы, он же UI и управление им.
@@ -97,14 +106,63 @@ public class CirSim implements  MouseDownHandler,  MouseUpHandler, MouseMoveHand
     MenuBar editBar;
     MenuBar toolBar;
     MenuBar infoBar;
-     
-    CheckboxMenuItem alternativeColorCheckItem;
-    CheckboxMenuItem printableCheckItem;
-     
-    private final int MENUBARHEIGHT=30;
+
+	@FXML
+	private AnchorPane root;
+
+
+	@FXML
+	private MenuBar menuBar;
+
+
+	@FXML
+	private Menu editMenu;
+	@FXML
+	private MenuItem centerCircItem;
+	@FXML
+	private MenuItem zoomItem;
+	@FXML
+	private MenuItem zoomInItem;
+	@FXML
+	private MenuItem zoomOutItem;
+
+
+	@FXML
+	private Menu optionsMenu;
+	@FXML
+	private RadioMenuItem printableCheckItem;
+	@FXML
+	private RadioMenuItem alternativeColorCheckItem;
+
+
+	@FXML
+	private Menu toolsMenu;
+	@FXML
+	private MenuItem regenCircItem;
+	@FXML
+	private MenuItem lvlUpItem;
+
+
+	@FXML
+	private Menu aboutMenu;
+	@FXML
+	private MenuItem devItem;
+	@FXML
+	private MenuItem rulesItem;
+
+	@FXML
+	private Menu backToMenu;
+
+	@FXML
+	private Menu infoMenu;
+
+	@FXML
+	private Canvas cv;
+
+	private final int MENUBARHEIGHT=30;
     public int width,height;
     
-    double transform[];
+    double[] transform;
     
  /////////////////////
 //Events
@@ -119,10 +177,12 @@ public class CirSim implements  MouseDownHandler,  MouseUpHandler, MouseMoveHand
  ////////////////////////
 //Circuit procession
     
-    double circuitMatrix[][],circuitRightSide[],
-	origRightSide[], origMatrix[][];
-    RowInfo circuitRowInfo[];
-    int circuitPermute[];
+    double[][] circuitMatrix;
+	double[] circuitRightSide;
+	double[] origRightSide;
+	double[][] origMatrix;
+    RowInfo[] circuitRowInfo;
+    int[] circuitPermute;
     boolean circuitNonLinear;
     int voltageSourceCount;
     int circuitMatrixSize, circuitMatrixFullSize;
@@ -132,7 +192,7 @@ public class CirSim implements  MouseDownHandler,  MouseUpHandler, MouseMoveHand
     Vector<CircuitNode> nodeList;
     Vector<Point> postDrawList = new Vector<Point>();
     Vector<Point> badConnectionList = new Vector<Point>();
-    CircuitElm voltageSources[];
+    CircuitElm[] voltageSources;
      
     HashMap<Point,NodeMapEntry> nodeMap;
     HashMap<Point,Integer> postCountMap;
@@ -154,9 +214,7 @@ public class CirSim implements  MouseDownHandler,  MouseUpHandler, MouseMoveHand
     private Gif crystal;
     private boolean lose = false;
     public boolean canToggle = true;
-    
-    
-    
+
     private String gameType;
     private double Score = 100;
     private int testTime = 15; //minutes for test
@@ -165,11 +223,20 @@ public class CirSim implements  MouseDownHandler,  MouseUpHandler, MouseMoveHand
     private double failPenalty = 20;
     
     private int maxLevelCount = 10;
-    
+
     MenuItem ScoreText;
-    
-    Constants constants = (Constants) GWT.create(Constants.class);
-    
+
+    String bundelName = "Constants";
+    Localizer localizer;
+	private EventHandler<javafx.event.ActionEvent> event;
+
+	//Constants constants = (Constants) GWT.create(Constants.class);
+
+	////////////////////////
+	///////Init/////////////
+	////////////////////////
+
+
   ////////////////////////
  //Circuit Construction//
 ////////////////////////   
@@ -201,114 +268,111 @@ public class CirSim implements  MouseDownHandler,  MouseUpHandler, MouseMoveHand
   }
   
   	public void init(String gType) {
-  		
-  	 gameType = gType;
+
+		localizer = new Localizer(bundelName);
+
+    	gameType = gType;
   	 
-  	if(gameType.equals("Test")) {Score = 100;}
-  	else {Score = 0;}
+  		if(gameType.equals("Test")) {Score = 100;}
+  		else {Score = 0;}
 	 
-	 transform = new double[6];
+	 	transform = new double[6];
 	 
-	 CircuitElm.initClass(this);
-	 elmList = new Vector<CircuitElm>();
-	 
-	 root = RootLayoutPanel.get();
-	 
-	 layoutPanel = new DockLayoutPanel(Unit.PX);
-	 mainBar     = new MenuBar(false); 
-	 extrasBar   = new MenuBar(true);
-	 editBar     = new MenuBar(true);
-	 toolBar     = new MenuBar(true);
-     infoBar     = new MenuBar(true);
-     
-     ScoreText = new MenuItem(constants.Score() + " " + (int)Score, new Command() {
+	 	CircuitElm.initClass(this);
+	 	elmList = new Vector<CircuitElm>();
 
-		@Override
-		public void execute() {
-			
-		}});
 
-     
-     
-		editBar.addItem(new MenuItem(constants.CenterCirc(), new Command() { public void execute(){
-			centreCircuit();
-		}}));
-		editBar.addItem(new MenuItem(constants.Zoom100(),  new Command() { public void execute(){
-			setCircuitScale(1);
-		}}));
-		editBar.addItem(new MenuItem(constants.ZoomIn(),  new Command() { public void execute(){
-			zoomCircuit(20);
-		}}));
-		editBar.addItem(new MenuItem(constants.ZoomOut(),  new Command() { public void execute(){
-			zoomCircuit(-20);
-		}}));
+
+
+		editMenu.setText(localizer.Localize("Edit"));
+
+		centerCircItem.setText(localizer.Localize("CenterCirc"));
+		centerCircItem.setOnAction(new EventHandler<ActionEvent>() {
+			public void handle(ActionEvent event) {
+				centreCircuit();
+			}
+		});
+		zoomItem.setText(localizer.Localize("Zoom100"));
+		zoomItem.setOnAction(new EventHandler<ActionEvent>() {
+			public void handle(ActionEvent event) {
+				setCircuitScale(1);
+			}
+		});
+		zoomInItem.setText(localizer.Localize("ZoomIn"));
+		zoomInItem.setOnAction(new EventHandler<ActionEvent>() {
+			public void handle(ActionEvent event) {
+				zoomCircuit(20);
+			}
+		});
+		zoomOutItem.setText(localizer.Localize("ZoomOut"));
+		zoomOutItem.setOnAction(new EventHandler<ActionEvent>() {
+			public void handle(ActionEvent event) {
+				zoomCircuit(-20);
+			}
+		});
+
+
+		optionsMenu.setText(localizer.Localize("options"));
+
+		printableCheckItem.setText(localizer.Localize("WBack"));
+		alternativeColorCheckItem.setText(localizer.Localize("AltColor"));
+
+		toolsMenu.setText(localizer.Localize("Tools"));
+		regenCircItem.setText(localizer.Localize("Regen"));
+		regenCircItem.setOnAction(new EventHandler<ActionEvent>() {
+			public void handle(ActionEvent event) {
+				GenerateCircuit();
+			}
+		});
+		lvlUpItem.setText(localizer.Localize("LevelUp"));
+		lvlUpItem.setOnAction(new EventHandler<ActionEvent>() {
+			public void handle(ActionEvent event) {
+				level+=1;
+				GenerateCircuit();
+			}
+		});
+
+		aboutMenu.setText(localizer.Localize("About"));
+		rulesItem.setText(localizer.Localize("Rules"));
+		rulesItem.setOnAction(new EventHandler<ActionEvent>() {
+			public void handle(ActionEvent event) {
+				Alert alert = new Alert(AlertType.INFORMATION);
+				alert.setTitle(localizer.Localize("Rules"));
+				alert.setHeaderText(localizer.Localize("Rules"));
+				alert.setContentText(localizer.Localize("Rules"));
+
+				alert.showAndWait();
+			}
+		});
+		devItem.setText(localizer.Localize("Developers"));
+		devItem.setOnAction(new EventHandler<ActionEvent>() {
+			public void handle(ActionEvent event) {
+				Alert alert = new Alert(AlertType.INFORMATION);
+				alert.setTitle(localizer.Localize("Developers"));
+				alert.setHeaderText(localizer.Localize("Developers"));
+				alert.setContentText(localizer.Localize("Developers"));
+
+				alert.showAndWait();
+			}
+		});
+
+		backToMenu.setText(localizer.Localize("ToMenu"));
+		backToMenu.setOnAction(new EventHandler<ActionEvent>() {
+			public void handle(ActionEvent event) {
+				//Todo: Menu?
+			}
+		});
+		backToMenu.hide();
+
+		infoMenu.setText(localizer.Localize("Score")+ " " + (int)Score);
 
 	 
-	 	extrasBar.addItem(printableCheckItem = new CheckboxMenuItem(constants.WBack(),
-				new Command() { public void execute(){
-				}}));
-		printableCheckItem.setState(false);
-		
-		extrasBar.addItem(alternativeColorCheckItem = new CheckboxMenuItem(constants.AltColor(),
-				new Command() { public void execute(){
-					CircuitElm.setColorScale();
-				}}));
-		alternativeColorCheckItem.setState(false);
-		
-		toolBar.addItem(new MenuItem(constants.LevelUp(),  new Command() { public void execute(){
-			level+=1;
-      		GenerateCircuit();
-		}}));
-		
-		toolBar.addItem(new MenuItem(constants.Regen(),  new Command() { public void execute(){
-      		GenerateCircuit();
-		}}));
-		
-		infoBar.addItem(new MenuItem(constants.Rules(),  new Command() { public void execute(){
-			AboutBox b = new AboutBox(constants.Rules());
-			layoutPanel.add(b);
-		}}));
-		
-		infoBar.addItem(new MenuItem(constants.Developers(),  new Command() { public void execute(){
-			AboutBox b = new AboutBox(constants.Developers());
-			layoutPanel.add(b);
-		}}));
+	 	root = RootLayoutPanel.get();
+
 		
 		//initialize wire color
 		CircuitElm.setColorScale();
-		
-		mainBar.addItem(constants.Edit(), editBar);
-		mainBar.addSeparator();
-		mainBar.addItem(constants.Options(),extrasBar);
-		mainBar.addSeparator();
-     	mainBar.addItem(constants.Tools(), toolBar);
-     	mainBar.addSeparator();
-     	mainBar.addItem(constants.About(), infoBar);
-     	mainBar.addSeparator();
-     	mainBar.addItem(new MenuItem(constants.ToMenu(), new Scheduler.ScheduledCommand() {
-     	
-			@Override
-			public void execute() {
-				timer.cancel();
-				root.clear();
-				
-				  Main.menu = new Menu();
-				  Main.menu.init();
-				  
-				  Window.addResizeHandler(new ResizeHandler() {
-				    	 
-					  public void onResize(ResizeEvent event)
-			          {               
-						  Main.menu.setCanvasSize();
-			          }
-			      });
-				
-			} }));
-     	mainBar.addSeparator();
-     	mainBar.addItem(ScoreText);
-     	
-		layoutPanel.addNorth(mainBar, MENUBARHEIGHT);
-	 
+
 		cv = Canvas.createIfSupported();
 			  if (cv==null) {
 				  RootPanel.get().add(new Label("Not working. You need a browser that supports the CANVAS element."));
@@ -437,15 +501,15 @@ public class CirSim implements  MouseDownHandler,  MouseUpHandler, MouseMoveHand
       			String s = FunctionsOutput.get(i).volts[0] < 2.5 ? "0" : "1";
       			currOutput.add(s);
       		}
-      		GWT.log("curr out index " + currOutputIndex);
+			System.out.println("curr out index " + currOutputIndex);
       		
       		if(currOutputIndex < FunctionsOutput.size()) {
-      			
-          		GWT.log(currOutput.toString());
+
+				System.out.println(currOutput.toString());
           		
           		//Условия поигрыша
 	      		if(currOutputIndex != FunctionsOutput.size()-1 && currOutput.get(currOutputIndex).equals("0") && currOutput.get(currOutputIndex+1).equals("0")) {
-	      			GWT.log("Game Over");	
+					System.out.println("Game Over");
 	      			
 	      			//Ищем, сколько платформ кристал должен пролететь прежде чем разбиться
 	      			for(int i = currOutputIndex; i<FunctionsOutput.size(); i++) {	
@@ -466,19 +530,19 @@ public class CirSim implements  MouseDownHandler,  MouseUpHandler, MouseMoveHand
 	      		//Переход на след платформу
 	      		if(currOutputIndex != FunctionsOutput.size()-1 && currOutput.get(currOutputIndex).equals("0") && currOutput.get(currOutputIndex+1).equals("1")) {
 	      			currOutputIndex++;	
-	      			GWT.log("new curr out index " + currOutputIndex);
+	      			System.out.println("new curr out index " + currOutputIndex);
 	      		}
 	      		//заглушка для последней платформы
 	      		if(currOutputIndex == FunctionsOutput.size()-1 && currOutput.get(currOutputIndex).equals("0")) {
-	      			currOutputIndex++;		
-	      			GWT.log("new curr out index " + currOutputIndex);
+	      			currOutputIndex++;
+					System.out.println("new curr out index " + currOutputIndex);
 	      		}
 	      		
 	      		//Переход на след уровень
 	          	if(currOutputIndex == FunctionsOutput.size()) {
 	          		
 	          		currOutputIndex = 0;
-	          		GWT.log("You Won!");
+					System.out.println("You Won!");
 	          		elmList.clear();
 	          		level++;
 	          		
@@ -998,7 +1062,7 @@ public class CirSim implements  MouseDownHandler,  MouseUpHandler, MouseMoveHand
     		}
 
     		// determine nodes that are not connected indirectly to ground
-    		boolean closure[] = new boolean[nodeList.size()];
+    		boolean[] closure = new boolean[nodeList.size()];
     		boolean changed = true;
     		closure[0] = true;
     		
@@ -1240,7 +1304,7 @@ public class CirSim implements  MouseDownHandler,  MouseUpHandler, MouseMoveHand
     
     
     
-    static void lu_solve(double a[][], int n, int ipvt[], double b[]) {
+    static void lu_solve(double[][] a, int n, int[] ipvt, double[] b) {
     	int i;
 
     	// find first nonzero b element
@@ -1280,7 +1344,7 @@ public class CirSim implements  MouseDownHandler,  MouseUpHandler, MouseMoveHand
     	
     }  
      
-    static boolean lu_factor(double a[][], int n, int ipvt[]) {
+    static boolean lu_factor(double[][] a, int n, int[] ipvt) {
     		int i,j,k;
     		
     		// check for a possible singular matrix by scanning for rows that
@@ -1432,8 +1496,8 @@ public class CirSim implements  MouseDownHandler,  MouseUpHandler, MouseMoveHand
 	
 	 	// make the new, simplified matrix
 	 	int newsize = nn;
-	 	double newmatx[][] = new double[newsize][newsize];
-	 	double newrs  []   = new double[newsize];
+	 	double[][] newmatx = new double[newsize][newsize];
+	 	double[] newrs = new double[newsize];
 	 	int ii = 0;
 	 	for (i = 0; i != matrixSize; i++) {
 	 	    RowInfo rri = circuitRowInfo[i];
@@ -1626,8 +1690,9 @@ public class CirSim implements  MouseDownHandler,  MouseUpHandler, MouseMoveHand
 		transform[4] = circuitArea.width /2 - cx*newScale;
 		transform[5] = circuitArea.height/2 - cy*newScale;
     }
-    
-    void centreCircuit() {
+
+    @FXML
+    public void centreCircuit() {
     	
 	Rectangle bounds = getCircuitBounds();
 	
@@ -1739,7 +1804,7 @@ public class CirSim implements  MouseDownHandler,  MouseUpHandler, MouseMoveHand
 	public void onMouseMove(MouseMoveEvent e) {
 		e.preventDefault();
 		
-		if(dragging == true) {
+		if(dragging) {
 			dragAll(e.getX(), e.getY());
 		}
 		

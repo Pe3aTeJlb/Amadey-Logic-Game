@@ -25,9 +25,6 @@ Copyright (C) Pplos Studio
 package AmadeyLogicGame;
 
 import java.util.ArrayList;
-import com.google.gwt.core.client.GWT;
-
-//import com.google.gwt.core.client.GWT;
 
 /*
 Создание столбца для таблицы истинности
@@ -86,12 +83,12 @@ public class LogicFunctionGenerator {
         
     	if(sharedVars.size()>0) {
             if(debug) {
-                GWT.log("Shared var length "+Integer.toString(sharedVars.size()));
+                System.out.println("Shared var length "+Integer.toString(sharedVars.size()));
                 }
             dmp+= "Shared var length "+Integer.toString(sharedVars.size()) + "\n";
     		for(int i = 0; i < sharedVars.size(); i++) {
     			VarNames[i] = sharedVars.get(i);
-    			 if(debug)GWT.log(sharedVars.get(i));
+    			 if(debug)System.out.println(sharedVars.get(i));
     			 dmp+=sharedVars.get(i)+"\n";
     		}
     		dmp+="End of shared vars"+"\n";
@@ -105,7 +102,7 @@ public class LogicFunctionGenerator {
 	            VarNames[i] = varName;
 	            lastVarIndex++;
         	}
-            if(debug)GWT.log(VarNames[i]);
+            if(debug)System.out.println(VarNames[i]);
             dmp += VarNames[i]+"\n";
         }
 
@@ -120,8 +117,8 @@ public class LogicFunctionGenerator {
             	VectorFunctions[0][i] = '1';
             	callOnce = false;
             	 if(debug) {
-     	            GWT.log("Function №"+Integer.toString(i));
-     	            GWT.log("1");
+                     System.out.println("Function №"+Integer.toString(i));
+                     System.out.println("1");
                  }
             	 dmp += "Function №"+Integer.toString(i) + "\n"+ "1"+"\n";
             	 
@@ -132,8 +129,8 @@ public class LogicFunctionGenerator {
             }else {
             	VectorFunctions[0][i] = '0';
 	            if(debug) {
-		            GWT.log("Function №"+Integer.toString(i));
-		            GWT.log("0");
+                    System.out.println("Function №"+Integer.toString(i));
+                    System.out.println("0");
 	            }
             dmp += "Function №"+Integer.toString(i) + "\n"+ "0"+"\n";
             }
@@ -143,10 +140,10 @@ public class LogicFunctionGenerator {
             for(int j = 1; j < totalVarCount; j++)
             {
                 VectorFunctions[j][i] = buffVector[j][0];
-                if(debug)GWT.log(Character.toString(VectorFunctions[j][i]));
+                if(debug)System.out.println(Character.toString(VectorFunctions[j][i]));
                 dmp+= Character.toString(VectorFunctions[j][i]) + "\n";
             }
-            if(debug)GWT.log("end of function");
+            if(debug)System.out.println("end of function");
             dmp += "end of function" + "\n";
         }
         

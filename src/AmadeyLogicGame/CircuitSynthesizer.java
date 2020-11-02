@@ -29,8 +29,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
 
-import com.google.gwt.core.client.GWT;
-
 //x0, x1, ~x0 и тд - Входные элементы схемы
 
 //Описание схемы выглядит следующим образом
@@ -121,17 +119,17 @@ public class CircuitSynthesizer {
 		
 		if(debug) {
 			dump += "Circ count "+ Integer.toString(circCount) + "\n";
-			GWT.log("Circ count "+ Integer.toString(circCount));
-			GWT.log("");
+			System.out.println("Circ count "+ Integer.toString(circCount));
+			System.out.println("");
 		}
 		
 		//minTrue = random(2,6)/10;
 		//maxTrue = minTrue+0.2f;
 		
 		if(debug) {
-			GWT.log("Circ count "+ Integer.toString(circCount));
-			GWT.log("");
-			GWT.log("maxT "+ maxTrue);
+			System.out.println("Circ count "+ Integer.toString(circCount));
+			System.out.println("");
+			System.out.println("maxT "+ maxTrue);
 		}dump += "Circ count "+ Integer.toString(circCount) + "\n"+"\n" + "maxT" + maxTrue+ "\n";
 		
 		for(int i = 0; i < circCount; i++) {
@@ -172,18 +170,18 @@ public class CircuitSynthesizer {
 
 			
 			 if(debug) {
-				 GWT.log("MDNF " + MDNF);
-				 GWT.log("Factr "+factorize);
-				 GWT.log("Basis " + basis);
-				 GWT.log("Function count " + funcCount);
-				 GWT.log("Var count " + varCount);
+				 System.out.println("MDNF " + MDNF);
+				 System.out.println("Factr "+factorize);
+				 System.out.println("Basis " + basis);
+				 System.out.println("Function count " + funcCount);
+				 System.out.println("Var count " + varCount);
 			 }
 			 dump += "MDNF " + MDNF + "\n" + "Factr "+factorize + "\n" + "Basis " + basis + "\n" + 
 					 "Function count " + funcCount + "\n" + "Var count " + varCount + "\n";
 			 
 					//Add shared input
 					if(i>0 && i < circCount - 1 && circCount>1) {
-						GWT.log("Shared Vars++");
+						System.out.println("Shared Vars++");
 						dump+= "Include Shared Vars"+"\n";
 						int n = random(0,1);
 						
@@ -231,10 +229,10 @@ public class CircuitSynthesizer {
 		 varCount = 3;
 		 
 		 if(debug) {
-			 GWT.log("MDNF " + MDNF);
-			 GWT.log("Basis " + basis);
-			 GWT.log("Function count " + funcCount);
-			 GWT.log("Var count " + varCount);
+			 System.out.println("MDNF " + MDNF);
+			 System.out.println("Basis " + basis);
+			 System.out.println("Function count " + funcCount);
+			 System.out.println("Var count " + varCount);
 		 }
 		 
 		
@@ -265,9 +263,9 @@ public class CircuitSynthesizer {
 		}
 		
 		if(debug) {
-			GWT.log("Circ count "+ Integer.toString(circCount));
-			GWT.log("");
-			GWT.log("maxT "+ maxTrue);
+			System.out.println("Circ count "+ Integer.toString(circCount));
+			System.out.println("");
+			System.out.println("maxT "+ maxTrue);
 		}dump += "Circ count "+ Integer.toString(circCount) + "\n"+"\n" + "maxT" + maxTrue+ "\n";
 		
 		for(int i = 0; i < circCount; i++) {
@@ -312,11 +310,11 @@ public class CircuitSynthesizer {
 			funcCount =  (int)Math.floor(0.5f*Math.log(circDifficult-0.5f)+2);
 			
 			 if(debug) {
-				 GWT.log("MDNF " + MDNF);
-				 GWT.log("Factr "+factorize);
-				 GWT.log("Basis " + basis);
-				 GWT.log("Function count " + funcCount);
-				 GWT.log("Var count " + varCount);
+				 System.out.println("MDNF " + MDNF);
+				 System.out.println("Factr "+factorize);
+				 System.out.println("Basis " + basis);
+				 System.out.println("Function count " + funcCount);
+				 System.out.println("Var count " + varCount);
 			 }
 			 dump += "MDNF " + MDNF + "\n" + "Factr "+factorize + "\n" + "Basis " + basis + "\n" + 
 					 "Function count " + funcCount + "\n" + "Var count " + varCount + "\n";
@@ -324,7 +322,7 @@ public class CircuitSynthesizer {
 					//Add shared input
 					if(i>0 && i < circCount - 1 && circCount>1 && circDifficult > 4) {
 						sharedVars.clear();
-						if(debug)GWT.log("Shared Vars++");dump+= "Include Shared Vars"+"\n";
+						if(debug)System.out.println("Shared Vars++");dump+= "Include Shared Vars"+"\n";
 
 							int sharedVarsCount = random(1,varCount-2);
 							
@@ -346,14 +344,14 @@ public class CircuitSynthesizer {
 				dump  = e.toString() +"\n\n"+ dump;	
 			}
 			
-			if(debug)GWT.log("End of Circuit");
+			if(debug)System.out.println("End of Circuit");
 			dump+="End of Circuit"+"\n\n";
 		}
 		
 		DeleteUnusedInputs();
 		CreateCircuitOutput();
-		
-		GWT.log(dump);
+
+		System.out.println(dump);
 	}
 	
 	//Создание списка наследуемых входных переменных
@@ -408,7 +406,7 @@ public class CircuitSynthesizer {
 		String functions[] = sol.getSolution().split("\n");
 		
 	      for(int i = 0; i<functions.length; i++) {
-	    	  if(debug)GWT.log(functions[i]+"\n");
+	    	  if(debug)System.out.println(functions[i]+"\n");
 	    	  dump+=functions[i]+"\n";
 	      }
 	      dump+="\n";
@@ -427,7 +425,7 @@ public class CircuitSynthesizer {
 		        if(MDNF) {
 		        	if(factorize) {
 			        	factorizator.PrepareData(functions[i], varCount);
-			        	 if(debug)GWT.log("Factr out"+factorizator.output);
+			        	 if(debug)System.out.println("Factr out"+factorizator.output);
 			        	 dump+="Factr out"+factorizator.output+"\n\n";
 			        	shuntingYard.calculateExpression(factorizator.output);
 		        	}else {
@@ -474,7 +472,7 @@ public class CircuitSynthesizer {
 			}
 			ll2 += " endl "+"\n";
 		}
-		if(debug)GWT.log(ll2);
+		if(debug)System.out.println(ll2);
 		dump+=ll2;
 		
 		int Yaccum = 1;
@@ -647,7 +645,7 @@ public class CircuitSynthesizer {
 					for(int j = 0; j<list.get(i).size(); j++) {
 						ll+=list.get(i).get(j) + "  ";
 					}
-					if(debug)GWT.log(ll);
+					if(debug)System.out.println(ll);
 					dump+=ll+"\n";
 				
 				
@@ -738,13 +736,13 @@ public class CircuitSynthesizer {
 							}
 							else 
 							{
-								GWT.log("He he he, error somewhere/ line 142 " + list.get(i).get(j));
+								System.out.println("He he he, error somewhere/ line 142 " + list.get(i).get(j));
 								dump+="He he he, error somewhere/ line 142 " + list.get(i).get(j)+"\n";
 								ConnectElements(dictionary.get(list.get(i).get(j)), dictionary.get(blockName),list.get(i).get(j),false,false);
 							}
 					  }
 					
-					if(debug)GWT.log("End of block");
+					if(debug)System.out.println("End of block");
 					dump+="End of block"+"\n";
 				}
 				
@@ -768,8 +766,8 @@ public class CircuitSynthesizer {
 		LastLogElems.add(dictionary.get(blockName));
 		//CreateCircuitOutput(blockName);
 		
-		if(debug)GWT.log("End of subCirc");
-		if(debug)GWT.log("");
+		if(debug)System.out.println("End of subCirc");
+		if(debug)System.out.println("");
 		dump+="End of subCirc"+"\n\n";
 	}
 	
@@ -1050,7 +1048,7 @@ public class CircuitSynthesizer {
 	
   	private void DeleteUnusedInputs() {
   		
-  		if(debug)GWT.log("unused vars "+UnusedVarNames.toString());
+  		if(debug)System.out.println("unused vars "+UnusedVarNames.toString());
   		dump += "unused vars "+UnusedVarNames.toString() + "\n";
   		
   		if(UnusedVarNames.size()>0) {
@@ -1064,7 +1062,7 @@ public class CircuitSynthesizer {
 	  				p = p.substring(1,p.length());
 	  			}
 	  			
-	  			if(debug)GWT.log(p);
+	  			if(debug)System.out.println(p);
 	  			dump+=p+"\n";
 	  			
 		  		int IndexToDelete = ((Integer.parseInt(p))-1)*2;

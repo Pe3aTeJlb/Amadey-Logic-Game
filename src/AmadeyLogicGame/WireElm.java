@@ -31,6 +31,7 @@ package AmadeyLogicGame;
 	boolean hasWireInfo; // used in CirSim to calculate wire currents
 	
 	public WireElm(int xx, int yy) { super(xx, yy); }
+
 	public WireElm(int xa, int ya, int xb, int yb, int f)		  
 	{
 	    super(xa, ya, xb, yb, f);

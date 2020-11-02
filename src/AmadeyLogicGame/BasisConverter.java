@@ -26,8 +26,6 @@ package AmadeyLogicGame;
 
 import java.util.ArrayList;
 
-import com.google.gwt.core.client.GWT;
-
 public class BasisConverter {
 
     public String outFunction = "";
@@ -273,7 +271,7 @@ public class BasisConverter {
             vectorFunc.add(Integer.parseInt(Character.toString(functionVector[i][row])));
         }
 
-        if(debug)GWT.log("Init vf "+ vectorFunc.toString());
+        if(debug)System.out.println("Init vf "+ vectorFunc.toString());
         dmp+=vectorFunc.toString()+"\n";
 
         int m = vectorFunc.size();
@@ -318,7 +316,7 @@ public class BasisConverter {
                             }else{terms.add(operands.get(0));}
 
                             outFunction += tmp+"@";
-                            if(debug)GWT.log(outFunction);
+                            if(debug)System.out.println(outFunction);
                         }
                     }
 
@@ -330,7 +328,7 @@ public class BasisConverter {
             vectorFunc.remove(vectorFunc.size()-1);
             
             dmp += vectorFunc.toString() + "\n";
-            if(debug)GWT.log(vectorFunc.toString());
+            if(debug)System.out.println(vectorFunc.toString());
             ZhegalikinIndexes.add(vectorFunc.get(0));
         }
         
@@ -338,7 +336,7 @@ public class BasisConverter {
         if(vectorFunc.get(0) == 1){
             operands = new ArrayList<>();
             String v = Integer.toBinaryString(m-1);
-            if(debug)GWT.log(v);
+            if(debug)System.out.println(v);
             //dmp+=v+"\n";
             String tmp = "";
             int y = 0;
@@ -360,7 +358,7 @@ public class BasisConverter {
                 }else{terms.add(operands.get(0));}
 
                 outFunction += tmp+"@";
-                if(debug)GWT.log(outFunction);
+                if(debug)System.out.println(outFunction);
         }
 
         outFunction = removeByIndex(outFunction, outFunction.length()-1);
@@ -380,15 +378,15 @@ public class BasisConverter {
 	        			String tmp2 = list.get(list.size()-1).get(j+1);
 	        			list.get(list.size()-1).set(j, tmp2);
 	        			list.get(list.size()-1).set(j+1, tmp);
-	        			GWT.log("!!!!!!!!!!!!!!0"+list.get(list.size()-1).get(j));
+                        System.out.println("!!!!!!!!!!!!!!0"+list.get(list.size()-1).get(j));
         			}
         		}
         	}
         
-        if(debug)GWT.log(ZhegalikinIndexes.toString());
-        if(debug)GWT.log(outFunction);
-        if(debug)GWT.log(list.toString());
-        GWT.log(""+list.get(list.size()-1).get(list.get(list.size()-1).size()-3));
+        if(debug)System.out.println(ZhegalikinIndexes.toString());
+        if(debug)System.out.println(outFunction);
+        if(debug)System.out.println(list.toString());
+        System.out.println(""+list.get(list.size()-1).get(list.get(list.size()-1).size()-3));
         dmp+=ZhegalikinIndexes.toString()+"\n"+outFunction+"\n"+list.toString()+"\n";
         	
 

@@ -26,8 +26,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 
-import com.google.gwt.core.client.GWT;
-
 public class Solver implements Runnable {
 
     private static final int MAX_VAR_MEM = 10;       // used to allocate memory in an amount sufficient to guaranty this number of input variables, note that 10 variables requites 59.049 registries and 16 variables, 43.046.721
@@ -196,7 +194,7 @@ public class Solver implements Runnable {
                                     {
                                         if(r1 != null && r2 != null) {
                                     		return  (((r1.getV() - r2.getV()) << Implicant.MAX_IN_VAR) + r1.getM() - r2.getM());
-                                        }else {GWT.log("Shit is null"); return 2;}
+                                        }else {System.out.println("Shit is null"); return 2;}
                                     });
 //                                    System.out.print("trying " + tempj + " with " + lstPrimes[k] + " " + d);
                                     if(d < 0) { // new prime implicant found
@@ -211,7 +209,7 @@ public class Solver implements Runnable {
                                         {
                                             if(r1 != null && r2 != null) {
                                         		return  (((r1.getV() - r2.getV()) << Implicant.MAX_IN_VAR) + r1.getM() - r2.getM());
-                                            }else {GWT.log("Shit is null"); return 2;}
+                                            }else {System.out.println("Shit is null"); return 2;}
                                         });
 //                                            System.out.println(" OK " + ctdc1);
                                     }

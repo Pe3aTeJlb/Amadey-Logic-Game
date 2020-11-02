@@ -47,7 +47,7 @@ class AndGateElm extends GateElm {
 	    	
 			// 0=topleft, 1-10 = top curve, 11 = right, 12-21=bottom curve,
 			// 22 = bottom left
-			Point triPoints[] = newPointArray(23);
+			Point[] triPoints = newPointArray(23);
 			interpPoint2(lead1, lead2, triPoints[0], triPoints[22], 0, hs2);
 			int i;
 			
