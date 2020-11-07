@@ -36,7 +36,7 @@ class AndGateElm extends GateElm {
 	}
 	
 	String getGateText() { return "&"; }
-	
+
 	void setPoints() {
 		
 	    super.setPoints();

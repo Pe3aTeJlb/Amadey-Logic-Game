@@ -32,7 +32,7 @@ public class BasisConverter {
     public ArrayList<ArrayList<String>> list = new ArrayList<>();
     private ArrayList<String> operands = new ArrayList<>();
     private ArrayList<String> terms = new ArrayList<>();
-    private boolean debug = false;
+    private boolean debug;
     public String dmp;
     public boolean Has1 = false;
     

@@ -1,20 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.canvas.*?>
 <?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
+<?import javafx.scene.canvas.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane fx:id="root" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="AmadeyLogicGame.Controller">
+<fx:root fx:id="root" prefHeight="400.0" prefWidth="600.0" type="AnchorPane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="AmadeyLogicGame.CirSim">
    <children>
-      <MenuBar prefHeight="25.0" prefWidth="600.0">
+      <MenuBar fx:id="menuBar" prefHeight="25.0" prefWidth="600.0">
         <menus>
           <Menu fx:id="editMenu" mnemonicParsing="false" text="Edit">
             <items>
-                  <MenuItem fx:id="centerCircItem" mnemonicParsing="false" onAction="#centreCircuit" text="Center circuit" />
-              <MenuItem fx:id="zoomItem" mnemonicParsing="false" onAction="#setCircuitScale" text="Zoom100%" />
+                  <MenuItem fx:id="centerCircItem" mnemonicParsing="false" text="Center circuit" />
+              <MenuItem fx:id="zoomItem" mnemonicParsing="false" text="Zoom100%" />
                   <MenuItem fx:id="zoomInItem" mnemonicParsing="false" text="Zoom In" />
                   <MenuItem fx:id="zoomOutItem" mnemonicParsing="false" text="Zoom Out" />
             </items>
@@ -43,4 +41,4 @@
       </MenuBar>
       <Canvas fx:id="cv" height="378.0" layoutX="200.0" layoutY="100.0" width="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="25.0" />
    </children>
-</AnchorPane>
+</fx:root>

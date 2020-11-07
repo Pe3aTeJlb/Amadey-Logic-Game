@@ -89,17 +89,13 @@ public class CirSim implements  MouseDownHandler,  MouseUpHandler, MouseMoveHand
 	
  /////////////////////
 //Set UI Fields
-	
-	RootLayoutPanel root;
-	
+
     Canvas cv;
     Context2d cvcontext;
     Canvas backcv;
     Context2d backcontext;
     
-	Rectangle circuitArea; 
-	
-    DockLayoutPanel layoutPanel;
+	Rectangle circuitArea;
      
     MenuBar mainBar;
     MenuBar extrasBar;
@@ -246,22 +242,9 @@ public class CirSim implements  MouseDownHandler,  MouseUpHandler, MouseMoveHand
     }
 	
     public void setCanvasSize(){
-	  
-	  	width  = (int)RootLayoutPanel.get().getOffsetWidth();
-	  	height = (int)RootLayoutPanel.get().getOffsetHeight()-MENUBARHEIGHT;
-  	
-		if (cv != null) {
-			cv.setWidth(width + "PX");
-			cv.setHeight(height + "PX");
-			cv.setCoordinateSpaceWidth(width);
-			cv.setCoordinateSpaceHeight(height);
-		}
-		if (backcv != null) {
-			backcv.setWidth(width + "PX");
-			backcv.setHeight(height + "PX");
-			backcv.setCoordinateSpaceWidth(width);
-			backcv.setCoordinateSpaceHeight(height);
-		}
+
+	  	width = (int)cv.getWidth();
+	  	width = (int)cv.getHeight();
 
 		circuitArea = new Rectangle(0, 0, width, height);	
 		
@@ -280,9 +263,6 @@ public class CirSim implements  MouseDownHandler,  MouseUpHandler, MouseMoveHand
 	 
 	 	CircuitElm.initClass(this);
 	 	elmList = new Vector<CircuitElm>();
-
-
-
 
 		editMenu.setText(localizer.Localize("Edit"));
 
@@ -366,30 +346,19 @@ public class CirSim implements  MouseDownHandler,  MouseUpHandler, MouseMoveHand
 
 		infoMenu.setText(localizer.Localize("Score")+ " " + (int)Score);
 
-	 
-	 	root = RootLayoutPanel.get();
+		cv.setOn
 
-		
 		//initialize wire color
 		CircuitElm.setColorScale();
 
-		cv = Canvas.createIfSupported();
-			  if (cv==null) {
-				  RootPanel.get().add(new Label("Not working. You need a browser that supports the CANVAS element."));
-				  return;
-			  }
-			  
 		cvcontext=cv.getContext2d();
 		
 		backcv = Canvas.createIfSupported();
 		backcontext = backcv.getContext2d();
 		
 		setCanvasSize();	  
-		
-		layoutPanel.add(cv);
-		
-		root.add(layoutPanel);
-		
+
+
 		cv.addMouseDownHandler(this);
 		cv.addMouseUpHandler(this);
 		cv.addMouseWheelHandler(this);
