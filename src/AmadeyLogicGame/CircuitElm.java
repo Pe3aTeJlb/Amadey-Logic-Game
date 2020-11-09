@@ -27,12 +27,16 @@ Copyright (C) Paul Falstad and Iain Sharp
 
 package AmadeyLogicGame;
 
+import javafx.geometry.VPos;
+import javafx.scene.text.Font;
+import java.text.NumberFormat;
 import java.util.ArrayList;
+import javafx.scene.canvas.GraphicsContext.*;
+import javafx.scene.text.TextAlignment;
 
-import com.google.gwt.canvas.dom.client.CanvasGradient;
-import com.google.gwt.canvas.dom.client.Context2d.LineCap;
-//import com.google.gwt.core.client.GWT;
-import com.google.gwt.i18n.client.NumberFormat;
+//import com.google.gwt.canvas.dom.client.CanvasGradient;
+//import com.google.gwt.canvas.dom.client.Context2d.LineCap;
+//import com.google.gwt.i18n.client.NumberFormat;
 
 // circuit element class
 public abstract class CircuitElm  {
@@ -60,7 +64,9 @@ public abstract class CircuitElm  {
     // point to which user dragged out element.  For simple two-terminal elements, this is the second node/post
     int x2, y2;
     
-    int flags, nodes[], voltSource;
+    int flags;
+	int[] nodes;
+	int voltSource;
     
     // length along x and y axes, and sign of difference
     int dx, dy, dsign;
@@ -80,7 +86,7 @@ public abstract class CircuitElm  {
     Point lead1, lead2;
     
     // voltages at each node
-    double volts[];
+    double[] volts;
     
     double current, curcount;
     Rectangle boundingBox;
@@ -105,7 +111,7 @@ public abstract class CircuitElm  {
 
     static void initClass(CirSim s) {
     	
-		unitsFont = new Font("SansSerif", 0, 12);
+		unitsFont = new Font("SansSerif",  12);
 		sim = s;
 		
 		colorScale = new Color[colorScaleCount];
@@ -113,9 +119,9 @@ public abstract class CircuitElm  {
 		ps1 = new Point();
 		ps2 = new Point();
 	
-		showFormat=NumberFormat.getFormat("####.###");
-	
-		shortFormat=NumberFormat.getFormat("####.#");
+		//showFormat = NumberFormat.("####.###");
+		//shortFormat = NumberFormat.getNumberInstance(Lo)
+		////shortFormat = NumberFormat.getFormat("####.#");
 		
     }
     
@@ -136,7 +142,7 @@ public abstract class CircuitElm  {
 				int n1 = (int) (128 * v) + 127;
 				int n2 = (int) (127 * (1 - v));
 				
-				if (sim.alternativeColorCheckItem.getState()) {
+				if (sim.alternativeColorCheckItem.isSelected()) {
 				    colorScale[i] = new Color(n2, n2, n1);
 				}
 				else 
@@ -600,7 +606,7 @@ public abstract class CircuitElm  {
     
     // needed for calculating circuit bounds (need to special-case centered text elements)
     boolean isCenteredText() { return false; }
-    
+
     void drawCenteredText(Graphics g, String s, int x, int y, boolean cx) {
 	// FontMetrics fm = g.getFontMetrics();
 	//int w = fm.stringWidth(s);
@@ -610,30 +616,32 @@ public abstract class CircuitElm  {
 //	g.drawString(s, x, y+fm.getAscent()/2);
 //	adjustBbox(x, y-fm.getAscent()/2,
 //		   x+w, y+fm.getAscent()/2+fm.getDescent());
-    	int w=(int)g.context.measureText(s).getWidth();
+    	//int w=(int)g.context.measureText(s).getWidth();
+    	int w=(int)g.getFont().getSize();
     	int h2=(int)g.currentFontSize/2;
 		g.context.save();
-		g.context.setTextBaseline("middle");
+		g.context.setTextBaseline(VPos.CENTER);
 		if (cx) {
-			g.context.setTextAlign("center");
+			g.context.setTextAlign(TextAlignment.CENTER);
 			adjustBbox(x-w/2,y-h2,x+w/2,y+h2);
 		} else {
 			adjustBbox(x,y-h2,x+w,y+h2);
 		}
 		
 		if (cx)
-			g.context.setTextAlign("center");
+			g.context.setTextAlign(TextAlignment.CENTER);
 		g.drawString(s, x, y);
 		g.context.restore();
     }
-    
+
     // draw component values (number of resistor ohms, etc).  hs = offset
     void drawValues(Graphics g, String s, double hs) {
 		if (s == null)
 		    return;
 		g.setFont(unitsFont);
 		//FontMetrics fm = g.getFontMetrics();
-		int w = (int)g.context.measureText(s).getWidth();
+		//int w = (int)g.context.measureText(s).getWidth();
+		int w=(int)g.getFont().getSize();
 		g.setColor(whiteColor);
 		int ya = (int)g.currentFontSize/2;
 		int xc, yc;
@@ -659,13 +667,14 @@ public abstract class CircuitElm  {
 		g.context.setLineWidth(3.0);
 		g.context.transform(((double)(p2.x-p1.x))/len, ((double)(p2.y-p1.y))/len,
 			-((double)(p2.y-p1.y))/len,((double)(p2.x-p1.x))/len,p1.x,p1.y);
-	
-		    CanvasGradient grad = g.context.createLinearGradient(0,0,len,0);
-		    grad.addColorStop(0, getVoltageColor(g,v1).getHexValue());
-		    grad.addColorStop(1.0, getVoltageColor(g,v2).getHexValue());
-		    g.context.setStrokeStyle(grad);
+
+	//	CanvasGradient grad = g.context.createLinearGradient(0,0,len,0);
+	//	grad.addColorStop(0, getVoltageColor(g,v1).getHexValue());
+	//	grad.addColorStop(1.0, getVoltageColor(g,v2).getHexValue());
+		//g.context.setStrokeStyle(grad);
+
 		
-		g.context.setLineCap(LineCap.ROUND);
+		//g.context.setLineCap(LineCap.ROUND);
 		g.context.scale(1, hs > 0 ? 1 : -1);
 	
 		int loop;
@@ -675,7 +684,7 @@ public abstract class CircuitElm  {
 		    g.context.beginPath();
 		    double start = len*loop/loopCt;
 		    g.context.moveTo(start,0);
-		    g.context.arc(len*(loop+.5)/loopCt, 0, len/(2*loopCt), Math.PI, Math.PI*2);
+		    g.context.arc(len*(loop+.5)/loopCt, 0, len/(2*loopCt),len/(2*loopCt), Math.PI, Math.PI*2);
 		    g.context.lineTo(len*(loop+1)/loopCt, 0);
 		    g.context.stroke();
 		}
@@ -731,7 +740,7 @@ public abstract class CircuitElm  {
     static void drawThickCircle(Graphics g, int cx, int cy, int ri) {
     	g.setLineWidth(3.0);
     	g.context.beginPath();
-    	g.context.arc(cx, cy, ri*.98, 0, 2*Math.PI);
+    	g.context.arc(cx, cy, ri*.98, ri*.98, 0, 2*Math.PI);
     	g.context.stroke();
     	g.setLineWidth(1.0);
     }

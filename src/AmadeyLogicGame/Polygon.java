@@ -31,8 +31,8 @@ class Polygon {
 	
 	private static final int MIN_LENGTH = 4;
 	public int npoints;
-	public int xpoints[];
-	public int ypoints[];
+	public int[] xpoints;
+	public int[] ypoints;
 	
 	
 	public Polygon(){

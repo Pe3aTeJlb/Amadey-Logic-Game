@@ -5,7 +5,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<fx:root fx:id="root" prefHeight="400.0" prefWidth="600.0" type="AnchorPane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="AmadeyLogicGame.CirSim">
+<AnchorPane fx:id="root" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="AmadeyLogicGame.CirSim">
    <children>
       <MenuBar fx:id="menuBar" prefHeight="25.0" prefWidth="600.0">
         <menus>
@@ -41,4 +41,4 @@
       </MenuBar>
       <Canvas fx:id="cv" height="378.0" layoutX="200.0" layoutY="100.0" width="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="25.0" />
    </children>
-</fx:root>
+</AnchorPane>

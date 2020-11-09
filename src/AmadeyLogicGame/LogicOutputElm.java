@@ -27,7 +27,9 @@ Copyright (C) Paul Falstad and Iain Sharp
 
 package AmadeyLogicGame;
 
-    class LogicOutputElm extends CircuitElm {
+import javafx.scene.text.Font;
+
+class LogicOutputElm extends CircuitElm {
     	
 	final int FLAG_TERNARY = 1;
 	final int FLAG_NUMERIC = 2;
@@ -60,9 +62,9 @@ package AmadeyLogicGame;
 	}
 	
 	void draw(Graphics g) {
-		
-		Font oldf=g.getFont();
-	    Font f = new Font("SansSerif", Font.BOLD, 20);
+
+		Font oldf = g.getFont();
+		Font f = new Font("SansSerif",20);
 	    g.setFont(f);
 	    //g.setColor(needsHighlight() ? selectColor : lightGrayColor);
 	    g.setColor(lightGrayColor);

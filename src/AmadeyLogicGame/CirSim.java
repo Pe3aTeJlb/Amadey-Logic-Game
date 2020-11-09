@@ -59,11 +59,15 @@ import com.google.gwt.user.client.ui.MenuItem;
 */
 
 
+import javafx.animation.AnimationTimer;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -74,7 +78,7 @@ import javafx.scene.control.Alert.AlertType;
  Категорически не рекомендуется лезть в расчёт схемы и в классы для отрисовки графики
  */
 
-public class CirSim implements  MouseDownHandler,  MouseUpHandler, MouseMoveHandler, MouseWheelHandler{
+public class CirSim {
 
 	//this
 	static CirSim theSim;
@@ -90,18 +94,11 @@ public class CirSim implements  MouseDownHandler,  MouseUpHandler, MouseMoveHand
  /////////////////////
 //Set UI Fields
 
-    Canvas cv;
-    Context2d cvcontext;
+    GraphicsContext cvcontext;
     Canvas backcv;
-    Context2d backcontext;
+    GraphicsContext backcontext;
     
 	Rectangle circuitArea;
-     
-    MenuBar mainBar;
-    MenuBar extrasBar;
-    MenuBar editBar;
-    MenuBar toolBar;
-    MenuBar infoBar;
 
 	@FXML
 	private AnchorPane root;
@@ -128,7 +125,7 @@ public class CirSim implements  MouseDownHandler,  MouseUpHandler, MouseMoveHand
 	@FXML
 	private RadioMenuItem printableCheckItem;
 	@FXML
-	private RadioMenuItem alternativeColorCheckItem;
+	public RadioMenuItem alternativeColorCheckItem;
 
 
 	@FXML
@@ -155,7 +152,6 @@ public class CirSim implements  MouseDownHandler,  MouseUpHandler, MouseMoveHand
 	@FXML
 	private Canvas cv;
 
-	private final int MENUBARHEIGHT=30;
     public int width,height;
     
     double[] transform;
@@ -222,11 +218,15 @@ public class CirSim implements  MouseDownHandler,  MouseUpHandler, MouseMoveHand
 
     MenuItem ScoreText;
 
-    String bundelName = "Constants";
-    Localizer localizer;
+   // private Locale l = Locale.getDefault();
+	private Locale l = Locale.forLanguageTag("ru_RU");
+    private final String bundelName = "Constants";
+    private Localizer localizer;
 	private EventHandler<javafx.event.ActionEvent> event;
 
-	//Constants constants = (Constants) GWT.create(Constants.class);
+	private AnimationTimer update;
+	private Timer CrystalRestart;
+	private TimerTask CrystalRestartTask;
 
 	////////////////////////
 	///////Init/////////////
@@ -236,24 +236,19 @@ public class CirSim implements  MouseDownHandler,  MouseUpHandler, MouseMoveHand
   ////////////////////////
  //Circuit Construction//
 ////////////////////////   
-    
-    CirSim() {
-    	theSim = this;
+
+    public CirSim() {
+    //	theSim = this;
     }
-	
-    public void setCanvasSize(){
 
-	  	width = (int)cv.getWidth();
-	  	width = (int)cv.getHeight();
+    @FXML
+  	public void initialize() {
 
-		circuitArea = new Rectangle(0, 0, width, height);	
-		
-  }
-  
-  	public void init(String gType) {
+		theSim = this;
 
-		localizer = new Localizer(bundelName);
+		localizer = new Localizer(bundelName, l);
 
+		String gType = "casual";
     	gameType = gType;
   	 
   		if(gameType.equals("Test")) {Score = 100;}
@@ -346,38 +341,70 @@ public class CirSim implements  MouseDownHandler,  MouseUpHandler, MouseMoveHand
 
 		infoMenu.setText(localizer.Localize("Score")+ " " + (int)Score);
 
-		cv.setOn
+		cv.setOnMousePressed(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent event) {
+
+			}
+		});
+		cv.setOnMouseDragged(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent event) {
+				dragAll((int)event.getX(), (int)event.getY());
+			}
+		});
+		cv.setOnScroll(new EventHandler<ScrollEvent>() {
+			@Override
+			public void handle(ScrollEvent event) {
+				zoomCircuit((int)event.getDeltaY());
+			}
+		});
+
 
 		//initialize wire color
 		CircuitElm.setColorScale();
 
-		cvcontext=cv.getContext2d();
-		
-		backcv = Canvas.createIfSupported();
-		backcontext = backcv.getContext2d();
-		
+		cvcontext = cv.getGraphicsContext2D();
+
 		setCanvasSize();	  
 
-
-		cv.addMouseDownHandler(this);
-		cv.addMouseUpHandler(this);
-		cv.addMouseWheelHandler(this);
-		cv.addMouseMoveHandler(this);	
-		
 		centreCircuit();
 		
 		GenerateCircuit();
 		
-		penaltyPerFrame = Score / (testTime * 60 * 60);  
-				
-		timer.scheduleRepeating(REFRESH_RATE);
-		
+		penaltyPerFrame = Score / (testTime * 60 * 60);
+
+		update = new AnimationTimer() {
+			@Override
+			public void handle(long now) {
+				Score -= penaltyPerFrame;
+				TimeSpend += 0.015;
+				ScoreText.setText(localizer.Localize("Score") + " " + (int)Score);
+				updateCircuit();
+			}
+		};
+		//update.start();
+
+		//Необходим ля синхронизации появления нового кристалл и обноления платформы при рестарте
+		CrystalRestart = new Timer();
+		CrystalRestartTask = new TimerTask() {
+			@Override
+			public void run() {
+				crystal.RestartGif(1);;
+				currOutputIndex = 0;
+				currCrystalPosY = FunctionsOutput.get(currOutputIndex).y - 40;
+				CrystalRestart.cancel();
+			}
+		};
+
   	}
+
+  	//Game Logic
 
   	private void GenerateCircuit() {
   		
   		if(level <= maxLevelCount) {
-	  		GWT.log("Level"+level);
+			System.out.println("Level"+level);
 	  		CircuitSynthesizer v = new CircuitSynthesizer();
 	  		
 	  		if(gameType.equals("Test")) {
@@ -399,57 +426,9 @@ public class CirSim implements  MouseDownHandler,  MouseUpHandler, MouseMoveHand
   			Exit();
   		}
   	}
-    
-  	public void Exit() {
-  		
-  		GWT.log("Exit");
-  		
-  	}
-  	
-  	//Game Logic
-  	//also check update method
-  	public void GameOverTrigger() {
-  		refreshGameState = true;
-  		tickCounter = 0;
-  	}
-  	
-  	void RestartLevel() {
-  		
-  		lose = false;
-  			
-		for(int i = 0; i<FunctionsInput.size(); i++) {
-			FunctionsInput.get(i).position = 0;
-		}
-		
-		CrystalRestart.schedule(110);
-		
-  		canToggle = true;
-  	}
 
-  	//Необходим ля синхронизации появления нового кристалл и обноления платформы при рестарте
-	final Timer CrystalRestart = new Timer() {
-		
-        public void run() {
-
-        	crystal.RestartGif(1);;
-    		
-      		currOutputIndex = 0;
-      		currCrystalPosY = FunctionsOutput.get(currOutputIndex).y - 40;
-        }
-        
-    };
-  		
  // *****************************************************************
 //  Void Update	
-  
-	final Timer timer = new Timer() {
-	      public void run() {
-	    	Score -= penaltyPerFrame;
-	    	TimeSpend += 0.015;
-	    	ScoreText.setText(constants.Score() + " " + (int)Score);
-	        updateCircuit();
-	      }
-	 };
 
 	public void updateCircuit() {
     	
@@ -457,7 +436,7 @@ public class CirSim implements  MouseDownHandler,  MouseUpHandler, MouseMoveHand
     	runCircuit();
     	analyzeCircuit();
     	
-    	Graphics g = new Graphics(backcontext);
+    	Graphics g = new Graphics(cvcontext);
     	
     	if(refreshGameState)tickCounter++;
     		
@@ -517,7 +496,7 @@ public class CirSim implements  MouseDownHandler,  MouseUpHandler, MouseMoveHand
 	          		
 	          		GenerateCircuit();
 	          	}
-	          	
+
       		}
       			    		
      		refreshGameState = false;
@@ -527,7 +506,7 @@ public class CirSim implements  MouseDownHandler,  MouseUpHandler, MouseMoveHand
     	
     	CircuitElm.selectColor = Color.cyan;
     	
-    	if (printableCheckItem.getState()) {
+    	if (printableCheckItem.isSelected()) {
     		CircuitElm.whiteColor = Color.black;
       	    CircuitElm.lightGrayColor = Color.black;
       	    g.setColor(Color.white);
@@ -536,16 +515,17 @@ public class CirSim implements  MouseDownHandler,  MouseUpHandler, MouseMoveHand
     		CircuitElm.lightGrayColor = Color.white;
     		g.setColor(Color.black);
     	}
-    	g.fillRect(0, 0, g.context.getCanvas().getWidth(), g.context.getCanvas().getHeight());
+
+    	g.fillRect(0, 0, (int)g.context.getCanvas().getWidth(), (int)g.context.getCanvas().getHeight());
     	
     	
-    	backcontext.setTransform(transform[0], transform[1], transform[2],
+    	cvcontext.setTransform(transform[0], transform[1], transform[2],
 				 				 transform[3], transform[4], transform[5]
 				 				);
         		 
     	for (int i = 0; i != elmList.size(); i++) {
     		
-    		if(printableCheckItem.getState()){
+    		if(printableCheckItem.isSelected()){
     			g.setColor(Color.black);	
     		}else {
     			g.setColor(Color.white);
@@ -555,7 +535,7 @@ public class CirSim implements  MouseDownHandler,  MouseUpHandler, MouseMoveHand
     			getElm(i).draw(g);
     	    }catch(Exception ee) {
     	    	ee.printStackTrace();
-    		    GWT.log("exception while drawing " + ee);
+				System.out.println("exception while drawing " + ee);
     	    }
     		
     	}
@@ -579,30 +559,68 @@ public class CirSim implements  MouseDownHandler,  MouseUpHandler, MouseMoveHand
     			crystal.Play(40);
     		}
     		if(crystal.gifEnded && lose) {RestartLevel();}
-    
-    		backcontext.drawImage(ImageElement.as(crystal.img.getElement()), crystal.currX, crystal.currY, crystal.frameWidth, crystal.frameWidth, FunctionsOutput.get(0).x+130, currCrystalPosY, 50, 50);
+    		cvcontext.drawImage(crystal.img, crystal.currX, crystal.currY,crystal.frameWidth,crystal.frameWidth,FunctionsOutput.get(0).x+130,currCrystalPosY,50,50);
+
 
     	}
     	else if(currOutputIndex < FunctionsOutput.size() && currCrystalPosY < FunctionsOutput.get(currOutputIndex).y-67) {
     		canToggle = false;
     		currCrystalPosY += 5;
-    		backcontext.drawImage(ImageElement.as(crystal.img.getElement()), crystal.currX, crystal.currY, crystal.frameWidth, crystal.frameWidth, FunctionsOutput.get(currOutputIndex).x+130, currCrystalPosY, 50, 50);
-    	}
+			cvcontext.drawImage(crystal.img, crystal.currX, crystal.currY,crystal.frameWidth,crystal.frameWidth,FunctionsOutput.get(0).x+130,currCrystalPosY,50,50);
+		}
     	else {    
     		
     		//ожидание окончания гифки и перезапуск уровня. См класс Gif
     		if(lose) {
     	  		crystal.Play(75);
     		}else{canToggle = true;}
-    		
-    		backcontext.drawImage(ImageElement.as(crystal.img.getElement()), crystal.currX, crystal.currY, crystal.frameWidth, crystal.frameWidth, FunctionsOutput.get(currOutputIndex).x+130, FunctionsOutput.get(currOutputIndex).y-67, 50, 50);
-    		
-    		if(crystal.gifEnded && lose) {RestartLevel();}
+
+			cvcontext.drawImage(crystal.img, crystal.currX, crystal.currY,crystal.frameWidth,crystal.frameWidth,FunctionsOutput.get(0).x+130,currCrystalPosY,50,50);
+
+			if(crystal.gifEnded && lose) {RestartLevel();}
     	}
-    	cvcontext.drawImage(backcontext.getCanvas(),0.0,0.0);
+    	//cvcontext.drawImage(backcontext.getCanvas(),0.0,0.0);
     }
- 
-       
+
+	public void setCanvasSize(){
+
+		width = (int)cv.getWidth();
+		width = (int)cv.getHeight();
+
+		circuitArea = new Rectangle(0, 0, width, height);
+
+	}
+
+	//Game Logic
+	//also check update method
+	public void GameOverTrigger() {
+		refreshGameState = true;
+		tickCounter = 0;
+	}
+
+	private void RestartLevel() {
+
+		lose = false;
+
+		for(int i = 0; i<FunctionsInput.size(); i++) {
+			FunctionsInput.get(i).position = 0;
+		}
+
+		CrystalRestart.schedule(CrystalRestartTask,110);
+
+		canToggle = true;
+	}
+
+	public void Exit() {
+
+		System.out.println("Exit");
+
+	}
+
+	//GameLogic End
+
+
+
  // *****************************************************************
 //  SOLVE CIRCUIT
     
@@ -612,8 +630,7 @@ public class CirSim implements  MouseDownHandler,  MouseUpHandler, MouseMoveHand
     int framerate = 0, steprate = 0;
     boolean converged;
     int subIterations;
-    
-    
+
     class NodeMapEntry {
     		int node;
     		NodeMapEntry() { node = -1; }
@@ -717,22 +734,7 @@ public class CirSim implements  MouseDownHandler,  MouseUpHandler, MouseMoveHand
     		}
      
     }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
     void runCircuit() {
     	
     	if (circuitMatrix == null || elmList.size() == 0) {
@@ -883,8 +885,7 @@ public class CirSim implements  MouseDownHandler,  MouseUpHandler, MouseMoveHand
     	//calcWireCurrents();
     	
     }
-    
-    
+
     void analyzeCircuit() {
     	 
     	 if (elmList.isEmpty()) {
@@ -1210,8 +1211,7 @@ public class CirSim implements  MouseDownHandler,  MouseUpHandler, MouseMoveHand
 
     	 
     	 
-    } 
-    
+    }
          
     void calculateWireClosure() {
     	
@@ -1256,23 +1256,7 @@ public class CirSim implements  MouseDownHandler,  MouseUpHandler, MouseMoveHand
     		}
     		
     }
-    	
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
     static void lu_solve(double[][] a, int n, int[] ipvt, double[] b) {
     	int i;
 
@@ -1660,7 +1644,6 @@ public class CirSim implements  MouseDownHandler,  MouseUpHandler, MouseMoveHand
 		transform[5] = circuitArea.height/2 - cy*newScale;
     }
 
-    @FXML
     public void centreCircuit() {
     	
 	Rectangle bounds = getCircuitBounds();
@@ -1683,24 +1666,11 @@ public class CirSim implements  MouseDownHandler,  MouseUpHandler, MouseMoveHand
     	}
     	
     }
-       
-    
+
 // *****************************************************************
 //  MOUSE EVENTS
-    
-	@Override
-	public void onMouseWheel(MouseWheelEvent e) {
-		e.preventDefault();
-		zoomCircuit(e.getDeltaY());
-	}
 
-	@Override
-	public void onMouseUp(MouseUpEvent e) {
-		e.preventDefault();
-		if (e.getNativeButton()==NativeEvent.BUTTON_RIGHT) {return;}
-		dragging = false;
-	}
-	
+	/*
 	@Override
 	public void onMouseDown(MouseDownEvent e) {
 		e.preventDefault();
@@ -1769,15 +1739,7 @@ public class CirSim implements  MouseDownHandler,  MouseUpHandler, MouseMoveHand
 	 	dragScreenY = e.getY();
 	 	
 	}
-	
-	public void onMouseMove(MouseMoveEvent e) {
-		e.preventDefault();
-		
-		if(dragging) {
-			dragAll(e.getX(), e.getY());
-		}
-		
-	}
+	*/
 	
 	void dragAll (int x, int y) {
 		

@@ -27,24 +27,26 @@ Copyright (C) Paul Falstad and Iain Sharp
 
 package AmadeyLogicGame;
 
-import com.google.gwt.canvas.dom.client.Context2d;
+import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Paint;
+import javafx.scene.text.Font;
 
 public class Graphics {
 	
-	Context2d context;
+	GraphicsContext context;
 	int currentFontSize;
-	Font currentFont= null;
+	Font currentFont = null;
 	Color lastColor;
 	
-	  public Graphics(Context2d context) {
+	  public Graphics(GraphicsContext context) {
 		    this.context = context;
 	}
 	  
 	  public void setColor(Color color) {
 		    if (color != null) {
 		      String colorString = color.getHexValue();
-		      context.setStrokeStyle(colorString);
-		      context.setFillStyle(colorString);
+		      context.setStroke(Paint.valueOf(colorString));
+		      context.setFill(Paint.valueOf(colorString));
 		    } else {
 		      System.out.println("Ignoring null-Color");
 		    }
@@ -52,8 +54,8 @@ public class Graphics {
 	  }
 	  
 	  public void setColor(String color) {
-	      context.setStrokeStyle(color);
-	      context.setFillStyle(color);
+		  context.setStroke(Paint.valueOf(color));
+		  context.setFill(Paint.valueOf(color));
 	      lastColor=null;
 	  }
 	  
@@ -79,9 +81,9 @@ public class Graphics {
 		//  context.closePath();
 	  }
 	  
-	  public void fillOval(int x, int y, int width, int height) {
+	  public void fillOval(double x, double y, double width, double height) {
 		  context.beginPath();
-		  context.arc(x+width/2, y+width/2, width/2, 0, 2.0*3.14159);
+		  context.arc(x+width/2, y+width/2, width/2, width/2, 0, 2.0*3.14159);
 		  context.closePath();
 		  context.fill();
 	  }
@@ -133,8 +135,8 @@ public class Graphics {
 	  
 	  public void setFont(Font f){
 		  if (f!=null){
-			  context.setFont(f.fontname);
-			  currentFontSize=f.size;
+			  context.setFont(f);
+			  currentFontSize=(int)f.getSize();
 			  currentFont=f;
 		  }
 	  }
@@ -153,7 +155,7 @@ public class Graphics {
 	       setLineDash(context, a, b);
 	   }
 	   
-	   native static void setLineDash(Context2d context, int a, int b) /*-{
+	   native static void setLineDash(GraphicsContext context, int a, int b) /*-{
 	       if (a == 0)
 	           context.setLineDash([]);
 	       else

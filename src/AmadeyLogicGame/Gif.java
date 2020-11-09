@@ -24,12 +24,10 @@ Copyright (C) Pplos Studio
 
 package AmadeyLogicGame;
 
-import com.google.gwt.user.client.Timer;
-import java.util.Timer;
-//import com.google.gwt.user.client.ui.Image;
+import javafx.animation.AnimationTimer;
 import javafx.scene.image.Image;
 
-public class Gif extends Image {
+public class Gif {
 	
 	public String fileName;
 	public int frameCount;
@@ -39,9 +37,9 @@ public class Gif extends Image {
 	public boolean gifEnded = false;
 	public boolean isPlaying = false;
 	public int currX, currY, nextX, nextY;
-	
+
 	Gif(String file, int w, int h, int frameW, int fCount){
-		
+
 		fileName = file;
 		
 		width = w;
@@ -57,33 +55,31 @@ public class Gif extends Image {
 		img = new Image(tmp);
 		
 	}
-	
-	final Timer timer = new Timer() {
-		
-        public void run() {
-        	
-	        if (currX < width && currFrame < frameCount) {
-	        	
-	        	nextX += frameWidth;
-	        	
-	        }else {
-	        	cancel();
-	        	gifEnded = true;
-	        }
-	        
-	        
-	        if(nextX == width) {
-	        	nextX = 0;
-	        	nextY += frameWidth+1;
-	        }
-	        
-	        currFrame += 1;
-	        
-	        currX = nextX;
-	        currY = nextY;
-        }
-        
-    };
+
+	public AnimationTimer timer = new AnimationTimer() {
+		@Override
+		public void handle(long now) {
+			if (currX < width && currFrame < frameCount) {
+
+				nextX += frameWidth;
+
+			}else {
+				timer.stop();
+				gifEnded = true;
+			}
+
+
+			if(nextX == width) {
+				nextX = 0;
+				nextY += frameWidth+1;
+			}
+
+			currFrame += 1;
+
+			currX = nextX;
+			currY = nextY;
+		}
+	};
 
 	
 	public void Play(int frameDelay) {
@@ -91,8 +87,7 @@ public class Gif extends Image {
 		if(!isPlaying) {
 			isPlaying = true;
 			gifEnded = false;
-			//timer.
-			timer.scheduleRepeating(frameDelay);
+			timer.start();
 		}
 		
 	}
