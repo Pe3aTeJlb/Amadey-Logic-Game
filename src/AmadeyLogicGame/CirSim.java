@@ -66,6 +66,8 @@ import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.AnchorPane;
@@ -93,12 +95,6 @@ public class CirSim {
 	
  /////////////////////
 //Set UI Fields
-
-    GraphicsContext cvcontext;
-    Canvas backcv;
-    GraphicsContext backcontext;
-    
-	Rectangle circuitArea;
 
 	@FXML
 	private AnchorPane root;
@@ -151,6 +147,12 @@ public class CirSim {
 
 	@FXML
 	private Canvas cv;
+
+	GraphicsContext cvcontext;
+	Canvas backcv;
+	GraphicsContext backcontext;
+
+	Rectangle circuitArea;
 
     public int width,height;
     
@@ -216,9 +218,7 @@ public class CirSim {
     
     private int maxLevelCount = 10;
 
-    MenuItem ScoreText;
-
-   // private Locale l = Locale.getDefault();
+    //private Locale l = Locale.getDefault();
 	private Locale l = Locale.forLanguageTag("ru_RU");
     private final String bundelName = "Constants";
     private Localizer localizer;
@@ -253,6 +253,8 @@ public class CirSim {
   	 
   		if(gameType.equals("Test")) {Score = 100;}
   		else {Score = 0;}
+
+		backcv = new Canvas();
 	 
 	 	transform = new double[6];
 	 
@@ -344,7 +346,56 @@ public class CirSim {
 		cv.setOnMousePressed(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent event) {
+				CircuitElm newMouseElm=null;
+				int sx = (int)event.getX();
+				int sy = (int)event.getY();
+				int gx = inverseTransformX(sx);
+				int gy = inverseTransformY(sy);
 
+
+				if(event.getButton() == MouseButton.PRIMARY) {
+
+					if (mouseElm != null && mouseElm.getHandleGrabbedClose(gx, gy, POSTGRABSQ, MINPOSTGRABSIZE)>=0) {
+						newMouseElm = mouseElm;
+					} else {
+
+						int bestDist = 100000000;
+						int bestArea = 100000000;
+						for (int i = 0; i != elmList.size(); i++) {
+							CircuitElm ce = getElm(i);
+							if (ce.boundingBox.contains(gx, gy)) {
+								int j;
+								int area = ce.boundingBox.width * ce.boundingBox.height;
+								int jn = ce.getPostCount();
+								if (jn > 2)
+									jn = 2;
+								for (j = 0; j != jn; j++) {
+									Point pt = ce.getPost(j);
+									int dist = Graphics.distanceSq(gx, gy, pt.x, pt.y);
+
+									// if multiple elements have overlapping bounding boxes,
+									// we prefer selecting elements that have posts close
+									// to the mouse pointer and that have a small bounding
+									// box area.
+									if (dist <= bestDist && area <= bestArea) {
+										bestDist = dist;
+										bestArea = area;
+										newMouseElm = ce;
+									}
+								}
+								// prefer selecting elements that have small bounding box area (for
+								// elements with no posts)
+								if (ce.getPostCount() == 0 && area <= bestArea) {
+									newMouseElm = ce;
+									bestArea = area;
+								}
+							}
+						}
+
+					}
+
+					setMouseElm(newMouseElm);
+				}
 			}
 		});
 		cv.setOnMouseDragged(new EventHandler<MouseEvent>() {
@@ -365,6 +416,7 @@ public class CirSim {
 		CircuitElm.setColorScale();
 
 		cvcontext = cv.getGraphicsContext2D();
+		backcontext = backcv.getGraphicsContext2D();
 
 		setCanvasSize();	  
 
@@ -379,11 +431,11 @@ public class CirSim {
 			public void handle(long now) {
 				Score -= penaltyPerFrame;
 				TimeSpend += 0.015;
-				ScoreText.setText(localizer.Localize("Score") + " " + (int)Score);
+				infoMenu.setText(localizer.Localize("Score") + " " + (int)Score);
 				updateCircuit();
 			}
 		};
-		//update.start();
+		update.start();
 
 		//Необходим ля синхронизации появления нового кристалл и обноления платформы при рестарте
 		CrystalRestart = new Timer();
@@ -436,7 +488,7 @@ public class CirSim {
     	runCircuit();
     	analyzeCircuit();
     	
-    	Graphics g = new Graphics(cvcontext);
+    	Graphics g = new Graphics(backcontext);
     	
     	if(refreshGameState)tickCounter++;
     		
@@ -503,7 +555,6 @@ public class CirSim {
    
     	}
     	
-    	
     	CircuitElm.selectColor = Color.cyan;
     	
     	if (printableCheckItem.isSelected()) {
@@ -517,12 +568,11 @@ public class CirSim {
     	}
 
     	g.fillRect(0, 0, (int)g.context.getCanvas().getWidth(), (int)g.context.getCanvas().getHeight());
-    	
-    	
-    	cvcontext.setTransform(transform[0], transform[1], transform[2],
-				 				 transform[3], transform[4], transform[5]
+
+		backcontext.setTransform(transform[0], transform[1], transform[2],
+			 				 transform[3], transform[4], transform[5]
 				 				);
-        		 
+
     	for (int i = 0; i != elmList.size(); i++) {
     		
     		if(printableCheckItem.isSelected()){
@@ -559,14 +609,14 @@ public class CirSim {
     			crystal.Play(40);
     		}
     		if(crystal.gifEnded && lose) {RestartLevel();}
-    		cvcontext.drawImage(crystal.img, crystal.currX, crystal.currY,crystal.frameWidth,crystal.frameWidth,FunctionsOutput.get(0).x+130,currCrystalPosY,50,50);
+			backcontext.drawImage(crystal.img, crystal.currX, crystal.currY,crystal.frameWidth,crystal.frameWidth,FunctionsOutput.get(0).x+130,currCrystalPosY,50,50);
 
 
     	}
     	else if(currOutputIndex < FunctionsOutput.size() && currCrystalPosY < FunctionsOutput.get(currOutputIndex).y-67) {
     		canToggle = false;
     		currCrystalPosY += 5;
-			cvcontext.drawImage(crystal.img, crystal.currX, crystal.currY,crystal.frameWidth,crystal.frameWidth,FunctionsOutput.get(0).x+130,currCrystalPosY,50,50);
+			backcontext.drawImage(crystal.img, crystal.currX, crystal.currY,crystal.frameWidth,crystal.frameWidth,FunctionsOutput.get(0).x+130,currCrystalPosY,50,50);
 		}
     	else {    
     		
@@ -575,20 +625,25 @@ public class CirSim {
     	  		crystal.Play(75);
     		}else{canToggle = true;}
 
-			cvcontext.drawImage(crystal.img, crystal.currX, crystal.currY,crystal.frameWidth,crystal.frameWidth,FunctionsOutput.get(0).x+130,currCrystalPosY,50,50);
+			backcontext.drawImage(crystal.img, crystal.currX, crystal.currY,crystal.frameWidth,crystal.frameWidth,FunctionsOutput.get(0).x+130,currCrystalPosY,50,50);
 
 			if(crystal.gifEnded && lose) {RestartLevel();}
     	}
-    	//cvcontext.drawImage(backcontext.getCanvas(),0.0,0.0);
+		cvcontext.drawImage(backcontext,0.0,0.0);
     }
 
 	public void setCanvasSize(){
 
-		width = (int)cv.getWidth();
-		width = (int)cv.getHeight();
+    	width = (int)root.getWidth();
+		height = (int)(root.getHeight()-menuBar.getPrefHeight());
+
+		cv.setWidth(width);
+		cv.setHeight(height);
+
+		backcv.setWidth(width);
+		backcv.setHeight(height);
 
 		circuitArea = new Rectangle(0, 0, width, height);
-
 	}
 
 	//Game Logic
@@ -1640,6 +1695,7 @@ public class CirSim {
 	
 		// adjust translation to keep center of screen constant
 		// inverse transform = (x-t4)/t0
+
 		transform[4] = circuitArea.width /2 - cx*newScale;
 		transform[5] = circuitArea.height/2 - cy*newScale;
     }
@@ -1670,77 +1726,6 @@ public class CirSim {
 // *****************************************************************
 //  MOUSE EVENTS
 
-	/*
-	@Override
-	public void onMouseDown(MouseDownEvent e) {
-		e.preventDefault();
-	
-		if (e.getNativeButton() != NativeEvent.BUTTON_LEFT && 
-			e.getNativeButton() != NativeEvent.BUTTON_MIDDLE 
-			//.getNativeButton() != NativeEvent.BUTTON_RIGHT 
-			)
-	    	{return;}
-		
-		CircuitElm newMouseElm=null;
-		int sx = e.getX();
-    	int sy = e.getY();
-    	int gx = inverseTransformX(sx);
-    	int gy = inverseTransformY(sy);
-				
-		if(e.getNativeButton()==NativeEvent.BUTTON_MIDDLE || e.getNativeButton() == NativeEvent.BUTTON_LEFT) {
-			dragging = true;
-		}
-		
-		if(e.getNativeButton()==NativeEvent.BUTTON_LEFT) {
-			
-			if (mouseElm != null && mouseElm.getHandleGrabbedClose(gx, gy, POSTGRABSQ, MINPOSTGRABSIZE)>=0) {
-	    		newMouseElm = mouseElm;
-	    	} else { 
-	    		
-	    		int bestDist = 100000000;
-	    		int bestArea = 100000000;
-	    		for (int i = 0; i != elmList.size(); i++) {
-	    			CircuitElm ce = getElm(i);
-	    			if (ce.boundingBox.contains(gx, gy)) {
-	    				int j;
-	    				int area = ce.boundingBox.width * ce.boundingBox.height;
-	    				int jn = ce.getPostCount();
-	    				if (jn > 2)
-	    					jn = 2;
-	    				for (j = 0; j != jn; j++) {
-	    					Point pt = ce.getPost(j);
-	    					int dist = Graphics.distanceSq(gx, gy, pt.x, pt.y);
-
-	    					// if multiple elements have overlapping bounding boxes,
-	    					// we prefer selecting elements that have posts close
-	    					// to the mouse pointer and that have a small bounding
-	    					// box area.
-	    					if (dist <= bestDist && area <= bestArea) {
-	    						bestDist = dist;
-	    						bestArea = area;
-	    						newMouseElm = ce;
-	    					}
-	    				}
-	    				// prefer selecting elements that have small bounding box area (for
-	    				// elements with no posts)
-	    				if (ce.getPostCount() == 0 && area <= bestArea) {
-	    				    newMouseElm = ce;
-	    				    bestArea = area;
-	    				}
-	    			}
-	    		}	
-	    		
-	    	}
-		
-			setMouseElm(newMouseElm);
-		}
-		
-		dragScreenX = e.getX();
-	 	dragScreenY = e.getY();
-	 	
-	}
-	*/
-	
 	void dragAll (int x, int y) {
 		
     	int dx = x-dragScreenX;
@@ -1770,16 +1755,13 @@ public class CirSim {
     
 // *****************************************************************
 //  TOOLS    
-    
-    
+
     int getrand(int x) {
 		int q = random.nextInt();
 		if (q < 0)
 			q = -q;
 		return q % x;
 	}
-	  
-    //static SafeHtml LSHTML(String s) { return SafeHtmlUtils.fromTrustedString(s); }
 
     public Rectangle getCircuitBounds() {
     	

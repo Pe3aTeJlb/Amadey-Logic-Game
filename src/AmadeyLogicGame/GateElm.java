@@ -40,6 +40,7 @@ abstract class GateElm extends CircuitElm {
 	public GateElm(int xx, int yy) {
 	    super(xx, yy);
 	    noDiagonal = true;
+	    noDiagonal = true;
 	    inputCount = 2;
 	    
 	    // copy defaults from last gate edited

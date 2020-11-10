@@ -51,7 +51,7 @@ public class Gif {
 		
 		nextX = currX + frameWidth;
 				
-		String tmp =  "Images/" + fileName + ".png";
+		String tmp =  fileName + ".png";
 		img = new Image(tmp);
 		
 	}
