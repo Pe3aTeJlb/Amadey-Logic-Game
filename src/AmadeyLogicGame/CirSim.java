@@ -29,36 +29,6 @@ package AmadeyLogicGame;
 
 import java.util.*;
 import java.lang.Math;
-/*
-import com.google.gwt.canvas.client.Canvas;
-import com.google.gwt.user.client.ui.DockLayoutPanel;
-import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.RootLayoutPanel;
-import com.google.gwt.user.client.ui.RootPanel;
-import com.google.gwt.canvas.dom.client.Context2d;
-import com.google.gwt.event.dom.client.MouseDownEvent;
-import com.google.gwt.event.dom.client.MouseDownHandler;
-import com.google.gwt.event.dom.client.MouseMoveEvent;
-import com.google.gwt.event.dom.client.MouseMoveHandler;
-import com.google.gwt.event.dom.client.MouseUpHandler;
-import com.google.gwt.event.dom.client.MouseUpEvent;
-import com.google.gwt.event.dom.client.MouseWheelEvent;
-import com.google.gwt.event.dom.client.MouseWheelHandler;
-import com.google.gwt.event.logical.shared.ResizeEvent;
-import com.google.gwt.event.logical.shared.ResizeHandler;
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.dom.client.Style.Unit;
-import com.google.gwt.user.client.ui.MenuBar;
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.dom.client.ImageElement;
-import com.google.gwt.dom.client.NativeEvent;
-import com.google.gwt.user.client.ui.MenuItem;
-*/
-
-
 import javafx.animation.AnimationTimer;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -66,13 +36,13 @@ import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
-import javafx.scene.image.Image;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.transform.Affine;
 
 
 /*
@@ -149,14 +119,13 @@ public class CirSim {
 	private Canvas cv;
 
 	GraphicsContext cvcontext;
-	Canvas backcv;
-	GraphicsContext backcontext;
 
 	Rectangle circuitArea;
 
     public int width,height;
     
     double[] transform;
+    private Affine affine;
     
  /////////////////////
 //Events
@@ -165,8 +134,8 @@ public class CirSim {
     int dragScreenX, dragScreenY, initDragGridX, initDragGridY;
     boolean dragging;
     private CircuitElm mouseElm=null;
-    static final int POSTGRABSQ=25;
-    static final int MINPOSTGRABSIZE = 256;
+    private final int POSTGRABSQ=25;
+    private final int MINPOSTGRABSIZE = 256;
     
  ////////////////////////
 //Circuit procession
@@ -228,18 +197,12 @@ public class CirSim {
 	private Timer CrystalRestart;
 	private TimerTask CrystalRestartTask;
 
-	////////////////////////
-	///////Init/////////////
-	////////////////////////
+
+ ////////////////////////
+///////Init/////////////
 
 
-  ////////////////////////
- //Circuit Construction//
-////////////////////////   
-
-    public CirSim() {
-    //	theSim = this;
-    }
+    public CirSim() { }
 
     @FXML
   	public void initialize() {
@@ -253,8 +216,6 @@ public class CirSim {
   	 
   		if(gameType.equals("Test")) {Score = 100;}
   		else {Score = 0;}
-
-		backcv = new Canvas();
 	 
 	 	transform = new double[6];
 	 
@@ -351,8 +312,6 @@ public class CirSim {
 				int sy = (int)event.getY();
 				int gx = inverseTransformX(sx);
 				int gy = inverseTransformY(sy);
-
-
 				if(event.getButton() == MouseButton.PRIMARY) {
 
 					if (mouseElm != null && mouseElm.getHandleGrabbedClose(gx, gy, POSTGRABSQ, MINPOSTGRABSIZE)>=0) {
@@ -401,7 +360,14 @@ public class CirSim {
 		cv.setOnMouseDragged(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent event) {
-				dragAll((int)event.getX(), (int)event.getY());
+				int dx = (int)(event.getX()-dragScreenX);
+				int dy = (int)(event.getY()-dragScreenY);
+				if (dx == 0 && dy == 0) {return;}
+				transform[4] += dx;
+				transform[5] += dy;
+				dragScreenX = (int)event.getX();
+				dragScreenY = (int)event.getY();
+
 			}
 		});
 		cv.setOnScroll(new EventHandler<ScrollEvent>() {
@@ -416,7 +382,6 @@ public class CirSim {
 		CircuitElm.setColorScale();
 
 		cvcontext = cv.getGraphicsContext2D();
-		backcontext = backcv.getGraphicsContext2D();
 
 		setCanvasSize();	  
 
@@ -453,6 +418,9 @@ public class CirSim {
 
   	//Game Logic
 
+ ////////////////////////
+//Circuit Construction//
+
   	private void GenerateCircuit() {
   		
   		if(level <= maxLevelCount) {
@@ -487,9 +455,11 @@ public class CirSim {
     	setCanvasSize();
     	runCircuit();
     	analyzeCircuit();
-    	
-    	Graphics g = new Graphics(backcontext);
-    	
+
+		cvcontext = cv.getGraphicsContext2D();
+
+    	Graphics g = new Graphics(cvcontext);
+
     	if(refreshGameState)tickCounter++;
     		
     	//
@@ -569,9 +539,11 @@ public class CirSim {
 
     	g.fillRect(0, 0, (int)g.context.getCanvas().getWidth(), (int)g.context.getCanvas().getHeight());
 
-		backcontext.setTransform(transform[0], transform[1], transform[2],
+		cvcontext.setTransform(transform[0], transform[1], transform[2],
 			 				 transform[3], transform[4], transform[5]
-				 				);
+		);
+
+		//cvcontext.setTransform(affine);
 
     	for (int i = 0; i != elmList.size(); i++) {
     		
@@ -609,14 +581,14 @@ public class CirSim {
     			crystal.Play(40);
     		}
     		if(crystal.gifEnded && lose) {RestartLevel();}
-			backcontext.drawImage(crystal.img, crystal.currX, crystal.currY,crystal.frameWidth,crystal.frameWidth,FunctionsOutput.get(0).x+130,currCrystalPosY,50,50);
+			cvcontext.drawImage(crystal.img, crystal.currX, crystal.currY,crystal.frameWidth,crystal.frameWidth,FunctionsOutput.get(0).x+130,currCrystalPosY,50,50);
 
 
     	}
     	else if(currOutputIndex < FunctionsOutput.size() && currCrystalPosY < FunctionsOutput.get(currOutputIndex).y-67) {
     		canToggle = false;
     		currCrystalPosY += 5;
-			backcontext.drawImage(crystal.img, crystal.currX, crystal.currY,crystal.frameWidth,crystal.frameWidth,FunctionsOutput.get(0).x+130,currCrystalPosY,50,50);
+			cvcontext.drawImage(crystal.img, crystal.currX, crystal.currY,crystal.frameWidth,crystal.frameWidth,FunctionsOutput.get(0).x+130,currCrystalPosY,50,50);
 		}
     	else {    
     		
@@ -625,11 +597,11 @@ public class CirSim {
     	  		crystal.Play(75);
     		}else{canToggle = true;}
 
-			backcontext.drawImage(crystal.img, crystal.currX, crystal.currY,crystal.frameWidth,crystal.frameWidth,FunctionsOutput.get(0).x+130,currCrystalPosY,50,50);
+			cvcontext.drawImage(crystal.img, crystal.currX, crystal.currY,crystal.frameWidth,crystal.frameWidth,FunctionsOutput.get(0).x+130,currCrystalPosY,50,50);
 
 			if(crystal.gifEnded && lose) {RestartLevel();}
     	}
-		cvcontext.drawImage(backcontext,0.0,0.0);
+
     }
 
 	public void setCanvasSize(){
@@ -639,9 +611,6 @@ public class CirSim {
 
 		cv.setWidth(width);
 		cv.setHeight(height);
-
-		backcv.setWidth(width);
-		backcv.setHeight(height);
 
 		circuitArea = new Rectangle(0, 0, width, height);
 	}
@@ -1677,27 +1646,31 @@ public class CirSim {
     }
 
     void zoomCircuit(int dy) {
-    	
+
     	double newScale;
     	double oldScale = transform[0];
     	double val = dy*.01;
     	newScale = Math.max(oldScale+val, .2);
     	newScale = Math.min(newScale, 2.5);
     	setCircuitScale(newScale);
-    	
+
     }
-    
+
     void setCircuitScale(double newScale) {
-    	
+
 		int cx = inverseTransformX(circuitArea.width/2);
 		int cy = inverseTransformY(circuitArea.height/2);
-		transform[0] = transform[3] = newScale;
-	
+
+		transform[0] = newScale;
+		transform[3] = newScale;
+
 		// adjust translation to keep center of screen constant
 		// inverse transform = (x-t4)/t0
 
 		transform[4] = circuitArea.width /2 - cx*newScale;
 		transform[5] = circuitArea.height/2 - cy*newScale;
+
+
     }
 
     public void centreCircuit() {
@@ -1726,18 +1699,6 @@ public class CirSim {
 // *****************************************************************
 //  MOUSE EVENTS
 
-	void dragAll (int x, int y) {
-		
-    	int dx = x-dragScreenX;
-    	int dy = y-dragScreenY;
-    	if (dx == 0 && dy == 0) {return;}
-    	transform[4] += dx;
-    	transform[5] += dy;
-    	dragScreenX = x;
-    	dragScreenY = y;
-		
-	}
-	
     void setMouseElm(CircuitElm ce) {
     	if (ce!=mouseElm) {
     		if (mouseElm!=null)
@@ -1751,8 +1712,7 @@ public class CirSim {
     		se.toggle();
     	}
     }
-	
-    
+
 // *****************************************************************
 //  TOOLS    
 
