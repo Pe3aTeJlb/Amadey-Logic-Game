@@ -108,7 +108,7 @@ class SwitchElm extends CircuitElm {
     }
     
     void toggle() {
-    	
+
     	if(sim.canToggle) {
 			position++;
 			if (position >= posCount)

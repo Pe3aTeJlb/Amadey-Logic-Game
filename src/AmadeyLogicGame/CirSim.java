@@ -42,7 +42,6 @@ import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.transform.Affine;
 
 
 /*
@@ -60,8 +59,6 @@ public class CirSim {
 	//Circuit settings fields
 	boolean euroGates = false;
     Random random;
-	
-	private final int REFRESH_RATE = 15; //Устанавливает время между кадрами в мс. Эквивалентно 60 fps
 	
  /////////////////////
 //Set UI Fields
@@ -91,7 +88,7 @@ public class CirSim {
 	@FXML
 	private RadioMenuItem printableCheckItem;
 	@FXML
-	public RadioMenuItem alternativeColorCheckItem;
+	public RadioMenuItem /**/alternativeColorCheckItem;
 
 
 	@FXML
@@ -118,20 +115,21 @@ public class CirSim {
 	@FXML
 	private Canvas cv;
 
-	GraphicsContext cvcontext;
+	private GraphicsContext cvcontext;
+	private Graphics g;
+
 
 	Rectangle circuitArea;
 
     public int width,height;
     
     double[] transform;
-    private Affine affine;
     
  /////////////////////
 //Events
     
     long zoomTime;
-    int dragScreenX, dragScreenY, initDragGridX, initDragGridY;
+    double dragScreenX, dragScreenY, initDragGridX, initDragGridY;
     boolean dragging;
     private CircuitElm mouseElm=null;
     private final int POSTGRABSQ=25;
@@ -254,6 +252,12 @@ public class CirSim {
 
 		printableCheckItem.setText(localizer.Localize("WBack"));
 		alternativeColorCheckItem.setText(localizer.Localize("AltColor"));
+		alternativeColorCheckItem.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				CircuitElm.setColorScale(alternativeColorCheckItem.isSelected());
+			}
+		});
 
 		toolsMenu.setText(localizer.Localize("Tools"));
 		regenCircItem.setText(localizer.Localize("Regen"));
@@ -355,33 +359,41 @@ public class CirSim {
 
 					setMouseElm(newMouseElm);
 				}
+				dragScreenX = event.getX();
+				dragScreenY = event.getY();
 			}
+
 		});
 		cv.setOnMouseDragged(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent event) {
-				int dx = (int)(event.getX()-dragScreenX);
-				int dy = (int)(event.getY()-dragScreenY);
+				double dx = event.getX()-dragScreenX;
+				double dy = event.getY()-dragScreenY;
 				if (dx == 0 && dy == 0) {return;}
+				clearRect40K(transform[4],transform[5]);
+
 				transform[4] += dx;
 				transform[5] += dy;
-				dragScreenX = (int)event.getX();
-				dragScreenY = (int)event.getY();
+				dragScreenX = event.getX();
+				dragScreenY = event.getY();
 
 			}
 		});
 		cv.setOnScroll(new EventHandler<ScrollEvent>() {
 			@Override
 			public void handle(ScrollEvent event) {
-				zoomCircuit((int)event.getDeltaY());
+				clearRect40K();
+				zoomCircuit(event.getDeltaY());
+
 			}
 		});
 
 
 		//initialize wire color
-		CircuitElm.setColorScale();
+		CircuitElm.setColorScale(alternativeColorCheckItem.isSelected());
 
 		cvcontext = cv.getGraphicsContext2D();
+		g = new Graphics(cvcontext);
 
 		setCanvasSize();	  
 
@@ -451,14 +463,19 @@ public class CirSim {
 //  Void Update	
 
 	public void updateCircuit() {
-    	
+
+
+
     	setCanvasSize();
     	runCircuit();
     	analyzeCircuit();
 
-		cvcontext = cv.getGraphicsContext2D();
 
-    	Graphics g = new Graphics(cvcontext);
+    	clearRect40K(transform[4], transform[5]); //clear current frame to avoid GIF fall trail
+
+	//	cvcontext = cv.getGraphicsContext2D();
+
+    	//Graphics g = new Graphics(cvcontext);
 
     	if(refreshGameState)tickCounter++;
     		
@@ -502,6 +519,7 @@ public class CirSim {
 	      			currOutputIndex++;	
 	      			System.out.println("new curr out index " + currOutputIndex);
 	      		}
+
 	      		//заглушка для последней платформы
 	      		if(currOutputIndex == FunctionsOutput.size()-1 && currOutput.get(currOutputIndex).equals("0")) {
 	      			currOutputIndex++;
@@ -1624,7 +1642,7 @@ public class CirSim {
 	 	    else {
 	 	    	i--;
 	 	    }
-	 	    circuitRightSide[i] += x;
+			if (i >= 0)circuitRightSide[i] += x;
 	 	}
     }
      
@@ -1645,11 +1663,11 @@ public class CirSim {
 		gridRound = gridSize/2-1;
     }
 
-    void zoomCircuit(int dy) {
+    void zoomCircuit(double dy) {
 
     	double newScale;
     	double oldScale = transform[0];
-    	double val = dy*.01;
+    	double val = dy*.005;
     	newScale = Math.max(oldScale+val, .2);
     	newScale = Math.min(newScale, 2.5);
     	setCircuitScale(newScale);
@@ -1716,6 +1734,27 @@ public class CirSim {
 // *****************************************************************
 //  TOOLS    
 
+	void clearRect40K()
+	{
+
+		if (printableCheckItem.isSelected()) {
+			cvcontext.setFill(javafx.scene.paint.Color.WHITE);
+		} else {
+			cvcontext.setFill(javafx.scene.paint.Color.BLACK);
+		}
+		cvcontext.fillRect(0,0,(cv.getWidth()/transform[0])*2,(cv.getHeight()/transform[0])*2);
+	}
+
+	void clearRect40K(double prevX, double prevY)
+	{
+		if (printableCheckItem.isSelected()) {
+			cvcontext.setFill(javafx.scene.paint.Color.WHITE);
+		} else {
+			cvcontext.setFill(javafx.scene.paint.Color.BLACK);
+		}
+		cvcontext.fillRect(-prevX/transform[0],-prevY/transform[0],cv.getWidth()/transform[0],cv.getHeight()/transform[0]);
+	}
+
     int getrand(int x) {
 		int q = random.nextInt();
 		if (q < 0)
@@ -1733,15 +1772,15 @@ public class CirSim {
     		miny = min(ce.y, min(ce.y2, miny));
     		maxy = max(ce.y, max(ce.y2, maxy));
     	}
-    	
+
     	if (minx > maxx) {return null;}
-    	
+
     	return new Rectangle(minx, miny, maxx-minx, maxy-miny);
     }
    
-    int min(int a, int b) { return (a < b) ? a : b; }
+    int min(int a, int b) { return Math.min(a, b); }
     
-    int max(int a, int b) { return (a > b) ? a : b; }
+    int max(int a, int b) { return Math.max(a, b); }
         
     // convert screen coordinates to grid coordinates by inverting circuit transform
     int inverseTransformX(double x) {

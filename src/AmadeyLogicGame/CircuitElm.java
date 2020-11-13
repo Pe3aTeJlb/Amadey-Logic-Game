@@ -28,9 +28,16 @@ Copyright (C) Paul Falstad and Iain Sharp
 package AmadeyLogicGame;
 
 import javafx.geometry.VPos;
+import javafx.scene.paint.CycleMethod;
+import javafx.scene.paint.LinearGradient;
+import javafx.scene.paint.Stop;
+import javafx.scene.shape.ArcType;
+import javafx.scene.shape.StrokeLineCap;
 import javafx.scene.text.Font;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.List;
+
 import javafx.scene.canvas.GraphicsContext.*;
 import javafx.scene.text.TextAlignment;
 
@@ -125,7 +132,7 @@ public abstract class CircuitElm  {
 		
     }
     
-    static void setColorScale() {
+    static void setColorScale(boolean altColor) {
 
 		for (int i = 0; i != colorScaleCount; i++) {
 			
@@ -142,8 +149,9 @@ public abstract class CircuitElm  {
 				int n1 = (int) (128 * v) + 127;
 				int n2 = (int) (127 * (1 - v));
 				
-				if (sim.alternativeColorCheckItem.isSelected()) {
+				if (altColor) {
 				    colorScale[i] = new Color(n2, n2, n1);
+
 				}
 				else 
 				{
@@ -668,13 +676,20 @@ public abstract class CircuitElm  {
 		g.context.transform(((double)(p2.x-p1.x))/len, ((double)(p2.y-p1.y))/len,
 			-((double)(p2.y-p1.y))/len,((double)(p2.x-p1.x))/len,p1.x,p1.y);
 
-	//	CanvasGradient grad = g.context.createLinearGradient(0,0,len,0);
-	//	grad.addColorStop(0, getVoltageColor(g,v1).getHexValue());
-	//	grad.addColorStop(1.0, getVoltageColor(g,v2).getHexValue());
+
+		Stop a = new Stop(0, javafx.scene.paint.Color.valueOf(getVoltageColor(g,v1).toString()));
+		Stop b = new Stop(0, javafx.scene.paint.Color.valueOf(getVoltageColor(g,v2).toString()));
+		List<Stop> l = new ArrayList<>();
+		l.add(a);l.add(b);
+		LinearGradient grad = new LinearGradient(0,0,len,0,true, CycleMethod.NO_CYCLE, l);
+		g.context.setStroke(grad);
+
+		//CanvasGradient grad = g.context.createLinearGradient(0,0,len,0);
+		//grad.addColorStop(0, getVoltageColor(g,v1).getHexValue());
+		//grad.addColorStop(1.0, getVoltageColor(g,v2).getHexValue());
 		//g.context.setStrokeStyle(grad);
 
-		
-		//g.context.setLineCap(LineCap.ROUND);
+		g.context.setLineCap(StrokeLineCap.ROUND);
 		g.context.scale(1, hs > 0 ? 1 : -1);
 	
 		int loop;
@@ -702,11 +717,11 @@ public abstract class CircuitElm  {
     	g.setLineWidth(3.0);
     	//Чтобы убрать неровности при перпендикулярном соединении
     	if(pa.y==pb.y) {
-    		g.drawLine(pa.x-1, pa.y, pb.x+1, pb.y);
+    		g.drawLine(pa.x, pa.y, pb.x, pb.y);
     	}else {
     		if(pb.y<pa.y) {
-    			g.drawLine(pa.x, pa.y-1, pb.x, pb.y-1);
-    		}else {g.drawLine(pa.x, pa.y-1, pb.x, pb.y+1);}
+    			g.drawLine(pa.x, pa.y, pb.x, pb.y);
+    		}else {g.drawLine(pa.x, pa.y, pb.x, pb.y);}
     		}
     	g.setLineWidth(1.0);
     }
@@ -740,7 +755,7 @@ public abstract class CircuitElm  {
     static void drawThickCircle(Graphics g, int cx, int cy, int ri) {
     	g.setLineWidth(3.0);
     	g.context.beginPath();
-    	g.context.arc(cx, cy, ri*.98, ri*.98, 0, 2*Math.PI);
+    	g.context.arc(cx, cy, ri*.98, ri*.98, 0, ri*40*3.14);
     	g.context.stroke();
     	g.setLineWidth(1.0);
     }

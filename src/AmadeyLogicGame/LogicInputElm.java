@@ -51,8 +51,7 @@ class LogicInputElm extends SwitchElm {
 		loV = 0;
 	}
 	
-	boolean isNumeric() { return true;
-	}
+	boolean isNumeric() { return true; }
 		
 	int getPostCount() { return 1; }
 	
@@ -89,6 +88,7 @@ class LogicInputElm extends SwitchElm {
 	void setCurrent(int vs, double c) { current = -c; }
 	
 	void stamp() {
+
 	    double v = (position == 0) ? loV : hiV;
 	    sim.stampVoltageSource(0, nodes[0], voltSource, v);
 	}
