@@ -82,10 +82,7 @@ public class Graphics {
 	  }
 	  
 	  public void fillOval(double x, double y, double width, double height) {
-		  context.beginPath();
-		  context.arc(x+width/2, y+width/2, width/2, width/2, 0, 2.0*3.14159);
-		  context.closePath();
-		  context.fill();
+		  context.fillOval(x,y,width,height);
 	  }
 	  
 	  public void drawString(String s, int x, int y){

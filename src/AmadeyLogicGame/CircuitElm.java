@@ -577,8 +577,6 @@ public abstract class CircuitElm  {
     }
     */
     static void drawPost(Graphics g, Point pt) {
-		//g.setColor(gray);
-		g.setColor(whiteColor);
 		g.fillOval(pt.x-3, pt.y-3, 7, 7);
     }
     
@@ -683,11 +681,6 @@ public abstract class CircuitElm  {
 		l.add(a);l.add(b);
 		LinearGradient grad = new LinearGradient(0,0,len,0,true, CycleMethod.NO_CYCLE, l);
 		g.context.setStroke(grad);
-
-		//CanvasGradient grad = g.context.createLinearGradient(0,0,len,0);
-		//grad.addColorStop(0, getVoltageColor(g,v1).getHexValue());
-		//grad.addColorStop(1.0, getVoltageColor(g,v2).getHexValue());
-		//g.context.setStrokeStyle(grad);
 
 		g.context.setLineCap(StrokeLineCap.ROUND);
 		g.context.scale(1, hs > 0 ? 1 : -1);

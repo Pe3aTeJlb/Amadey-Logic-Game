@@ -1,0 +1,19 @@
+<component name="ArtifactManager">
+  <artifact type="javafx" name="Amadey-Logic-Game:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/Amadey_Logic_Game_jar</output-path>
+    <properties id="javafx-properties">
+      <options>
+        <option name="appClass" value="AmadeyLogicGame.Main" />
+        <option name="description" value="" />
+        <option name="htmlPlaceholderId" value="" />
+        <option name="nativeBundle" value="exe" />
+        <option name="title" value="" />
+        <option name="vendor" value="" />
+        <option name="version" value="" />
+      </options>
+    </properties>
+    <root id="root">
+      <element id="module-output" name="Amadey-Logic-Game" />
+    </root>
+  </artifact>
+</component>

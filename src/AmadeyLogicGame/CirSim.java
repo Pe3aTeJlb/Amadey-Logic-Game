@@ -421,7 +421,7 @@ public class CirSim {
 			public void run() {
 				crystal.RestartGif(1);;
 				currOutputIndex = 0;
-				currCrystalPosY = FunctionsOutput.get(currOutputIndex).y - 40;
+				currCrystalPosY = FunctionsOutput.get(currOutputIndex).y - 80;
 				CrystalRestart.cancel();
 			}
 		};
@@ -450,7 +450,7 @@ public class CirSim {
 			FunctionsOutput = v.outElems;
 			FunctionsInput = v.inElems;
 			currOutput = new ArrayList<String>();
-			currCrystalPosY = FunctionsOutput.get(currOutputIndex).y - 40;
+			currCrystalPosY = FunctionsOutput.get(currOutputIndex).y - 80;
 			crystal = new Gif("GIF", 1024, 1024, 128, 1);
   		}
   		else {
@@ -464,22 +464,14 @@ public class CirSim {
 
 	public void updateCircuit() {
 
-
-
     	setCanvasSize();
     	runCircuit();
     	analyzeCircuit();
 
-
     	clearRect40K(transform[4], transform[5]); //clear current frame to avoid GIF fall trail
 
-	//	cvcontext = cv.getGraphicsContext2D();
-
-    	//Graphics g = new Graphics(cvcontext);
-
     	if(refreshGameState)tickCounter++;
-    		
-    	//
+
     	if(tickCounter > 6 && refreshGameState && currOutputIndex < FunctionsOutput.size()) {
     		
     		currOutput = new ArrayList<String>();
@@ -561,7 +553,6 @@ public class CirSim {
 			 				 transform[3], transform[4], transform[5]
 		);
 
-		//cvcontext.setTransform(affine);
 
     	for (int i = 0; i != elmList.size(); i++) {
     		
@@ -580,15 +571,17 @@ public class CirSim {
     		
     	}
     	
-    	for (int i = 0; i != postDrawList.size(); i++)
-    				CircuitElm.drawPost(g, postDrawList.get(i));
+    	for (int i = 0; i != postDrawList.size(); i++){
+    		g.setColor(Color.white);
+    		CircuitElm.drawPost(g, postDrawList.get(i));
+    	}
     	
     	for (int i = 0; i != badConnectionList.size(); i++) {
     	    Point cn = badConnectionList.get(i);
     	    g.setColor(Color.red);
     	    g.fillOval(cn.x-3, cn.y-3, 7, 7);
     	}
-    	
+
     	
     	//Отрисовка падения кристалла
     	if(currOutputIndex == FunctionsOutput.size()) {
