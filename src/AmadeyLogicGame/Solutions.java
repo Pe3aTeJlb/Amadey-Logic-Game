@@ -1,8 +1,8 @@
 /*    
 Copyright (C) Luis Paulo Laus
     
-    This file is a part of Avrora Logic Game, which based on CircuitJS1
-    https://github.com/Pe3aTeJlb/Avrora-logic-game
+    This file is a part of Amadey Logic Game, which based on CircuitJS1
+    https://github.com/Pe3aTeJlb/Amadey-Logic-Game
     
     JQM Java Quine McCluskey
     https://sourceforge.net/projects/jqm-java-quine-mccluskey/

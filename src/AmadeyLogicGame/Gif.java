@@ -1,8 +1,8 @@
 /*    
 Copyright (C) Pplos Studio
     
-    This file is a part of Avrora Logic Game, which based on CircuitJS1
-    https://github.com/Pe3aTeJlb/Avrora-logic-game
+   This file is a part of Amadey Logic Game, which based on CircuitJS1
+    https://github.com/Pe3aTeJlb/Amadey-Logic-Game
     
     CircuitJS1 was originally written by Paul Falstad.
 	http://www.falstad.com/

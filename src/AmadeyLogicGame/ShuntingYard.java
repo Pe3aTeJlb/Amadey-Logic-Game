@@ -2,8 +2,8 @@
 	https://javatalks.ru/topics/5515   
     Modified by Pplos Studio
        
-    This file is a part of Avrora Logic Game, which based on CircuitJS1
-    https://github.com/Pe3aTeJlb/Avrora-logic-game
+    This file is a part of Amadey Logic Game, which based on CircuitJS1
+    https://github.com/Pe3aTeJlb/Amadey-Logic-Game
       
     Avrora Logic Game is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
