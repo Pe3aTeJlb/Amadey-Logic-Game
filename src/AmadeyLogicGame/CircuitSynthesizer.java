@@ -296,7 +296,13 @@ public class CircuitSynthesizer {
 					}
 				}
 			}else if(Basis == 2) {
-				basis = "Nor";
+				//Костыль. Т.к. в первой схеме 1 подсхеме всегда 1, мы не можем использовать NOR
+				if(i==0){
+					System.out.println("fixed");
+					basis = "Nand";
+				}else{
+					basis = "Nor";
+				}
 				varCount =  random(2,3);
 			}else if(Basis == 3) {
 				basis = "Nand";

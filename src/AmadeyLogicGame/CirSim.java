@@ -32,13 +32,12 @@ import java.lang.Math;
 import javafx.animation.AnimationTimer;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
-import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.input.ScrollEvent;
+import javafx.scene.input.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -209,7 +208,7 @@ public class CirSim {
 
 		localizer = new Localizer(bundelName, l);
 
-		String gType = "casual";
+		String gType = "Test";
     	gameType = gType;
   	 
   		if(gameType.equals("Test")) {Score = 100;}
@@ -311,6 +310,7 @@ public class CirSim {
 		cv.setOnMousePressed(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent event) {
+
 				CircuitElm newMouseElm=null;
 				int sx = (int)event.getX();
 				int sy = (int)event.getY();
@@ -361,6 +361,21 @@ public class CirSim {
 				}
 				dragScreenX = event.getX();
 				dragScreenY = event.getY();
+
+
+				if(event.getButton() == MouseButton.MIDDLE){
+					System.out.println("lol");
+
+						GenerateCircuit();
+
+				}
+				if(event.getButton() == MouseButton.SECONDARY){
+
+						level += 1;
+						GenerateCircuit();
+
+				}
+
 			}
 
 		});
@@ -446,6 +461,7 @@ public class CirSim {
 				v.Synthesis(width, height, level);
 				//v.Synthesis(width, height);
 			}
+
 			elmList = v.elmList;
 			FunctionsOutput = v.outElems;
 			FunctionsInput = v.inElems;
