@@ -208,12 +208,6 @@ public class CirSim {
 
 		localizer = new Localizer(bundelName, l);
 
-		String gType = "Test";
-    	gameType = gType;
-  	 
-  		if(gameType.equals("Test")) {Score = 100;}
-  		else {Score = 0;}
-	 
 	 	transform = new double[6];
 	 
 	 	CircuitElm.initClass(this);
@@ -414,8 +408,6 @@ public class CirSim {
 
 		centreCircuit();
 		
-		GenerateCircuit();
-		
 		penaltyPerFrame = Score / (testTime * 60 * 60);
 
 		update = new AnimationTimer() {
@@ -427,7 +419,6 @@ public class CirSim {
 				updateCircuit();
 			}
 		};
-		update.start();
 
 		//Необходим ля синхронизации появления нового кристалл и обноления платформы при рестарте
 		CrystalRestart = new Timer();
@@ -448,9 +439,22 @@ public class CirSim {
  ////////////////////////
 //Circuit Construction//
 
+    public void Start(String gType){
+
+        gameType = gType;
+
+        if(gameType.equals("Test")) {Score = 100;}
+        else {Score = 0;}
+
+        GenerateCircuit();
+
+        update.start();
+    }
+
   	private void GenerateCircuit() {
   		
   		if(level <= maxLevelCount) {
+
 			System.out.println("Level"+level);
 	  		CircuitSynthesizer v = new CircuitSynthesizer();
 	  		

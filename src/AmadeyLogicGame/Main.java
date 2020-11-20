@@ -32,17 +32,22 @@ import javafx.stage.Stage;
 
 public class Main extends Application {
 
+    public static void main(String[] args) {
+        launch(args);
+    }
+
     @Override
     public void start(Stage primaryStage) throws Exception{
-        Parent root = FXMLLoader.load(getClass().getResource("ALG.fxml"));
+
+        FXMLLoader loader =  new FXMLLoader(getClass().getResource("ALG.fxml"));
+        Parent root = loader.load();
+        CirSim sim = loader.<CirSim>getController();
+        sim.Start("Test");
+
         //primaryStage.setTitle("Hello World");
         primaryStage.setScene(new Scene(root, 800, 600));
         primaryStage.show();
 
     }
 
-
-    public static void main(String[] args) {
-        launch(args);
-    }
 }
