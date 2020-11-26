@@ -34,15 +34,10 @@ public class ShuntingYard {
     public ArrayList<ArrayList<String>> list = new ArrayList<>();
     public ArrayList<String> out = new ArrayList<>();
 
-
     private String nl = System.getProperty("line.separator");
     private StringBuilder log = new StringBuilder("<<BasisConverter>>"+nl);
 
-    private boolean debug = false;
-    public String dmp = "";
-
-    public ShuntingYard(boolean dbg){
-    	debug = dbg;
+    public ShuntingYard(){
     }
 
 
@@ -274,11 +269,13 @@ public class ShuntingYard {
      */
     public void calculateExpression(String expression) {
     	
-    	 dmp = "";
+    	 log = new StringBuilder("ShuntingYard"+nl);
     	
     	 String rpn = sortingStation(expression, MAIN_MATH_OPERATIONS);
          StringTokenizer tokenizer = new StringTokenizer(rpn, " ");
-         if(debug)System.out.println(rpn); dmp += rpn+"\n";
+
+         log.append(rpn+nl);
+
          Stack<String> stack = new Stack<String>();
 
          ArrayList<String> operands = new ArrayList<>();
@@ -301,19 +298,18 @@ public class ShuntingYard {
          когда операции не совпадают, мы завершаем текущий список, создаём новый и записываем туда 2 первых операнда из стека
 
           */
-         if(debug) {
-             System.out.println("");
-             System.out.println("Shunting Yard");
-             System.out.println("How to read");
-             System.out.println("New iter - means new iteration");
-             System.out.println("Current stack");
-             System.out.println("prev stack size");
-             System.out.println("current stack size");
-             System.out.println("operand 1");
-             System.out.println("operand 2");
-             System.out.println("current operation");
-             System.out.println("prev operation");
-         }
+
+        log.append(nl+ "Shunting Yard"+nl+
+                "How to read"+nl+
+                "New iter - means new iteration"+nl+
+                "Current stack"+nl+
+                "prev stack size"+nl+
+                "current stack size"+nl+
+                "operand 1"+nl+
+                "operand 2"+nl+
+                "current operation"+nl+
+                "prev operation"+nl
+                );
          
          while (tokenizer.hasMoreTokens()) {
 
@@ -328,34 +324,31 @@ public class ShuntingYard {
                      prevOperation = token;
                  }
 
-                 if(debug) {
-                     System.out.println("New Iter");
-                     System.out.println("" + stack);
-                     System.out.println("" + prevStackSize);
-                     System.out.println("" + stack.size());
-                 }
-                 dmp+= "New Iter" + "\n" + ""+stack + "\n" + ""+prevStackSize + "\n" + ""+stack.size()+ "\n"; 
-                 
+                 log.append("New iter"+nl+
+                         stack+nl+
+                         prevStackSize+nl+
+                         startStackSize+nl
+                 );
+
                  startStackSize = stack.size();
                  String operand2 = stack.pop();
                  String operand1 = stack.empty() ? "" : stack.pop();
-                 
-                 if(debug) {
-                     System.out.println(operand1);
-                     System.out.println(operand2);
-                     System.out.println("" + token);
-                     System.out.println("prev op " + prevOperation);
-                 }
-                 dmp+= operand1 + "\n" + operand2 + "\n" + ""+token + "\n" + "prev op " + prevOperation + "\n";
+
+                 log.append(operand1+nl+
+                         operand2+nl+
+                         token+nl+
+                         "prev op"+prevOperation+nl
+                 );
 
                  if(token.equals(prevOperation)){
-                	 if(debug)System.out.println("Like prev");dmp+="Like prev" + "\n";
+
+                     log.append("Like prev"+nl);
                      if(operands.size()>0 && !list.contains(operands)){list.add(operands);}
-                      
 
                      if(newTerm>=2){
-                    	 if(debug)System.out.println("new Term");
-                    	 dmp+="new Term"+"\n";
+
+                         log.append("New term"+nl);
+
                          if(term.length()>0 && (term.charAt(term.length()-1) == '*' || term.charAt(term.length()-1) == '+'))term = removeByIndex(term, term.length()-1);
 
                          if(!term.equals("")) {
@@ -372,8 +365,8 @@ public class ShuntingYard {
                          term = "";
                          term = operand1 + token + operand2;
 
-                         if(debug)System.out.println("    " + operands);
-                         dmp += "    " + operands+"\n";
+                         log.append("    "+operands+nl);
+
                          stack.push(term);
                          newTerm=0;
                          prevOperation = token;
@@ -382,14 +375,15 @@ public class ShuntingYard {
 
                          if(startStackSize>prevStackSize){
                         // if(prevStackSize <= stack.size()-2){
-                        	 if(debug)System.out.println("Operands were added to stack");
-                        	 dmp += "Operands were added to stack" + "\n";
+
+                             log.append("Operands were added to stack"+nl);
+
                              operands.add(operand2);
                              if(term.length()>2){term += token+operand2;}
                              else {term += token+operand1;}
 
-                             if(debug)System.out.println("    " + operands);
-                             dmp += "    " + operands.toString()+"\n";
+                             log.append("    " + operands+nl);
+
                              if(term.length()>2){if(term.charAt(term.length()-1) == '*' || term.charAt(term.length()-1) == '+')term = removeByIndex(term, term.length()-1);}
                              stack.push(term);
                              newTerm=0;
@@ -398,14 +392,15 @@ public class ShuntingYard {
 
                          }
                          else{
-                        	 if(debug)System.out.println("Stack was shifted left");
-                        	 dmp += "Stack was shifted left" + "\n";
+
+                             log.append("Stack saw shifted left"+nl);
+
                              operands.add(operand1);
                              if(term.length()>2)if(term.charAt(term.length()-1) == '*' || term.charAt(term.length()-1) == '+'){term += operand1;}
                              else {term += token+operand1;}
 
-                             if(debug)System.out.println("    " + operands);
-                             dmp += "    " + operands + "\n";
+                             log.append("    "+operands+nl);
+
                              // String NewOperand = operand1.concat(token+operand2);
                              //stack.push(NewOperand);
                              if(term.length()>2){if(term.charAt(term.length()-1) == '*' || term.charAt(term.length()-1) == '+')term = removeByIndex(term, term.length()-1);}
@@ -422,14 +417,13 @@ public class ShuntingYard {
 
                  }else{
 
-                	 if(debug)System.out.println("Not Like prev");
-                	 dmp += "Not Like prev" + "\n";
+                     log.append("Not like prev"+nl);
 
                      if(term.length()>2){if(term.charAt(term.length()-1) == '*' || term.charAt(term.length()-1) == '+')term = removeByIndex(term, term.length()-1);}
                      if(!operands.contains(prevOperation) && operands.size()>=2)operands.add(prevOperation);
                      if(!operands.contains(term) && operands.size()>=2)operands.add(term);
-                     if(debug)System.out.println("Result list " +operands);
-                     dmp += "Result list " +operands + "\n";
+
+                     log.append("Result list "+ operands+nl);
 
                      term = "";
 
@@ -437,8 +431,8 @@ public class ShuntingYard {
                      operands = new ArrayList<>();
                      list.add(operands);
 
-                     if(debug)System.out.println("new list");
-                     dmp+= "new list" + "\n";
+                     log.append("New list"+nl);
+
                      String NewOperand = "";
 
                      if(stack.size()<=2){
@@ -454,8 +448,9 @@ public class ShuntingYard {
                          prevStackSize = stack.size();
                          newTerm=0;
                          prevOperation = token;
-                         if(debug)System.out.println(operands.toString());
-                         dmp += operands.toString()+"\n";
+
+                         log.append(operands+nl);
+
                      }
                      else {
 
@@ -472,8 +467,8 @@ public class ShuntingYard {
                          prevStackSize = stack.size();
                          newTerm=0;
                          prevOperation = token;
-                         if(debug)System.out.println(term);
-                         dmp += term + "\n";
+
+                         log.append(term+nl);
                      }
                  }
              }
@@ -481,12 +476,13 @@ public class ShuntingYard {
 
          operands.add(prevOperation);
          operands.add(term);
-         if(debug) {
-             System.out.println(operands.toString());
-             System.out.println(list.toString());
-             System.out.println("RPN " + rpn);
-         }
-         dmp += operands.toString() + "\n" + list.toString()+"\n"+"RPN "+rpn+"\n";
+
+         log.append(
+                 operands.toString()+nl+
+                         list.toString()+nl+
+                         "RPN "+rpn+nl
+         );
+
     }
     
     private String removeByIndex(String str, int index) {

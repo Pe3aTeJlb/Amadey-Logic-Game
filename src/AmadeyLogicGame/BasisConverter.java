@@ -33,17 +33,17 @@ public class BasisConverter {
     private ArrayList<String> operands = new ArrayList<>();
     private ArrayList<String> terms = new ArrayList<>();
 
-    private String nl = System.getProperty("line.separator");
+    private final String nl = System.getProperty("line.separator");
     private StringBuilder log = new StringBuilder("<<BasisConverter>>"+nl);
 
     public boolean Has1 = false;
     
-    public BasisConverter(boolean dbg){debug = dbg;}
+    public BasisConverter(){}
 
     //Приведение к базису и-не
     public void ToNand(String func, boolean sum_of_prod) {
-    
-    	dmp = "";
+
+    	log = new StringBuilder("<<BasisConverter>>"+nl);
     	list.clear();
     	terms.clear();
     	outFunction = "";
@@ -149,8 +149,8 @@ public class BasisConverter {
 
     //Приведение к базису Или-не
     public void ToNor(String func, boolean sum_of_prod) {
-    	
-    	dmp = "";
+
+        log = new StringBuilder("<<BasisConverter>>"+nl);
     	list.clear();
     	terms.clear();
     	outFunction = "";
@@ -260,8 +260,8 @@ public class BasisConverter {
 
     //Приведение к полиному Жегалкина методом треугольника
     public void ToZhegalkinPolynomial(char[][] functionVector, int row, String[] varNames) {
-    	
-    	dmp = "";
+
+        log = new StringBuilder("<<BasisConverter>>"+nl);
     	list.clear();
     	terms.clear();
     	outFunction = "";
@@ -273,8 +273,7 @@ public class BasisConverter {
             vectorFunc.add(Integer.parseInt(Character.toString(functionVector[i][row])));
         }
 
-        if(debug)System.out.println("Init vf "+ vectorFunc.toString());
-        dmp+=vectorFunc.toString()+"\n";
+        log.append("Init vf "+ vectorFunc.toString()+nl);
 
         int m = vectorFunc.size();
         ZhegalikinIndexes.add(vectorFunc.get(0));
@@ -318,7 +317,7 @@ public class BasisConverter {
                             }else{terms.add(operands.get(0));}
 
                             outFunction += tmp+"@";
-                            if(debug)System.out.println(outFunction);
+                            log.append(outFunction+nl);
                         }
                     }
 
@@ -328,9 +327,9 @@ public class BasisConverter {
             }
            
             vectorFunc.remove(vectorFunc.size()-1);
-            
-            dmp += vectorFunc.toString() + "\n";
-            if(debug)System.out.println(vectorFunc.toString());
+
+            log.append(vectorFunc.toString()+nl);
+
             ZhegalikinIndexes.add(vectorFunc.get(0));
         }
         
@@ -338,8 +337,9 @@ public class BasisConverter {
         if(vectorFunc.get(0) == 1){
             operands = new ArrayList<>();
             String v = Integer.toBinaryString(m-1);
-            if(debug)System.out.println(v);
-            //dmp+=v+"\n";
+
+            log.append(v);
+
             String tmp = "";
             int y = 0;
             for(int l = varNames.length-v.length(); l<varNames.length; l++){
@@ -360,7 +360,7 @@ public class BasisConverter {
                 }else{terms.add(operands.get(0));}
 
                 outFunction += tmp+"@";
-                if(debug)System.out.println(outFunction);
+                log.append(outFunction+nl);
         }
 
         outFunction = removeByIndex(outFunction, outFunction.length()-1);
@@ -380,19 +380,15 @@ public class BasisConverter {
 	        			String tmp2 = list.get(list.size()-1).get(j+1);
 	        			list.get(list.size()-1).set(j, tmp2);
 	        			list.get(list.size()-1).set(j+1, tmp);
-                        System.out.println("!!!!!!!!!!!!!!0"+list.get(list.size()-1).get(j));
         			}
         		}
         	}
-        
-        if(debug)System.out.println(ZhegalikinIndexes.toString());
-        if(debug)System.out.println(outFunction);
-        if(debug)System.out.println(list.toString());
-        System.out.println(""+list.get(list.size()-1).get(list.get(list.size()-1).size()-3));
-        dmp+=ZhegalikinIndexes.toString()+"\n"+outFunction+"\n"+list.toString()+"\n";
-        	
 
-        	
+        log.append(ZhegalikinIndexes.toString()+nl+
+                outFunction+nl+
+                list.toString()+nl
+        );
+
     }
 
     private String removeByIndex(String str, int index) {

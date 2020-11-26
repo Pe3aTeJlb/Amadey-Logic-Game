@@ -29,6 +29,8 @@ package AmadeyLogicGame;
 
 import java.util.*;
 import java.lang.Math;
+import java.util.logging.Logger;
+
 import javafx.animation.AnimationTimer;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -440,8 +442,8 @@ public class CirSim {
 
         if(gameType.equals("Test")) {Score = 100;}
         else {Score = 0;}
-
-        GenerateCircuit();
+        
+		GenerateCircuit();
 
         update.start();
     }
