@@ -33,6 +33,11 @@ public class ShuntingYard {
 
     public ArrayList<ArrayList<String>> list = new ArrayList<>();
     public ArrayList<String> out = new ArrayList<>();
+
+
+    private String nl = System.getProperty("line.separator");
+    private StringBuilder log = new StringBuilder("<<BasisConverter>>"+nl);
+
     private boolean debug = false;
     public String dmp = "";
 
@@ -487,5 +492,9 @@ public class ShuntingYard {
     private String removeByIndex(String str, int index) {
         return str.substring(0,index)+str.substring(index+1);
     }
-    
+
+
+    public StringBuilder getLog(){
+        return log;
+    }
 }

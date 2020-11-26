@@ -32,8 +32,10 @@ public class BasisConverter {
     public ArrayList<ArrayList<String>> list = new ArrayList<>();
     private ArrayList<String> operands = new ArrayList<>();
     private ArrayList<String> terms = new ArrayList<>();
-    private boolean debug;
-    public String dmp;
+
+    private String nl = System.getProperty("line.separator");
+    private StringBuilder log = new StringBuilder("<<BasisConverter>>"+nl);
+
     public boolean Has1 = false;
     
     public BasisConverter(boolean dbg){debug = dbg;}
@@ -397,4 +399,7 @@ public class BasisConverter {
         return str.substring(0,index)+str.substring(index+1);
     }
 
+    public StringBuilder getLog(){
+        return log;
+    }
 }

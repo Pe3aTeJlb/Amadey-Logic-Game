@@ -52,6 +52,8 @@ public class Factorisator_V_2 {
     
     public String output = "";
 
+    private StringBuilder log = new StringBuilder();
+
     public void PrepareData(String expression, int varcount) {
     	n = varcount;
     	

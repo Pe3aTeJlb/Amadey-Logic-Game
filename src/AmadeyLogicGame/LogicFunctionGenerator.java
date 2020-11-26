@@ -52,8 +52,10 @@ public class LogicFunctionGenerator {
     private float minTruePercent;
     private int lastVarIndex = 1;
     char[][] buffVector;
-    private boolean debug = false;
-    public String dmp = "";
+
+    private String nl = System.getProperty("line.separator");
+    private StringBuilder log = new StringBuilder("<<LogicFunctionGenerator>>"+nl);
+
 	public boolean callOnce = false;
 	private ArrayList<String> prevFunc = new ArrayList<String>();
 	private ArrayList<String> currFunc= new ArrayList<String>();
@@ -66,9 +68,9 @@ public class LogicFunctionGenerator {
 
     //генератор логической функции в виде таблицы истинности
     public void GenerateVectorFunction(int varCount, int funcCount, ArrayList<String> sharedVars, float min, float max) {
-    	
-    	dmp = "";
-    	
+
+
+
     	maxTruePercent = max;
     	minTruePercent = min;
 
@@ -194,4 +196,7 @@ public class LogicFunctionGenerator {
         return (int) (Math.random() * ++seed);
     }
 
+    public StringBuilder getLog(){
+        return  log;
+    }
 }

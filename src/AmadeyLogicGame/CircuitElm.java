@@ -908,7 +908,6 @@ public abstract class CircuitElm  {
 		  //  	return;
 	    	//}
 		w0 *= powerMult;
-		//System.out.println(w);
 		int i = (int) ((colorScaleCount/2)+(colorScaleCount/2)*-w0);
 		if (i<0)
 		    i=0;
@@ -919,7 +918,6 @@ public abstract class CircuitElm  {
     
     void setConductanceColor(Graphics g, double w0) {
 		w0 *= powerMult;
-		//System.out.println(w);
 		double w = (w0 < 0) ? -w0 : w0;
 		if (w > 1)
 		    w = 1;

@@ -44,6 +44,7 @@ public class Main extends Application {
         CirSim sim = loader.<CirSim>getController();
         sim.Start("Test");
 
+
         //primaryStage.setTitle("Hello World");
         primaryStage.setScene(new Scene(root, 800, 600));
         primaryStage.show();

@@ -32,7 +32,6 @@ import java.lang.Math;
 import javafx.animation.AnimationTimer;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -42,6 +41,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 
+import java.util.logging.Level;
 
 /*
  Скрипт расчёта схемы, он же UI и управление им.
@@ -52,8 +52,8 @@ public class CirSim {
 
 	//this
 	static CirSim theSim;
-	
-	public Vector<CircuitElm> elmList;
+
+	private Vector<CircuitElm> elmList;
 	
 	//Circuit settings fields
 	boolean euroGates = false;
@@ -118,40 +118,36 @@ public class CirSim {
 	private Graphics g;
 
 
-	Rectangle circuitArea;
+	private Rectangle circuitArea;
 
-    public int width,height;
-    
-    double[] transform;
+	private int width,height;
+
+	private double[] transform;
     
  /////////////////////
 //Events
-    
-    long zoomTime;
-    double dragScreenX, dragScreenY, initDragGridX, initDragGridY;
-    boolean dragging;
+
+	private double dragScreenX, dragScreenY;
     private CircuitElm mouseElm=null;
     private final int POSTGRABSQ=25;
     private final int MINPOSTGRABSIZE = 256;
     
  ////////////////////////
 //Circuit procession
-    
-    double[][] circuitMatrix;
-	double[] circuitRightSide;
-	double[] origRightSide;
-	double[][] origMatrix;
-    RowInfo[] circuitRowInfo;
-    int[] circuitPermute;
-    boolean circuitNonLinear;
-    int voltageSourceCount;
-    int circuitMatrixSize, circuitMatrixFullSize;
-    boolean circuitNeedsMap;   
-    boolean dumpMatrix;
+
+	private double[][] circuitMatrix;
+	private double[] circuitRightSide;
+	private double[] origRightSide;
+	private double[][] origMatrix;
+	private  RowInfo[] circuitRowInfo;
+	private int[] circuitPermute;
+	private boolean circuitNonLinear;
+	private int circuitMatrixSize, circuitMatrixFullSize;
+	private boolean circuitNeedsMap;
     
     Vector<CircuitNode> nodeList;
-    Vector<Point> postDrawList = new Vector<Point>();
-    Vector<Point> badConnectionList = new Vector<Point>();
+    Vector<Point> postDrawList = new Vector<>();
+    Vector<Point> badConnectionList = new Vector<>();
     CircuitElm[] voltageSources;
      
     HashMap<Point,NodeMapEntry> nodeMap;
@@ -173,7 +169,7 @@ public class CirSim {
     private int level = 1;
     private Gif crystal;
     private boolean lose = false;
-    public boolean canToggle = true;
+    boolean canToggle = true;
 
     private String gameType;
     private double Score = 100;
@@ -188,12 +184,12 @@ public class CirSim {
 	private Locale l = Locale.forLanguageTag("ru_RU");
     private final String bundelName = "Constants";
     private Localizer localizer;
-	private EventHandler<javafx.event.ActionEvent> event;
 
 	private AnimationTimer update;
 	private Timer CrystalRestart;
 	private TimerTask CrystalRestartTask;
 
+	private StringBuilder log = new StringBuilder();
 
  ////////////////////////
 ///////Init/////////////
@@ -202,9 +198,11 @@ public class CirSim {
     public CirSim() { }
 
     @FXML
-  	public void initialize() {
+	private void initialize() {
 
 		theSim = this;
+
+		log.append("Log"+System.getProperty("line.separator"));
 
 		localizer = new Localizer(bundelName, l);
 
@@ -358,10 +356,7 @@ public class CirSim {
 
 
 				if(event.getButton() == MouseButton.MIDDLE){
-					System.out.println("lol");
-
 						GenerateCircuit();
-
 				}
 				if(event.getButton() == MouseButton.SECONDARY){
 
@@ -455,7 +450,6 @@ public class CirSim {
   		
   		if(level <= maxLevelCount) {
 
-			System.out.println("Level"+level);
 	  		CircuitSynthesizer v = new CircuitSynthesizer();
 	  		
 	  		if(gameType.equals("Test")) {
@@ -500,14 +494,19 @@ public class CirSim {
       			String s = FunctionsOutput.get(i).volts[0] < 2.5 ? "0" : "1";
       			currOutput.add(s);
       		}
+
+    		log.append("curr out index " + currOutputIndex + System.getProperty("line.separator"));
 			System.out.println("curr out index " + currOutputIndex);
       		
       		if(currOutputIndex < FunctionsOutput.size()) {
 
 				System.out.println(currOutput.toString());
+				log.append(currOutput+System.getProperty("line.separator"));
           		
           		//Условия поигрыша
 	      		if(currOutputIndex != FunctionsOutput.size()-1 && currOutput.get(currOutputIndex).equals("0") && currOutput.get(currOutputIndex+1).equals("0")) {
+
+	      			log.append("Game Over"+System.getProperty("line.separator"));
 					System.out.println("Game Over");
 	      			
 	      			//Ищем, сколько платформ кристал должен пролететь прежде чем разбиться
@@ -536,12 +535,14 @@ public class CirSim {
 	      		if(currOutputIndex == FunctionsOutput.size()-1 && currOutput.get(currOutputIndex).equals("0")) {
 	      			currOutputIndex++;
 					System.out.println("new curr out index " + currOutputIndex);
+					log.append("new curr out index " + currOutputIndex+System.getProperty("line.separator"));
 	      		}
 	      		
 	      		//Переход на след уровень
 	          	if(currOutputIndex == FunctionsOutput.size()) {
 	          		
 	          		currOutputIndex = 0;
+	          		log.append("You Won!"+System.getProperty("line.separator"));
 					System.out.println("You Won!");
 	          		elmList.clear();
 	          		level++;
@@ -587,6 +588,7 @@ public class CirSim {
     	    }catch(Exception ee) {
     	    	ee.printStackTrace();
 				System.out.println("exception while drawing " + ee);
+				log.append("exception while drawing " + ee+System.getProperty("line.separator"));
     	    }
     		
     	}
@@ -664,10 +666,13 @@ public class CirSim {
 		CrystalRestart.schedule(CrystalRestartTask,110);
 
 		canToggle = true;
+
+		System.out.println(log);
 	}
 
 	public void Exit() {
 
+    	log.append("Exit"+System.getProperty("line.separator"));
 		System.out.println("Exit");
 
 	}
@@ -798,8 +803,6 @@ public class CirSim {
     	}
     	int iter;
     	//int maxIter = getIterCount();
-    	//boolean debugprint = dumpMatrix;
-    	dumpMatrix = false;
     	long steprate = (long) (250);
     	long tm = System.currentTimeMillis();
     	long lit = lastIterTime;
@@ -1066,7 +1069,6 @@ public class CirSim {
     		    }
     		    
     		}
-    		voltageSourceCount = vscount;
 
     		int matrixSize = nodeList.size()-1 + vscount;
     		circuitMatrix = new double[matrixSize][matrixSize];

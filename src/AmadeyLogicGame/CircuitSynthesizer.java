@@ -54,11 +54,9 @@ import java.util.Vector;
 public class CircuitSynthesizer {
 	
 	//Debug log
-	private boolean debug = false;
 	private boolean ShuntingYardDebug = false;
 	private boolean LogicVectorGeneratorDebug = false;
 	private boolean BasisConverterDebug = true;
-	public  String dump = ""; 
 	
 	private boolean MDNF, factorize;
 	private String basis = "";
@@ -105,7 +103,10 @@ public class CircuitSynthesizer {
 	private BasisConverter converter = new BasisConverter(BasisConverterDebug);
 	private Factorisator_V_2 factorizator = new Factorisator_V_2();
     private ShuntingYard shuntingYard = new ShuntingYard(ShuntingYardDebug);
-    private LogicFunctionGenerator generator = new LogicFunctionGenerator(LogicVectorGeneratorDebug);  
+    private LogicFunctionGenerator generator = new LogicFunctionGenerator(LogicVectorGeneratorDebug);
+
+    private String nl = System.getProperty("line.separator");
+	private StringBuilder log = new StringBuilder("<<CircuitSunthesizer>>"+nl);
     
     //Training
 	public void Synthesis(int w, int h) {
@@ -116,21 +117,13 @@ public class CircuitSynthesizer {
 		height = h;
 			
 		int circCount = random(1,6);
-		
-		if(debug) {
-			dump += "Circ count "+ Integer.toString(circCount) + "\n";
-			System.out.println("Circ count "+ Integer.toString(circCount));
-			System.out.println("");
-		}
-		
+
+		log.append("Circ count "+ circCount + nl);
+
+
 		//minTrue = random(2,6)/10;
 		//maxTrue = minTrue+0.2f;
-		
-		if(debug) {
-			System.out.println("Circ count "+ Integer.toString(circCount));
-			System.out.println("");
-			System.out.println("maxT "+ maxTrue);
-		}dump += "Circ count "+ Integer.toString(circCount) + "\n"+"\n" + "maxT" + maxTrue+ "\n";
+		log.append("Circ count "+ circCount + nl + "maxT" + maxTrue+ nl);
 		
 		for(int i = 0; i < circCount; i++) {
 			
@@ -168,21 +161,17 @@ public class CircuitSynthesizer {
 			funcCount =  random(1,4);
 			//funcCount = random(1,(int)Math.floor(0.5f*Math.log(circDifficult-0.5f)+2));
 
-			
-			 if(debug) {
-				 System.out.println("MDNF " + MDNF);
-				 System.out.println("Factr "+factorize);
-				 System.out.println("Basis " + basis);
-				 System.out.println("Function count " + funcCount);
-				 System.out.println("Var count " + varCount);
-			 }
-			 dump += "MDNF " + MDNF + "\n" + "Factr "+factorize + "\n" + "Basis " + basis + "\n" + 
-					 "Function count " + funcCount + "\n" + "Var count " + varCount + "\n";
-			 
+			log.append(
+					"MDNF " + MDNF + nl+
+					"Factr "+ factorize + nl +
+					"Basis " + basis + nl +
+							"Function count " + funcCount + nl+
+							"Var count " + varCount+ nl
+			);
 					//Add shared input
 					if(i>0 && i < circCount - 1 && circCount>1) {
-						System.out.println("Shared Vars++");
-						dump+= "Include Shared Vars"+"\n";
+						log.append("Include shared vars" + nl);
+
 						int n = random(0,1);
 						
 						if(n==1) {
@@ -205,7 +194,6 @@ public class CircuitSynthesizer {
 			
 		}
 		DeleteUnusedInputs();
-		//GWT.log("Demp"+dump);	
 }
 	
 	//Custom circuit
@@ -227,14 +215,13 @@ public class CircuitSynthesizer {
 		 //basis = "Zhegalkin";
 		 funcCount = 2;
 		 varCount = 3;
-		 
-		 if(debug) {
-			 System.out.println("MDNF " + MDNF);
-			 System.out.println("Basis " + basis);
-			 System.out.println("Function count " + funcCount);
-			 System.out.println("Var count " + varCount);
-		 }
-		 
+
+		log.append(
+				"MDNF " + MDNF + nl+
+						"Basis " + basis + nl +
+						"Function count " + funcCount + nl+
+						"Var count " + varCount+ nl
+		);
 		
 		InitializeParametrs();
 		DeleteUnusedInputs();
@@ -261,12 +248,8 @@ public class CircuitSynthesizer {
 			minTrue = 0.3f;
 			maxTrue = 0.4f;
 		}
-		
-		if(debug) {
-			System.out.println("Circ count "+ Integer.toString(circCount));
-			System.out.println("");
-			System.out.println("maxT "+ maxTrue);
-		}dump += "Circ count "+ Integer.toString(circCount) + "\n"+"\n" + "maxT" + maxTrue+ "\n";
+
+		log.append("Circ count "+ circCount + nl + "maxT" + maxTrue + nl);
 		
 		for(int i = 0; i < circCount; i++) {
 			//dashCirc = 0;
@@ -314,27 +297,26 @@ public class CircuitSynthesizer {
 			
 			varCount = (int)(Math.floor(0.0025f*Math.pow((circDifficult-2), 3)+2.9f));
 			funcCount =  (int)Math.floor(0.5f*Math.log(circDifficult-0.5f)+2);
-			
-			 if(debug) {
-				 System.out.println("MDNF " + MDNF);
-				 System.out.println("Factr "+factorize);
-				 System.out.println("Basis " + basis);
-				 System.out.println("Function count " + funcCount);
-				 System.out.println("Var count " + varCount);
-			 }
-			 dump += "MDNF " + MDNF + "\n" + "Factr "+factorize + "\n" + "Basis " + basis + "\n" + 
-					 "Function count " + funcCount + "\n" + "Var count " + varCount + "\n";
-			 
+
+			log.append(
+					"MDNF " + MDNF + nl+
+							"Factr "+ factorize + nl +
+							"Basis " + basis + nl +
+							"Function count " + funcCount + nl+
+							"Var count " + varCount+ nl
+			);
+
 					//Add shared input
 					if(i>0 && i < circCount - 1 && circCount>1 && circDifficult > 4) {
 						sharedVars.clear();
-						if(debug)System.out.println("Shared Vars++");dump+= "Include Shared Vars"+"\n";
 
-							int sharedVarsCount = random(1,varCount-2);
+						log.append("Include Shared Vars"+nl);
+
+						int sharedVarsCount = random(1,varCount-2);
 							
-							for(int j = 0; j<sharedVarsCount; j++) {
-								add();
-							}
+						for(int j = 0; j<sharedVarsCount; j++) {
+							add();
+						}
 						
 					} 
 			try{
@@ -346,18 +328,17 @@ public class CircuitSynthesizer {
 				freeSpace.y = input_freeSpace.y;
 				if(sharedVars.isEmpty())lastElemPos = 0;
 				
-			}catch(Exception e){	
-				dump  = e.toString() +"\n\n"+ dump;	
+			}catch(Exception e){
+				log.append(e+nl);
 			}
-			
-			if(debug)System.out.println("End of Circuit");
-			dump+="End of Circuit"+"\n\n";
+
+			log.append("End of circuit" + nl);
+
 		}
 		
 		DeleteUnusedInputs();
 		CreateCircuitOutput();
 
-		System.out.println(dump);
 	}
 	
 	//Создание списка наследуемых входных переменных
@@ -387,8 +368,8 @@ public class CircuitSynthesizer {
 	private void InitializeParametrs() {
         
         generator.GenerateVectorFunction(varCount, funcCount, sharedVars, minTrue,maxTrue);
-		
-        dump += generator.dmp;
+
+        log.append(generator.getLog());
         
         Solver sol = new Solver(
               generator.VectorFunctions,
@@ -412,10 +393,9 @@ public class CircuitSynthesizer {
 		String functions[] = sol.getSolution().split("\n");
 		
 	      for(int i = 0; i<functions.length; i++) {
-	    	  if(debug)System.out.println(functions[i]+"\n");
-	    	  dump+=functions[i]+"\n";
+	      		log.append(functions[i]+nl);
 	      }
-	      dump+="\n";
+	      log.append(nl);
 		
         for(int i = 0; i<functions.length; i++) {
         	
@@ -431,8 +411,7 @@ public class CircuitSynthesizer {
 		        if(MDNF) {
 		        	if(factorize) {
 			        	factorizator.PrepareData(functions[i], varCount);
-			        	 if(debug)System.out.println("Factr out"+factorizator.output);
-			        	 dump+="Factr out"+factorizator.output+"\n\n";
+			        	log.append("Factr out"+factorizator.output+nl);
 			        	shuntingYard.calculateExpression(factorizator.output);
 		        	}else {
 		        		shuntingYard.calculateMDNF(functions[i]);
@@ -446,17 +425,17 @@ public class CircuitSynthesizer {
 	        }
 	        else if(basis.equals("Nor")) {
 	        	converter.ToNor(functions[i], MDNF);
-	        	dump+=converter.dmp+"\n";
+				log.append(converter.getLog()+nl);
 	        	list = converter.list;
 	        }
 	        else if(basis.equals("Nand")) {
 	        	converter.ToNand(functions[i], MDNF);
-	        	dump+=converter.dmp+"\n";
+	        	log.append(converter.getLog()+nl);
 	        	list = converter.list;
 	        }
 	        else if(basis.equals("Zhegalkin")) {
 	        	converter.ToZhegalkinPolynomial(generator.VectorFunctions,i,generator.VarNames);
-	        	dump+=converter.dmp+"\n";
+				log.append(converter.getLog()+nl);
 	        	list = converter.list;
 	        }
 	        
@@ -476,10 +455,9 @@ public class CircuitSynthesizer {
 			for(int j = 0; j<list.get(i).size(); j++) {
 				ll2+=list.get(i).get(j) + "  ";
 			}
-			ll2 += " endl "+"\n";
+			ll2 += " endl "+nl;
 		}
-		if(debug)System.out.println(ll2);
-		dump+=ll2;
+		log.append(ll2);
 		
 		int Yaccum = 1;
 		int MaxFreeSpaceY = 0;
@@ -651,10 +629,8 @@ public class CircuitSynthesizer {
 					for(int j = 0; j<list.get(i).size(); j++) {
 						ll+=list.get(i).get(j) + "  ";
 					}
-					if(debug)System.out.println(ll);
-					dump+=ll+"\n";
-				
-				
+					log.append(ll+nl);
+
 				if(!dictionary.containsKey(blockName)) {
 				
 					CircuitElm newce;
@@ -742,14 +718,12 @@ public class CircuitSynthesizer {
 							}
 							else 
 							{
-								System.out.println("He he he, error somewhere/ line 142 " + list.get(i).get(j));
-								dump+="He he he, error somewhere/ line 142 " + list.get(i).get(j)+"\n";
+								log.append("He he he, error somewhere/ line 142 " + list.get(i).get(j)+nl);
 								ConnectElements(dictionary.get(list.get(i).get(j)), dictionary.get(blockName),list.get(i).get(j),false,false);
 							}
 					  }
-					
-					if(debug)System.out.println("End of block");
-					dump+="End of block"+"\n";
+
+					log.append("End of block"+nl);
 				}
 				
 		}
@@ -771,10 +745,8 @@ public class CircuitSynthesizer {
 		
 		LastLogElems.add(dictionary.get(blockName));
 		//CreateCircuitOutput(blockName);
-		
-		if(debug)System.out.println("End of subCirc");
-		if(debug)System.out.println("");
-		dump+="End of subCirc"+"\n\n";
+
+		log.append("End of subCirc"+nl+nl);
 	}
 	
 	/*
@@ -1053,9 +1025,8 @@ public class CircuitSynthesizer {
   	}
 	
   	private void DeleteUnusedInputs() {
-  		
-  		if(debug)System.out.println("unused vars "+UnusedVarNames.toString());
-  		dump += "unused vars "+UnusedVarNames.toString() + "\n";
+
+		log.append("unused vars "+UnusedVarNames.toString()+nl);
   		
   		if(UnusedVarNames.size()>0) {
   		
@@ -1067,9 +1038,8 @@ public class CircuitSynthesizer {
 	  			}else {
 	  				p = p.substring(1,p.length());
 	  			}
-	  			
-	  			if(debug)System.out.println(p);
-	  			dump+=p+"\n";
+
+	  			log.append(p+nl);
 	  			
 		  		int IndexToDelete = ((Integer.parseInt(p))-1)*2;
 		  		
