@@ -41,9 +41,9 @@ public class Main extends Application {
 
         FXMLLoader loader =  new FXMLLoader(getClass().getResource("ALG.fxml"));
         Parent root = loader.load();
-        CirSim sim = loader.<CirSim>getController();
+        CirSim sim = loader.getController();
         sim.Start("Test");
-
+        sim.
 
         //primaryStage.setTitle("Hello World");
         primaryStage.setScene(new Scene(root, 800, 600));

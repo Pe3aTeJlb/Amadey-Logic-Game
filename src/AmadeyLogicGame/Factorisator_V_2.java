@@ -481,13 +481,13 @@ class CustomData{
 
     public void PrintAlphabet(){
         for (String a: alphabet) {
-            System.out.println(a);
+            //System.out.println(a);
         }
     }
 
     public void PrintCollisions(){
         for (ArrayList<Integer> a: positions) {
-            System.out.println(a);
+           // System.out.println(a);
         }
     }
 

@@ -35,7 +35,7 @@ public class ShuntingYard {
     public ArrayList<String> out = new ArrayList<>();
 
     private String nl = System.getProperty("line.separator");
-    private StringBuilder log = new StringBuilder("<<BasisConverter>>"+nl);
+    private StringBuilder log = new StringBuilder(nl+"<<ShuntingYard>>"+nl);
 
     public ShuntingYard(){
     }
@@ -269,7 +269,7 @@ public class ShuntingYard {
      */
     public void calculateExpression(String expression) {
     	
-    	 log = new StringBuilder("ShuntingYard"+nl);
+    	 log = new StringBuilder(nl+"ShuntingYard"+nl);
     	
     	 String rpn = sortingStation(expression, MAIN_MATH_OPERATIONS);
          StringTokenizer tokenizer = new StringTokenizer(rpn, " ");

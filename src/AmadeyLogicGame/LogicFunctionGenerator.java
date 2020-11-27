@@ -54,22 +54,21 @@ public class LogicFunctionGenerator {
     char[][] buffVector;
 
     private String nl = System.getProperty("line.separator");
-    private StringBuilder log = new StringBuilder("<<LogicFunctionGenerator>>"+nl);
+    private StringBuilder log = new StringBuilder(nl+"<<LogicFunctionGenerator>>"+nl);
 
 	public boolean callOnce = false;
 	private ArrayList<String> prevFunc = new ArrayList<String>();
 	private ArrayList<String> currFunc= new ArrayList<String>();
     
-    public LogicFunctionGenerator(boolean dbg){
+    public LogicFunctionGenerator(){
     	maxTruePercent = 0.3f;
     	minTruePercent = 0.2f;
-    	debug = dbg;
     }
 
     //генератор логической функции в виде таблицы истинности
     public void GenerateVectorFunction(int varCount, int funcCount, ArrayList<String> sharedVars, float min, float max) {
 
-
+        log = new StringBuilder(nl+"<<LogicFunctionGenerator>>"+nl);
 
     	maxTruePercent = max;
     	minTruePercent = min;
@@ -84,16 +83,15 @@ public class LogicFunctionGenerator {
         
         
     	if(sharedVars.size()>0) {
-            if(debug) {
-                System.out.println("Shared var length "+Integer.toString(sharedVars.size()));
-                }
-            dmp+= "Shared var length "+Integer.toString(sharedVars.size()) + "\n";
+
+            log.append("Shared var length"+Integer.toString(sharedVars.size())+nl);
+
     		for(int i = 0; i < sharedVars.size(); i++) {
     			VarNames[i] = sharedVars.get(i);
-    			 if(debug)System.out.println(sharedVars.get(i));
-    			 dmp+=sharedVars.get(i)+"\n";
+    			log.append(sharedVars.get(i)+nl);
     		}
-    		dmp+="End of shared vars"+"\n";
+
+    		log.append("End of shared vars"+nl);
     	}
 
     	//Создаём имена переменных
@@ -104,8 +102,7 @@ public class LogicFunctionGenerator {
 	            VarNames[i] = varName;
 	            lastVarIndex++;
         	}
-            if(debug)System.out.println(VarNames[i]);
-            dmp += VarNames[i]+"\n";
+        	log.append(VarNames[i]+nl);
         }
 
         
@@ -118,11 +115,8 @@ public class LogicFunctionGenerator {
             if(callOnce) {
             	VectorFunctions[0][i] = '1';
             	callOnce = false;
-            	 if(debug) {
-                     System.out.println("Function №"+Integer.toString(i));
-                     System.out.println("1");
-                 }
-            	 dmp += "Function №"+Integer.toString(i) + "\n"+ "1"+"\n";
+
+            	 log.append("Function №"+Integer.toString(i) + nl+ "1"+nl);
             	 
             	 for(int k = 0; k< totalVarCount-1; k++) {
             		 prevFunc.add("0");
@@ -130,11 +124,7 @@ public class LogicFunctionGenerator {
             	 
             }else {
             	VectorFunctions[0][i] = '0';
-	            if(debug) {
-                    System.out.println("Function №"+Integer.toString(i));
-                    System.out.println("0");
-	            }
-            dmp += "Function №"+Integer.toString(i) + "\n"+ "0"+"\n";
+                log.append("Function №"+Integer.toString(i) + nl+ "0"+nl);
             }
             Generator(totalVarCount);
  
@@ -142,11 +132,9 @@ public class LogicFunctionGenerator {
             for(int j = 1; j < totalVarCount; j++)
             {
                 VectorFunctions[j][i] = buffVector[j][0];
-                if(debug)System.out.println(Character.toString(VectorFunctions[j][i]));
-                dmp+= Character.toString(VectorFunctions[j][i]) + "\n";
+                log.append(Character.toString(VectorFunctions[j][i])+nl);
             }
-            if(debug)System.out.println("end of function");
-            dmp += "end of function" + "\n";
+            log.append("End of Function"+nl);
         }
         
 
@@ -199,4 +187,5 @@ public class LogicFunctionGenerator {
     public StringBuilder getLog(){
         return  log;
     }
+
 }

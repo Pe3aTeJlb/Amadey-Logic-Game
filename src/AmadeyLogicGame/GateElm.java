@@ -27,6 +27,8 @@ Copyright (C) Paul Falstad and Iain Sharp
 
 package AmadeyLogicGame;
 
+import java.util.Random;
+
 abstract class GateElm extends CircuitElm {
     	
 	final int FLAG_SMALL = 1;
@@ -36,6 +38,8 @@ abstract class GateElm extends CircuitElm {
 	double highVoltage;
 	public static double lastHighVoltage = 5;
 	static boolean lastSchmitt = false;
+
+	Random random;
 	
 	public GateElm(int xx, int yy) {
 	    super(xx, yy);
@@ -191,7 +195,7 @@ abstract class GateElm extends CircuitElm {
 			if (oscillationCount++ > 50) {
 			    // output is oscillating too much, randomly leave output the same
 			    oscillationCount = 0;
-			    if (sim.getrand(10) > 5)
+			    if (getrand(10) > 5)
 				f = lastOutput;
 			}
 	    } else
@@ -214,6 +218,13 @@ abstract class GateElm extends CircuitElm {
 	    if (n == inputCount)
 		return current;
 	    return 0;
+	}
+
+	int getrand(int x) {
+		int q = random.nextInt();
+		if (q < 0)
+			q = -q;
+		return q % x;
 	}
 }
 

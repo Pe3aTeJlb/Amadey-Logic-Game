@@ -52,12 +52,7 @@ import java.util.Vector;
  */		 
 
 public class CircuitSynthesizer {
-	
-	//Debug log
-	private boolean ShuntingYardDebug = false;
-	private boolean LogicVectorGeneratorDebug = false;
-	private boolean BasisConverterDebug = true;
-	
+
 	private boolean MDNF, factorize;
 	private String basis = "";
 	private int funcCount = 0;
@@ -100,13 +95,13 @@ public class CircuitSynthesizer {
 	
 	private ArrayList<CircuitElm> LastLogElems = new ArrayList<CircuitElm>();//список последнего лог элемента подсхемы нужен для выравнивания платформ
 	
-	private BasisConverter converter = new BasisConverter(BasisConverterDebug);
+	private BasisConverter converter = new BasisConverter();
 	private Factorisator_V_2 factorizator = new Factorisator_V_2();
-    private ShuntingYard shuntingYard = new ShuntingYard(ShuntingYardDebug);
-    private LogicFunctionGenerator generator = new LogicFunctionGenerator(LogicVectorGeneratorDebug);
+    private ShuntingYard shuntingYard = new ShuntingYard();
+    private LogicFunctionGenerator generator = new LogicFunctionGenerator();
 
     private String nl = System.getProperty("line.separator");
-	private StringBuilder log = new StringBuilder("<<CircuitSunthesizer>>"+nl);
+	private StringBuilder log = new StringBuilder(nl+"<<CircuitSunthesizer>>"+nl);
     
     //Training
 	public void Synthesis(int w, int h) {
@@ -249,17 +244,22 @@ public class CircuitSynthesizer {
 			maxTrue = 0.4f;
 		}
 
-		log.append("Circ count "+ circCount + nl + "maxT" + maxTrue + nl);
+		log.append("Circ count "+ circCount + nl + "maxT" + maxTrue + nl+nl);
 		
 		for(int i = 0; i < circCount; i++) {
 			//dashCirc = 0;
-			
+
+			log.append("Circ №"+i+nl+nl);
+
 			int Basis = 0;
 			if(circDifficult < 5) {
+
 				int maxDif = (int)Math.floor(circDifficult*0.6f);
 				if(maxDif>2)maxDif=2;
 				Basis =  random(1,maxDif);
+
 			}else {
+
 				Basis =  random(1,3);
 				
 			}
@@ -306,8 +306,8 @@ public class CircuitSynthesizer {
 							"Var count " + varCount+ nl
 			);
 
-					//Add shared input
-					if(i>0 && i < circCount - 1 && circCount>1 && circDifficult > 4) {
+			//Add shared input
+			if(i>0 && i < circCount - 1 && circCount>1 && circDifficult > 4) {
 						sharedVars.clear();
 
 						log.append("Include Shared Vars"+nl);
@@ -319,6 +319,7 @@ public class CircuitSynthesizer {
 						}
 						
 					} 
+
 			try{
 				if(!sharedVars.isEmpty())dashCirc++;
 				
@@ -332,7 +333,7 @@ public class CircuitSynthesizer {
 				log.append(e+nl);
 			}
 
-			log.append("End of circuit" + nl);
+			log.append("End of circuit" + nl+nl);
 
 		}
 		
@@ -392,10 +393,10 @@ public class CircuitSynthesizer {
         
 		String functions[] = sol.getSolution().split("\n");
 		
-	      for(int i = 0; i<functions.length; i++) {
+		for(int i = 0; i<functions.length; i++) {
 	      		log.append(functions[i]+nl);
 	      }
-	      log.append(nl);
+		log.append(nl);
 		
         for(int i = 0; i<functions.length; i++) {
         	
@@ -413,13 +414,16 @@ public class CircuitSynthesizer {
 			        	factorizator.PrepareData(functions[i], varCount);
 			        	log.append("Factr out"+factorizator.output+nl);
 			        	shuntingYard.calculateExpression(factorizator.output);
+			        	log.append(shuntingYard.getLog()+nl);
 		        	}else {
 		        		shuntingYard.calculateMDNF(functions[i]);
+		        		log.append(shuntingYard.getLog()+nl);
 		        	}
 		        	list = shuntingYard.list;
 		        }
 		        else {
 		        	shuntingYard.calculateMKNF(functions[i]);
+		        	log.append(shuntingYard.getLog());
 		        	list = shuntingYard.list;
 		        }
 	        }
@@ -598,29 +602,30 @@ public class CircuitSynthesizer {
 						if(i>=1 && list.get(i-1).get(list.get(i-1).size()-2) == operation &&
 								
 								(float)list.get(i-1).get(list.get(i-1).size()-3).length()/list.get(i).get(list.get(i).size()-3).length() > 0.5f //разделение на каскады по длине имени лог элемента
-						) {
+						)
+						{
 							
-						if(!dictionary.containsKey(blockName))
-							freeSpace.y += 150;
-							NextStartPoint.y = freeSpace.y;
-						}else {
-							freeSpace.x += 250;
-							freeSpace.y = (int)(( freeSpace.y - StartPoint.y)/2)+StartPoint.y;
-							NextStartPoint.y = freeSpace.y;
-						}
+							if(!dictionary.containsKey(blockName))
+								freeSpace.y += 150;
+								NextStartPoint.y = freeSpace.y;
+							}else {
+								freeSpace.x += 250;
+								freeSpace.y = (int)(( freeSpace.y - StartPoint.y)/2)+StartPoint.y;
+								NextStartPoint.y = freeSpace.y;
+							}
 	
 					}
-					else if (i==list.size()-1) {
-						
-							freeSpace.y += 150;
-							freeSpace.x += 250;
-							NextStartPoint.y = freeSpace.y;
-							
-							if(freeSpace.x < lastElemPos){
-								freeSpace.x = lastElemPos;
-							}else {lastElemPos = freeSpace.x;}
-							
-					}
+						else if (i==list.size()-1) {
+
+								freeSpace.y += 150;
+								freeSpace.x += 250;
+								NextStartPoint.y = freeSpace.y;
+
+								if(freeSpace.x < lastElemPos){
+									freeSpace.x = lastElemPos;
+								}else {lastElemPos = freeSpace.x;}
+
+						}
 					
 				}
 				
@@ -1088,7 +1093,7 @@ public class CircuitSynthesizer {
   		return index;
   	}
   	
-  	static CircuitElm createCe(String marker, int x1, int y1, int x2, int y2, int f, int inputcount) {
+  	private CircuitElm createCe(String marker, int x1, int y1, int x2, int y2, int f, int inputcount) {
     	
     	if(marker.equals("Wire")) {
     		return (CircuitElm) new WireElm(x1, y1, x2, y2, f);
@@ -1141,4 +1146,8 @@ public class CircuitSynthesizer {
   		}else {return false;}
   		
   	}
+
+	public StringBuilder getLog() {
+		return log;
+	}
 }

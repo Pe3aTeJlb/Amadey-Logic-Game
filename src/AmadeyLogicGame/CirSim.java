@@ -27,10 +27,11 @@ Copyright (C) Paul Falstad and Iain Sharp
 
 package AmadeyLogicGame;
 
+import java.io.Console;
 import java.util.*;
 import java.lang.Math;
-import java.util.logging.Logger;
 
+import com.sun.xml.internal.bind.v2.TODO;
 import javafx.animation.AnimationTimer;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -42,8 +43,6 @@ import javafx.scene.input.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
-
-import java.util.logging.Level;
 
 /*
  Скрипт расчёта схемы, он же UI и управление им.
@@ -59,7 +58,6 @@ public class CirSim {
 	
 	//Circuit settings fields
 	boolean euroGates = false;
-    Random random;
 	
  /////////////////////
 //Set UI Fields
@@ -182,15 +180,18 @@ public class CirSim {
     
     private int maxLevelCount = 10;
 
+    //Localization
     //private Locale l = Locale.getDefault();
 	private Locale l = Locale.forLanguageTag("ru_RU");
     private final String bundelName = "Constants";
     private Localizer localizer;
 
+
 	private AnimationTimer update;
 	private Timer CrystalRestart;
 	private TimerTask CrystalRestartTask;
 
+	private String nl = System.getProperty("line.separator");
 	private StringBuilder log = new StringBuilder();
 
  ////////////////////////
@@ -204,7 +205,7 @@ public class CirSim {
 
 		theSim = this;
 
-		log.append("Log"+System.getProperty("line.separator"));
+		log.append("Log"+nl);
 
 		localizer = new Localizer(bundelName, l);
 
@@ -445,6 +446,9 @@ public class CirSim {
         
 		GenerateCircuit();
 
+
+		//System.out.println(log);
+
         update.start();
     }
 
@@ -462,6 +466,10 @@ public class CirSim {
 				//v.Synthesis(width, height);
 			}
 
+	  		log = new StringBuilder("Log of level "+level+nl);
+	  		log.append(v.getLog());
+			System.out.println(log);
+
 			elmList = v.elmList;
 			FunctionsOutput = v.outElems;
 			FunctionsInput = v.inElems;
@@ -478,7 +486,7 @@ public class CirSim {
  // *****************************************************************
 //  Void Update	
 
-	public void updateCircuit() {
+	private void updateCircuit() {
 
     	setCanvasSize();
     	runCircuit();
@@ -497,18 +505,18 @@ public class CirSim {
       			currOutput.add(s);
       		}
 
-    		log.append("curr out index " + currOutputIndex + System.getProperty("line.separator"));
+    		log.append("curr out index " + currOutputIndex + nl);
 			System.out.println("curr out index " + currOutputIndex);
       		
       		if(currOutputIndex < FunctionsOutput.size()) {
 
-				System.out.println(currOutput.toString());
-				log.append(currOutput+System.getProperty("line.separator"));
+				System.out.println("currOutput "+currOutput.toString());
+				log.append("currOutput "+currOutput+nl);
           		
           		//Условия поигрыша
 	      		if(currOutputIndex != FunctionsOutput.size()-1 && currOutput.get(currOutputIndex).equals("0") && currOutput.get(currOutputIndex+1).equals("0")) {
 
-	      			log.append("Game Over"+System.getProperty("line.separator"));
+	      			log.append("Game Over"+nl);
 					System.out.println("Game Over");
 	      			
 	      			//Ищем, сколько платформ кристал должен пролететь прежде чем разбиться
@@ -537,14 +545,14 @@ public class CirSim {
 	      		if(currOutputIndex == FunctionsOutput.size()-1 && currOutput.get(currOutputIndex).equals("0")) {
 	      			currOutputIndex++;
 					System.out.println("new curr out index " + currOutputIndex);
-					log.append("new curr out index " + currOutputIndex+System.getProperty("line.separator"));
+					log.append("new curr out index " + currOutputIndex+nl);
 	      		}
 	      		
 	      		//Переход на след уровень
 	          	if(currOutputIndex == FunctionsOutput.size()) {
 	          		
 	          		currOutputIndex = 0;
-	          		log.append("You Won!"+System.getProperty("line.separator"));
+	          		log.append("You Won!"+nl);
 					System.out.println("You Won!");
 	          		elmList.clear();
 	          		level++;
@@ -590,7 +598,7 @@ public class CirSim {
     	    }catch(Exception ee) {
     	    	ee.printStackTrace();
 				System.out.println("exception while drawing " + ee);
-				log.append("exception while drawing " + ee+System.getProperty("line.separator"));
+				log.append("exception while drawing " + ee+nl);
     	    }
     		
     	}
@@ -639,7 +647,7 @@ public class CirSim {
 
     }
 
-	public void setCanvasSize(){
+	private void setCanvasSize(){
 
     	width = (int)root.getWidth();
 		height = (int)(root.getHeight()-menuBar.getPrefHeight());
@@ -669,12 +677,11 @@ public class CirSim {
 
 		canToggle = true;
 
-		System.out.println(log);
 	}
 
-	public void Exit() {
+	private void Exit() {
 
-    	log.append("Exit"+System.getProperty("line.separator"));
+    	log.append("Exit"+nl);
 		System.out.println("Exit");
 
 	}
@@ -686,20 +693,18 @@ public class CirSim {
  // *****************************************************************
 //  SOLVE CIRCUIT
     
-    long lastTime = 0, lastFrameTime, lastIterTime, secTime = 0; 
-    int frames = 0;
+    long  lastFrameTime, lastIterTime;
     int steps = 0;
-    int framerate = 0, steprate = 0;
     boolean converged;
     int subIterations;
 
-    class NodeMapEntry {
+    private class NodeMapEntry {
     		int node;
     		NodeMapEntry() { node = -1; }
     		NodeMapEntry(int n) { node = n; }
     }
     
-    class WireInfo {
+    private class WireInfo {
     		WireElm wire;
     		Vector<CircuitElm> neighbors;
     		int post;
@@ -708,7 +713,7 @@ public class CirSim {
     		}
     }
      
-    class FindPathInfo {
+    private class FindPathInfo {
     	 
     	static final int INDUCT  = 1;
     	static final int VOLTAGE = 2;
@@ -797,7 +802,7 @@ public class CirSim {
      
     }
 
-    void runCircuit() {
+	private void runCircuit() {
     	
     	if (circuitMatrix == null || elmList.size() == 0) {
     	    circuitMatrix = null;
@@ -946,7 +951,7 @@ public class CirSim {
     	
     }
 
-    void analyzeCircuit() {
+	private void analyzeCircuit() {
     	 
     	 if (elmList.isEmpty()) {
     		    postDrawList = new Vector<Point>();
@@ -1271,8 +1276,8 @@ public class CirSim {
     	 
     	 
     }
-         
-    void calculateWireClosure() {
+
+	private void calculateWireClosure() {
     	
     		int i;
     		nodeMap = new HashMap<Point,NodeMapEntry>();
@@ -1316,7 +1321,7 @@ public class CirSim {
     		
     }
 
-    static void lu_solve(double[][] a, int n, int[] ipvt, double[] b) {
+	private  void lu_solve(double[][] a, int n, int[] ipvt, double[] b) {
     	int i;
 
     	// find first nonzero b element
@@ -1354,9 +1359,9 @@ public class CirSim {
     	    b[i] = tot/a[i][i];
     	}
     	
-    }  
-     
-    static boolean lu_factor(double[][] a, int n, int[] ipvt) {
+    }
+
+	private  boolean lu_factor(double[][] a, int n, int[] ipvt) {
     		int i,j,k;
     		
     		// check for a possible singular matrix by scanning for rows that
@@ -1428,13 +1433,13 @@ public class CirSim {
     		return true;
     }
 
-    void updateVoltageSource(int n1, int n2, int vs, double v) {
+	private void updateVoltageSource(int n1, int n2, int vs, double v) {
     		int vn = nodeList.size()+vs;
     		stampRightSide(vn, v);
     }
 
     // simplify the matrix; this speeds things up quite a bit, especially for digital circuits
-    boolean simplifyMatrix(int matrixSize) {
+	private boolean simplifyMatrix(int matrixSize) {
 	 	
     	int i, j;
 	 	for (i = 0; i != matrixSize; i++) {
@@ -1543,13 +1548,13 @@ public class CirSim {
 	 	circuitNeedsMap = true;
 	 	return true;
     }
-     
-    public CircuitNode getCircuitNode(int n) {
+
+	private CircuitNode getCircuitNode(int n) {
     		if (n >= nodeList.size()) {return null;}
     		return nodeList.elementAt(n);
     }
-     
-    void makePostDrawList() {
+
+	private void makePostDrawList() {
     	
     		postDrawList = new Vector<Point>();
     		badConnectionList = new Vector<Point>();
@@ -1592,8 +1597,8 @@ public class CirSim {
     		}
     		postCountMap = null;
     }
-     
-    void stampResistor(int n1, int n2, double r) {
+
+	private void stampResistor(int n1, int n2, double r) {
     		double r0 = 1/r;
     		if (Double.isNaN(r0) || Double.isInfinite(r0)) {
     		    int a = 0;
@@ -1606,7 +1611,7 @@ public class CirSim {
     }
      
     // use this if the amount of voltage is going to be updated in doStep(), by updateVoltageSource()
-    void stampVoltageSource(int n1, int n2, int vs) {
+	private void stampVoltageSource(int n1, int n2, int vs) {
 	 	int vn = nodeList.size()+vs;
 	 	stampMatrix(vn, n1, -1);
 	 	stampMatrix(vn, n2, 1);
@@ -1616,7 +1621,7 @@ public class CirSim {
     }
      
     // stamp independent voltage source #vs, from n1 to n2, amount v
-    void stampVoltageSource(int n1, int n2, int vs, double v) {
+	private void stampVoltageSource(int n1, int n2, int vs, double v) {
 	 	int vn = nodeList.size()+vs;
 	 	stampMatrix(vn, n1, -1);
 	 	stampMatrix(vn, n2, 1);
@@ -1624,8 +1629,8 @@ public class CirSim {
 	 	stampMatrix(n1, vn, 1);
 	 	stampMatrix(n2, vn, -1);
     }
-     
-    void stampMatrix(int i, int j, double x) {
+
+	private void stampMatrix(int i, int j, double x) {
     	if (i > 0 && j > 0) {
     		
     		    if (circuitNeedsMap) {
@@ -1651,7 +1656,7 @@ public class CirSim {
      
     // stamp value x on the right side of row i, representing an
     // independent current source flowing into node i
-    void stampRightSide(int i, double x) {
+	private void stampRightSide(int i, double x) {
 	 	if (i > 0) {
 	 	    if (circuitNeedsMap) {
 	 	    	i = circuitRowInfo[i-1].mapRow;
@@ -1664,23 +1669,16 @@ public class CirSim {
     }
      
     // indicate that the value on the right side of row i changes in doStep()
-    void stampRightSide(int i) {
+	private void stampRightSide(int i) {
 	 	if (i > 0) {
 	 		circuitRowInfo[i-1].rsChanges = true;
 	 	}
     }
-     
-     
+
 // *****************************************************************
 //  BEHAVIOUR
-        
-    void setGrid() {
-		gridSize = 8;
-		gridMask = ~(gridSize-1);
-		gridRound = gridSize/2-1;
-    }
 
-    void zoomCircuit(double dy) {
+	private void zoomCircuit(double dy) {
 
     	double newScale;
     	double oldScale = transform[0];
@@ -1691,7 +1689,7 @@ public class CirSim {
 
     }
 
-    void setCircuitScale(double newScale) {
+	private void setCircuitScale(double newScale) {
 
 		int cx = inverseTransformX(circuitArea.width/2);
 		int cy = inverseTransformY(circuitArea.height/2);
@@ -1708,7 +1706,7 @@ public class CirSim {
 
     }
 
-    public void centreCircuit() {
+	private void centreCircuit() {
     	
 	Rectangle bounds = getCircuitBounds();
 	
@@ -1734,7 +1732,7 @@ public class CirSim {
 // *****************************************************************
 //  MOUSE EVENTS
 
-    void setMouseElm(CircuitElm ce) {
+	private void setMouseElm(CircuitElm ce) {
     	if (ce!=mouseElm) {
     		if (mouseElm!=null)
     			mouseElm.setMouseElm(false);
@@ -1742,16 +1740,18 @@ public class CirSim {
     			ce.setMouseElm(true);
     		mouseElm=ce;
     	}
+
     	if (mouseElm != null && (mouseElm instanceof SwitchElm)) {
     		SwitchElm se = (SwitchElm) mouseElm;
     		se.toggle();
+    		//TODO GameOverTrigger replace here
     	}
     }
 
 // *****************************************************************
 //  TOOLS    
 
-	void clearRect40K()
+	private void clearRect40K()
 	{
 
 		if (printableCheckItem.isSelected()) {
@@ -1762,7 +1762,7 @@ public class CirSim {
 		cvcontext.fillRect(0,0,(cv.getWidth()/transform[0])*2,(cv.getHeight()/transform[0])*2);
 	}
 
-	void clearRect40K(double prevX, double prevY)
+	private void clearRect40K(double prevX, double prevY)
 	{
 		if (printableCheckItem.isSelected()) {
 			cvcontext.setFill(javafx.scene.paint.Color.WHITE);
@@ -1772,14 +1772,7 @@ public class CirSim {
 		cvcontext.fillRect(-prevX/transform[0],-prevY/transform[0],cv.getWidth()/transform[0],cv.getHeight()/transform[0]);
 	}
 
-    int getrand(int x) {
-		int q = random.nextInt();
-		if (q < 0)
-			q = -q;
-		return q % x;
-	}
-
-    public Rectangle getCircuitBounds() {
+	private Rectangle getCircuitBounds() {
     	
     	int i;
     	int minx = 1000, maxx = 0, miny = 1000, maxy = 0;
@@ -1794,30 +1787,21 @@ public class CirSim {
 
     	return new Rectangle(minx, miny, maxx-minx, maxy-miny);
     }
-   
-    int min(int a, int b) { return Math.min(a, b); }
-    
-    int max(int a, int b) { return Math.max(a, b); }
+
+	private int min(int a, int b) { return Math.min(a, b); }
+
+	private int max(int a, int b) { return Math.max(a, b); }
         
     // convert screen coordinates to grid coordinates by inverting circuit transform
-    int inverseTransformX(double x) {
+    private int inverseTransformX(double x) {
     	return (int) ((x-transform[4])/transform[0]);
     }
 
-    int inverseTransformY(double y) {
+    private int inverseTransformY(double y) {
     	return (int) ((y-transform[5])/transform[3]);
     }
     
-    // convert grid coordinates to screen coordinates
-    int transformX(double x) {
-    	return (int) ((x*transform[0]) + transform[4]);
-    }
-    
-    int transformY(double y) {
-    	return (int) ((y*transform[3]) + transform[5]);
-    }    
-    
-    public CircuitElm getElm(int n) {
+    private CircuitElm getElm(int n) {
 		if (n >= elmList.size()){return null;}
 		return elmList.elementAt(n);
     }
