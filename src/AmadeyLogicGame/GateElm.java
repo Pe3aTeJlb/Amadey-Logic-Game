@@ -118,7 +118,7 @@ abstract class GateElm extends CircuitElm {
 
 	String getGateText() { return null; }
 	
-	static boolean useEuroGates() { return sim.euroGates; }
+	static boolean useEuroGates() { return euroGates; }
 	
 	void draw(Graphics g) {
 
@@ -133,10 +133,12 @@ abstract class GateElm extends CircuitElm {
 	    drawThickLine(g, lead2, point2);
 	    g.setColor(needsHighlight() ? selectColor : lightGrayColor);
 	    drawThickPolygon(g, gatePoly);
+
 	    if (useEuroGates()) {
 		    Point center = interpPoint(point1, point2, .5);
 		    drawCenteredText(g, getGateText(), center.x, center.y-6*gsize, true);
 	    }
+
 	    g.setLineWidth(2);
 	    if (hasSchmittInputs())
 		drawPolygon(g, schmittPoly);
@@ -163,9 +165,7 @@ abstract class GateElm extends CircuitElm {
 	}
 	
 	int getVoltageSourceCount() { return 1; }
-	
-	abstract String getGateName();
-		
+
 	void stamp() {
 	    sim.stampVoltageSource(0, nodes[inputCount], voltSource);
 	}
@@ -226,5 +226,6 @@ abstract class GateElm extends CircuitElm {
 			q = -q;
 		return q % x;
 	}
+
 }
 

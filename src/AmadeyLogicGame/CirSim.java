@@ -27,11 +27,9 @@ Copyright (C) Paul Falstad and Iain Sharp
 
 package AmadeyLogicGame;
 
-import java.io.Console;
 import java.util.*;
 import java.lang.Math;
 
-import com.sun.xml.internal.bind.v2.TODO;
 import javafx.animation.AnimationTimer;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -54,11 +52,6 @@ public class CirSim {
 	//this
 	static CirSim theSim;
 
-	private Vector<CircuitElm> elmList;
-	
-	//Circuit settings fields
-	boolean euroGates = false;
-	
  /////////////////////
 //Set UI Fields
 
@@ -87,7 +80,7 @@ public class CirSim {
 	@FXML
 	private RadioMenuItem printableCheckItem;
 	@FXML
-	public RadioMenuItem /**/alternativeColorCheckItem;
+	private RadioMenuItem alternativeColorCheckItem;
 
 
 	@FXML
@@ -131,9 +124,8 @@ public class CirSim {
     private CircuitElm mouseElm=null;
     private final int POSTGRABSQ=25;
     private final int MINPOSTGRABSIZE = 256;
-    
- ////////////////////////
-//Circuit procession
+
+	//Circuit procession
 
 	private double[][] circuitMatrix;
 	private double[] circuitRightSide;
@@ -145,51 +137,56 @@ public class CirSim {
 	private int circuitMatrixSize, circuitMatrixFullSize;
 	private boolean circuitNeedsMap;
     
-    Vector<CircuitNode> nodeList;
-    Vector<Point> postDrawList = new Vector<>();
-    Vector<Point> badConnectionList = new Vector<>();
-    CircuitElm[] voltageSources;
+    private Vector<CircuitNode> nodeList;
+    private Vector<Point> postDrawList = new Vector<>();
+    private Vector<Point> badConnectionList = new Vector<>();
+    private CircuitElm[] voltageSources;
      
-    HashMap<Point,NodeMapEntry> nodeMap;
-    HashMap<Point,Integer> postCountMap;
-    Vector<WireInfo> wireInfoList;
-    
-    int gridSize, gridMask, gridRound;
+    private  HashMap<Point,NodeMapEntry> nodeMap;
+	private  HashMap<Point,Integer> postCountMap;
+	private  Vector<WireInfo> wireInfoList;
 
  ////////////////////////
 //Game logic vars and data struct
-    
+
+	private Vector<CircuitElm> elmList;
     private ArrayList<String> currOutput; //Хранят текущее состояние выходов функций
     private ArrayList<CircuitElm> FunctionsOutput;//Список выходных и входных элементов функций
     private ArrayList<SwitchElm> FunctionsInput;
     private int currOutputIndex = 0; // текущая позиция кристалла
     private int currCrystalPosY = 0;
+
     int tickCounter = 0;
+
     private boolean refreshGameState = true;
     private int level = 1;
     private Gif crystal;
     private boolean lose = false;
-    boolean canToggle = true;
+    private boolean canToggle = true; //disable
 
     private String gameType;
     private double Score = 100;
-    private int testTime = 15; //minutes for test
+    private final int testTime = 15; //minutes for test
     private double TimeSpend;
     private double penaltyPerFrame = 0;
-    private double failPenalty = 20;
-    
-    private int maxLevelCount = 10;
+    private final double failPenalty = 20;
+
+    private final int maxLevelCount = 10;
 
     //Localization
+
     //private Locale l = Locale.getDefault();
 	private Locale l = Locale.forLanguageTag("ru_RU");
     private final String bundelName = "Constants";
     private Localizer localizer;
 
+	//Update and GIF Timers
 
 	private AnimationTimer update;
 	private Timer CrystalRestart;
 	private TimerTask CrystalRestartTask;
+
+	//Log
 
 	private String nl = System.getProperty("line.separator");
 	private StringBuilder log = new StringBuilder();
@@ -212,7 +209,7 @@ public class CirSim {
 	 	transform = new double[6];
 	 
 	 	CircuitElm.initClass(this);
-	 	elmList = new Vector<CircuitElm>();
+	 	elmList = new Vector<>();
 
 		editMenu.setText(localizer.Localize("Edit"));
 
@@ -439,6 +436,8 @@ public class CirSim {
 
     public void Start(String gType){
 
+
+
         gameType = gType;
 
         if(gameType.equals("Test")) {Score = 100;}
@@ -453,7 +452,7 @@ public class CirSim {
     }
 
   	private void GenerateCircuit() {
-  		
+
   		if(level <= maxLevelCount) {
 
 	  		CircuitSynthesizer v = new CircuitSynthesizer();
@@ -660,12 +659,14 @@ public class CirSim {
 
 	//Game Logic
 	//also check update method
-	public void GameOverTrigger() {
+	private void GameOverTrigger() {
 		refreshGameState = true;
 		tickCounter = 0;
 	}
 
 	private void RestartLevel() {
+
+		currOutputIndex = 0;
 
 		lose = false;
 
@@ -693,10 +694,10 @@ public class CirSim {
  // *****************************************************************
 //  SOLVE CIRCUIT
     
-    long  lastFrameTime, lastIterTime;
-    int steps = 0;
-    boolean converged;
-    int subIterations;
+    private long  lastFrameTime, lastIterTime;
+    private int steps = 0;
+    private boolean converged;
+    private int subIterations;
 
     private class NodeMapEntry {
     		int node;
@@ -1433,7 +1434,7 @@ public class CirSim {
     		return true;
     }
 
-	private void updateVoltageSource(int n1, int n2, int vs, double v) {
+	public void updateVoltageSource(int n1, int n2, int vs, double v) {
     		int vn = nodeList.size()+vs;
     		stampRightSide(vn, v);
     }
@@ -1598,7 +1599,7 @@ public class CirSim {
     		postCountMap = null;
     }
 
-	private void stampResistor(int n1, int n2, double r) {
+	public void stampResistor(int n1, int n2, double r) {
     		double r0 = 1/r;
     		if (Double.isNaN(r0) || Double.isInfinite(r0)) {
     		    int a = 0;
@@ -1609,9 +1610,9 @@ public class CirSim {
     		stampMatrix(n1, n2, -r0);
     		stampMatrix(n2, n1, -r0);
     }
-     
+
     // use this if the amount of voltage is going to be updated in doStep(), by updateVoltageSource()
-	private void stampVoltageSource(int n1, int n2, int vs) {
+	public void stampVoltageSource(int n1, int n2, int vs) {
 	 	int vn = nodeList.size()+vs;
 	 	stampMatrix(vn, n1, -1);
 	 	stampMatrix(vn, n2, 1);
@@ -1619,9 +1620,9 @@ public class CirSim {
 	 	stampMatrix(n1, vn, 1);
 	 	stampMatrix(n2, vn, -1);
     }
-     
+
     // stamp independent voltage source #vs, from n1 to n2, amount v
-	private void stampVoltageSource(int n1, int n2, int vs, double v) {
+	public void stampVoltageSource(int n1, int n2, int vs, double v) {
 	 	int vn = nodeList.size()+vs;
 	 	stampMatrix(vn, n1, -1);
 	 	stampMatrix(vn, n2, 1);
@@ -1743,7 +1744,10 @@ public class CirSim {
 
     	if (mouseElm != null && (mouseElm instanceof SwitchElm)) {
     		SwitchElm se = (SwitchElm) mouseElm;
-    		se.toggle();
+    		if(canToggle){
+    			se.toggle();
+    			GameOverTrigger();
+			}
     		//TODO GameOverTrigger replace here
     	}
     }

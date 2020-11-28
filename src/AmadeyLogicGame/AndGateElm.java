@@ -41,7 +41,7 @@ class AndGateElm extends GateElm {
 		
 	    super.setPoints();
 	 
-	    if (sim.euroGates) {
+	    if (euroGates) {
 	    	createEuroGatePolygon();
 	    } else {
 	    	
@@ -68,8 +68,6 @@ class AndGateElm extends GateElm {
 	    
 	}
 
-	String getGateName() { return "AND gate"; }
-	
 	boolean calcFunction() {
 	    int i;
 	    boolean f = true;

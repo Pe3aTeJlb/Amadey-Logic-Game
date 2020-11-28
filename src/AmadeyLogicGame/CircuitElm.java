@@ -102,6 +102,8 @@ public abstract class CircuitElm  {
     boolean noDiagonal;
     
     public boolean selected;
+
+    static boolean euroGates;
     
 //    abstract int getDumpType();
     //int getDumpType() {
@@ -534,7 +536,7 @@ public abstract class CircuitElm  {
 	// default implementation only makes sense for subclasses with one voltage source.  If we have 0 this isn't used, if we have >1 this won't work 
     	voltSource = v;
     }
-    
+
 //    int getVoltageSource() { return voltSource; } // Never used except for debug code which is commented out
     
     double getVoltageDiff() {
@@ -1026,4 +1028,8 @@ public abstract class CircuitElm  {
 		y2 = oldy;
 		setPoints();
     }
+
+    void setEuroGates(boolean isTrue){
+    	euroGates = isTrue;
+	}
 }

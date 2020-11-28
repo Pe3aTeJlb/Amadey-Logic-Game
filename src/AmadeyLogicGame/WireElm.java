@@ -28,9 +28,8 @@ Copyright (C) Paul Falstad and Iain Sharp
 package AmadeyLogicGame;
 
     class WireElm extends CircuitElm {
+
 	boolean hasWireInfo; // used in CirSim to calculate wire currents
-	
-	public WireElm(int xx, int yy) { super(xx, yy); }
 
 	public WireElm(int xa, int ya, int xb, int yb, int f)		  
 	{
@@ -48,12 +47,14 @@ package AmadeyLogicGame;
 	    //doDots(g);
 	    setBbox(point1, point2, 3);
 	    String s = "";
+
 	    if (mustShowCurrent()) {
 	        s = getShortUnitText(Math.abs(getCurrent()), "A");
 	    } 
 	    if (mustShowVoltage()) {
 	        s = (s.length() > 0 ? s + " " : "") + getShortUnitText(volts[0], "V");
 	    }
+
 	    drawValues(g, s, 4);
 	    //drawPosts(g);
 	}

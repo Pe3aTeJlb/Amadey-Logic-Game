@@ -33,14 +33,7 @@ class SwitchElm extends CircuitElm {
 	boolean momentary;
     // position 0 == closed, position 1 == open
     int position, posCount;
-    
-    public SwitchElm(int xx, int yy) {
-		super(xx, yy);
-		momentary = false;
-		position = 0;
-		posCount = 2;
-    }
-    
+
     SwitchElm(int xx, int yy, boolean mm) {
 		super(xx, yy);
 		position = (mm) ? 1 : 0;
@@ -82,17 +75,7 @@ class SwitchElm extends CircuitElm {
 		drawThickLine(g, ps, ps2);
 		drawPosts(g);
     }
-    
-    Rectangle getSwitchRect() {
-		interpPoint(lead1, lead2, ps,  0, openhs);
-		return new Rectangle(lead1).union(new Rectangle(lead2)).union(new Rectangle(ps));
-    }
-    
-    void calculateCurrent() {
-		if (position == 1)
-		    current = 0;
-    }
-    
+
     void stamp() {
     	if (position == 0)
 	    sim.stampVoltageSource(nodes[0], nodes[1], voltSource, 0);
@@ -101,22 +84,11 @@ class SwitchElm extends CircuitElm {
     int getVoltageSourceCount() {
     	return (position == 1) ? 0 : 1;
     }
-    
-    void mouseUp() {
-    	if (momentary)
-    		toggle();
-    }
-    
+
     void toggle() {
-
-    	if(sim.canToggle) {
-			position++;
-			if (position >= posCount)
-			    position = 0;
-			
-			sim.GameOverTrigger();
-    	}
-
+    	position++;
+    	if (position >= posCount)
+    		position = 0;
     }
     
     boolean getConnection(int n1, int n2) { return position == 0; }
