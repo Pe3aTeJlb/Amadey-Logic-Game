@@ -56,7 +56,6 @@ public abstract class CircuitElm  {
     static Font unitsFont;
 
     static NumberFormat showFormat, shortFormat;//, noCommaFormat;
-
     static CircuitElm mouseElmRef = null;
 
     // initial point where user created element.  For simple two-terminal elements, this is the first node/post.
