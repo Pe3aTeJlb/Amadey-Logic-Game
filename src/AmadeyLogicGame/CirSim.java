@@ -173,9 +173,9 @@ public class CirSim {
     //Localization
 
     //private Locale l = Locale.getDefault();
-	private Locale l = Locale.forLanguageTag("ru_RU");
-    private final String bundelName = "Constants";
-    private Localizer localizer;
+	private final Locale l = Locale.forLanguageTag("ru_RU");
+	private final String bundelName = "Constants";
+	private Localizer localizer;
 
 	//Update and GIF Timers
 
@@ -185,16 +185,17 @@ public class CirSim {
 
 	//Log
 
-	private String nl = System.getProperty("line.separator");
+	private final String nl = System.getProperty("line.separator");
 	private StringBuilder log = new StringBuilder();
 
- ////////////////////////
+	////////////////////////
 ///////Init/////////////
 
 
-    public CirSim() { }
+	public CirSim() {
+	}
 
-    @FXML
+	@FXML
 	private void initialize() {
 
 		theSim = this;
@@ -625,11 +626,11 @@ public class CirSim {
 
 		lose = false;
 
-		for(int i = 0; i<FunctionsInput.size(); i++) {
-			FunctionsInput.get(i).position = 0;
+		for (SwitchElm switchElm : FunctionsInput) {
+			switchElm.position = 0;
 		}
 
-		CrystalRestart.schedule(CrystalRestartTask,110);
+		CrystalRestart.schedule(CrystalRestartTask, 110);
 
 		canToggle = true;
 
@@ -650,9 +651,8 @@ public class CirSim {
 //  SOLVE CIRCUIT
     
     private long  lastFrameTime, lastIterTime;
-    private int steps = 0;
     private boolean converged;
-    private int subIterations;
+
 
     private class NodeMapEntry {
     		int node;
@@ -660,23 +660,27 @@ public class CirSim {
     		NodeMapEntry(int n) { node = n; }
     }
 
-    private class FindPathInfo {
-    	 
-    	static final int INDUCT  = 1;
-    	static final int VOLTAGE = 2;
-    	static final int SHORT   = 3;
-    	static final int CAP_V   = 4;
-    	boolean used[];
-    	int dest;
-    	CircuitElm firstElm;
-    	int type;
-    	FindPathInfo(int t, CircuitElm e, int d) {
-    		    dest = d;
-    		    type = t;
-    		    firstElm = e;
-    		    used = new boolean[nodeList.size()];
-    		}
-    	boolean findPath(int n1) { return findPath(n1, -1); }
+	private class FindPathInfo {
+
+		static final int INDUCT = 1;
+		static final int VOLTAGE = 2;
+		static final int SHORT = 3;
+		static final int CAP_V = 4;
+		boolean[] used;
+		int dest;
+		CircuitElm firstElm;
+		int type;
+
+		FindPathInfo(int t, CircuitElm e, int d) {
+			dest = d;
+			type = t;
+			firstElm = e;
+			used = new boolean[nodeList.size()];
+		}
+
+		boolean findPath(int n1) {
+			return findPath(n1, -1);
+		}
     	boolean findPath(int n1, int depth) {
     		    if (n1 == dest)
     			return true;
@@ -750,122 +754,118 @@ public class CirSim {
     }
 
 	private void runCircuit() {
-    	
-    	if (circuitMatrix == null || elmList.size() == 0) {
-    	    circuitMatrix = null;
-    	    return;
-    	}
-    	int iter;
-    	//int maxIter = getIterCount();
-    	long steprate = (long) (250);
-    	long tm = System.currentTimeMillis();
-    	long lit = lastIterTime;
-    	
-    	if (lit == 0) {
-    	    lastIterTime = tm;
-    	    return;
-    	}
-    	
-    	// Check if we don't need to run simulation (for very slow simulation speeds).
-    	// If the circuit changed, do at least one iteration to make sure everything is consistent.
+
+		if (circuitMatrix == null || elmList.size() == 0) {
+			circuitMatrix = null;
+			return;
+		}
+		int iter;
+		//int maxIter = getIterCount();
+		long steprate = 250;
+		long tm = System.currentTimeMillis();
+		long lit = lastIterTime;
+
+		if (lit == 0) {
+			lastIterTime = tm;
+			return;
+		}
+
+		// Check if we don't need to run simulation (for very slow simulation speeds).
+		// If the circuit changed, do at least one iteration to make sure everything is consistent.
     	//if (1000 >= steprate*(tm-lastIterTime) && !didAnalyze)
     	  //  return;
     	
     	//boolean delayWireProcessing = canDelayWireProcessing();
     	
     	for (iter = 1; ; iter++) {
+
     	    int i, j, k, subiter;
     	    for (i = 0; i != elmList.size(); i++) {
     	    	CircuitElm ce = getElm(i);
     	    	ce.startIteration();
     	    }
-    	    steps++;
+
     	    final int subiterCount = 5000;
     	    //final int subiterCount = 1;
+
     	    for (subiter = 0; subiter != subiterCount; subiter++) {
-    	    	converged = true;
-    	    	subIterations = subiter;
-    	    	for (i = 0; i != circuitMatrixSize; i++)
+
+				converged = true;
+
+				for (i = 0; i != circuitMatrixSize; i++)
     	    		circuitRightSide[i] = origRightSide[i];
 	    		if (circuitNonLinear) {
 	    		    for (i = 0; i != circuitMatrixSize; i++)
 	    			for (j = 0; j != circuitMatrixSize; j++)
-	    			    circuitMatrix[i][j] = origMatrix[i][j];
-	    		}
-	    		for (i = 0; i != elmList.size(); i++) {
-	    		    CircuitElm ce = getElm(i);
-	    		    ce.doStep();
-	    		}
-    		//if (stopMessage != null)
-    		   // return;
-    		//boolean printit = debugprint;
-    		//debugprint = false;
-    		for (j = 0; j != circuitMatrixSize; j++) {
-    		    for (i = 0; i != circuitMatrixSize; i++) {
-	    		    double x = circuitMatrix[i][j];
-	    			if (Double.isNaN(x) || Double.isInfinite(x)) {
-	    			    //stop("nan/infinite matrix!", null);
-	    			    return;
-	    			}
-    		    }
-    		}
-    		/*
-    		if (printit) {
-    		    for (j = 0; j != circuitMatrixSize; j++) {
-    			//String x = "";
-    			//for (i = 0; i != circuitMatrixSize; i++)
-    			   // x += circuitMatrix[j][i] + ",";
-    			//x += "\n";
-    			//console(x);
-    		    }
-    		    //console("");
-    		}
-    		*/
-    		if (circuitNonLinear) {
-    		    if (converged && subiter > 0)
-    			break;
-    		    if (!lu_factor(circuitMatrix, circuitMatrixSize,
-    				  circuitPermute)) {
-    			//stop("Singular matrix!", null);
-    			return;
-    		    }
-    		}
-    		lu_solve(circuitMatrix, circuitMatrixSize, circuitPermute, circuitRightSide);
-    		
-    		for (j = 0; j != circuitMatrixFullSize; j++) {
-    			
-    		    RowInfo ri = circuitRowInfo[j];
-    		    double res = 0;
-    		    if (ri.type == RowInfo.ROW_CONST)
-    			res = ri.value;
-    		    else
-    			res = circuitRightSide[ri.mapCol];
-    		   
-    		    if (Double.isNaN(res)) {
-    			converged = false;
-    			//debugprint = true;
-    			break;
-    		    }
-    		    
-    		    if (j < nodeList.size()-1) {
-	    			CircuitNode cn = getCircuitNode(j+1);
-	    			for (k = 0; k != cn.links.size(); k++) {
-	    			    CircuitNodeLink cnl = (CircuitNodeLink)
-	    				cn.links.elementAt(k);
-	    			    
-	    			    cnl.elm.setNodeVoltage(cnl.num, res);
-	    			    
-	    			}
-    		    } else {
-	    			int ji = j-(nodeList.size()-1);
-	    			//System.out.println("setting vsrc " + ji + " to " + res);
-	    			voltageSources[ji].setCurrent(ji, res);
-    		    }
-    		}
-    		if (!circuitNonLinear)
-    		    break;
-    	    }
-    	    //if (subiter > 5)
+						circuitMatrix[i][j] = origMatrix[i][j];
+				}
+				for (i = 0; i != elmList.size(); i++) {
+					CircuitElm ce = getElm(i);
+					ce.doStep();
+				}
+				//if (stopMessage != null)
+				// return;
+				//boolean printit = debugprint;
+				//debugprint = false;
+				for (j = 0; j != circuitMatrixSize; j++) {
+					for (i = 0; i != circuitMatrixSize; i++) {
+						double x = circuitMatrix[i][j];
+						if (Double.isNaN(x) || Double.isInfinite(x)) {
+							//stop("nan/infinite matrix!", null);
+							return;
+						}
+					}
+				}
+
+				if (circuitNonLinear) {
+					if (converged && subiter > 0)
+						break;
+					if (!lu_factor(circuitMatrix, circuitMatrixSize,
+							circuitPermute)) {
+						//stop("Singular matrix!", null);
+						return;
+					}
+				}
+
+				lu_solve(circuitMatrix, circuitMatrixSize, circuitPermute, circuitRightSide);
+
+				for (j = 0; j != circuitMatrixFullSize; j++) {
+
+					RowInfo ri = circuitRowInfo[j];
+					double res = 0;
+					if (ri.type == RowInfo.ROW_CONST)
+						res = ri.value;
+					else
+						res = circuitRightSide[ri.mapCol];
+
+					if (Double.isNaN(res)) {
+						converged = false;
+						//debugprint = true;
+						break;
+					}
+
+					if (j < nodeList.size() - 1) {
+						CircuitNode cn = getCircuitNode(j + 1);
+						for (k = 0; k != cn.links.size(); k++) {
+							CircuitNodeLink cnl = cn.links.elementAt(k);
+
+							cnl.elm.setNodeVoltage(cnl.num, res);
+
+						}
+					} else {
+						int ji = j - (nodeList.size() - 1);
+						//System.out.println("setting vsrc " + ji + " to " + res);
+						voltageSources[ji].setCurrent(ji, res);
+					}
+
+				}
+
+				if (!circuitNonLinear)
+					break;
+
+			}
+
+			//if (subiter > 5)
     		//console("converged after " + subiter + " iterations\n");
     	    
     	    if (subiter == subiterCount) {
@@ -1321,10 +1321,12 @@ public class CirSim {
 	    			    break;
 	    			}
     		    }
-    		    // if all zeros, it's a singular matrix
+
+				// if all zeros, it's a singular matrix
     		    if (row_all_zeros)
     			return false;
-    		}
+
+			}
     		
     	        // use Crout's method; loop through the columns
     		for (j = 0; j != n; j++) {
@@ -1502,39 +1504,46 @@ public class CirSim {
     }
 
 	private void makePostDrawList() {
-    	
-    		postDrawList = new Vector<Point>();
-    		badConnectionList = new Vector<Point>();
-    		
-    		for (Map.Entry<Point, Integer> entry : postCountMap.entrySet()) {
-    		    
-    			if (entry.getValue() != 2) {
-    		    	postDrawList.add(entry.getKey());
-    			}
-    		    
-    		    // look for bad connections, posts not connected to other elements which intersect
-    		    // other elements' bounding boxes
-    		    if (entry.getValue() == 1) {
+
+		postDrawList = new Vector<>();
+		badConnectionList = new Vector<>();
+
+		for (Map.Entry<Point, Integer> entry : postCountMap.entrySet()) {
+
+			if (entry.getValue() != 2) {
+				postDrawList.add(entry.getKey());
+			}
+
+			// look for bad connections, posts not connected to other elements which intersect
+			// other elements' bounding boxes
+			if (entry.getValue() == 1) {
 	    			int j;
 	    			boolean bad = false;
 	    			Point cn = entry.getKey();
 	    			
 	    			for (j = 0; j != elmList.size() && !bad; j++) {
-	    			    CircuitElm ce = getElm(j);
-	    			    //if ( ce instanceof GraphicElm )
-	    				//continue;
-	    			    // does this post intersect elm's bounding box?
-	    			    if (!ce.boundingBox.contains(cn.x, cn.y))
-	    				continue;
-	    			    int k;
-	    			    // does this post belong to the elm?
-	    			    int pc = ce.getPostCount();
-	    			    for (k = 0; k != pc; k++)
-	    				if (ce.getPost(k).equals(cn))
+
+						CircuitElm ce = getElm(j);
+						//if ( ce instanceof GraphicElm )
+						//continue;
+						// does this post intersect elm's bounding box?
+
+						if (ce != null)
+							if (!ce.boundingBox.contains(cn.x, cn.y))
+								continue;
+
+						int k;
+						// does this post belong to the elm?
+
+						int pc = ce.getPostCount();
+
+						for (k = 0; k != pc; k++)
+							if (ce.getPost(k).equals(cn))
 	    				    break;
 	    			    if (k == pc)
 	    				bad = true;
-	    			}
+
+					}
 	    			
 	    			if (bad) {
 	    			    badConnectionList.add(cn);
@@ -1546,12 +1555,10 @@ public class CirSim {
     }
 
 	public void stampResistor(int n1, int n2, double r) {
-    		double r0 = 1/r;
-    		if (Double.isNaN(r0) || Double.isInfinite(r0)) {
-    		    int a = 0;
-    		    a /= a;
-    		}
-    		stampMatrix(n1, n1, r0);
+
+		double r0 = 1/r;
+
+		stampMatrix(n1, n1, r0);
     		stampMatrix(n2, n2, r0);
     		stampMatrix(n1, n2, -r0);
     		stampMatrix(n2, n1, -r0);
@@ -1638,8 +1645,8 @@ public class CirSim {
 
 	private void setCircuitScale(double newScale) {
 
-		int cx = inverseTransformX(circuitArea.width/2);
-		int cy = inverseTransformY(circuitArea.height/2);
+		int cx = inverseTransformX((double) circuitArea.width / 2);
+		int cy = inverseTransformY((double) circuitArea.height / 2);
 
 		transform[0] = newScale;
 		transform[3] = newScale;
@@ -1647,11 +1654,11 @@ public class CirSim {
 		// adjust translation to keep center of screen constant
 		// inverse transform = (x-t4)/t0
 
-		transform[4] = circuitArea.width /2 - cx*newScale;
-		transform[5] = circuitArea.height/2 - cy*newScale;
+		transform[4] = (double) circuitArea.width / 2 - cx * newScale;
+		transform[5] = (double) circuitArea.height / 2 - cy * newScale;
 
 
-    }
+	}
 
 	private void centreCircuit() {
 

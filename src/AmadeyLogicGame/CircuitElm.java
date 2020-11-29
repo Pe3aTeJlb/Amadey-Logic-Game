@@ -50,12 +50,12 @@ public abstract class CircuitElm  {
 	
     static double voltageRange = 5;
     static int colorScaleCount = 32;
-    static Color colorScale[];
-    static double currentMult, powerMult;
+	static Color[] colorScale;
+	static double currentMult, powerMult;
     
     // scratch points for convenience
     static Point ps1, ps2;
-    public ArrayList<Point> OperativePoints = new ArrayList<Point>(); 
+	public ArrayList<Point> OperativePoints = new ArrayList<>();
     
     static CirSim sim;
     static Color whiteColor, selectColor, lightGrayColor,gray;
@@ -345,11 +345,11 @@ public abstract class CircuitElm  {
     }
     
     Point [] newPointArray(int n) {
-		Point a[] = new Point[n];
+		Point[] a = new Point[n];
 		while (n > 0)
-		    a[--n] = new Point();
+			a[--n] = new Point();
 		return a;
-    }
+	}
 
     // draw current dots from point a to b
     /*
@@ -403,14 +403,14 @@ public abstract class CircuitElm  {
 		p.addPoint(d.x, d.y);
 		return p;
     }
-    
-    Polygon createPolygon(Point a[]) {
+
+	Polygon createPolygon(Point[] a) {
 		Polygon p = new Polygon();
 		int i;
 		for (i = 0; i != a.length; i++)
-		    p.addPoint(a[i].x, a[i].y);
+			p.addPoint(a[i].x, a[i].y);
 		return p;
-    }
+	}
     
     // draw second point to xx, yy
     
@@ -616,26 +616,26 @@ public abstract class CircuitElm  {
     boolean isCenteredText() { return false; }
 
     void drawCenteredText(Graphics g, String s, int x, int y, boolean cx) {
-	// FontMetrics fm = g.getFontMetrics();
-	//int w = fm.stringWidth(s);
+		// FontMetrics fm = g.getFontMetrics();
+		//int w = fm.stringWidth(s);
 //    	int w=0;
 //	if (cx)
 //	    x -= w/2;
 //	g.drawString(s, x, y+fm.getAscent()/2);
 //	adjustBbox(x, y-fm.getAscent()/2,
 //		   x+w, y+fm.getAscent()/2+fm.getDescent());
-    	//int w=(int)g.context.measureText(s).getWidth();
-    	int w=(int)g.getFont().getSize();
-    	int h2=(int)g.currentFontSize/2;
+		//int w=(int)g.context.measureText(s).getWidth();
+		int w = (int) g.getFont().getSize();
+		int h2 = g.currentFontSize / 2;
 		g.context.save();
 		g.context.setTextBaseline(VPos.CENTER);
 		if (cx) {
 			g.context.setTextAlign(TextAlignment.CENTER);
-			adjustBbox(x-w/2,y-h2,x+w/2,y+h2);
+			adjustBbox(x - w / 2, y - h2, x + w / 2, y + h2);
 		} else {
-			adjustBbox(x,y-h2,x+w,y+h2);
+			adjustBbox(x, y - h2, x + w, y + h2);
 		}
-		
+
 		if (cx)
 			g.context.setTextAlign(TextAlignment.CENTER);
 		g.drawString(s, x, y);
@@ -645,22 +645,22 @@ public abstract class CircuitElm  {
     // draw component values (number of resistor ohms, etc).  hs = offset
     void drawValues(Graphics g, String s, double hs) {
 		if (s == null)
-		    return;
+			return;
 		g.setFont(unitsFont);
 		//FontMetrics fm = g.getFontMetrics();
 		//int w = (int)g.context.measureText(s).getWidth();
-		int w=(int)g.getFont().getSize();
+		int w = (int) g.getFont().getSize();
 		g.setColor(whiteColor);
-		int ya = (int)g.currentFontSize/2;
+		int ya = g.currentFontSize / 2;
 		int xc, yc;
-	
-		    xc = (x2+x)/2;
-		    yc = (y2+y)/2;
-		
-		int dpx = (int) (dpx1*hs);
-		int dpy = (int) (dpy1*hs);
+
+		xc = (x2 + x) / 2;
+		yc = (y2 + y) / 2;
+
+		int dpx = (int) (dpx1 * hs);
+		int dpy = (int) (dpy1 * hs);
 		if (dpx == 0)
-		    g.drawString(s, xc-w/2, yc-abs(dpy)-2);
+			g.drawString(s, xc - w / 2, yc - abs(dpy) - 2);
 		else {
 		    int xx = xc+abs(dpx)+2;
 	
@@ -721,15 +721,15 @@ public abstract class CircuitElm  {
     	g.setLineWidth(1.0);
     }
 
-    static void drawThickPolygon(Graphics g, int xs[], int ys[], int c) {
-    	//	int i;
-    	//	for (i = 0; i != c-1; i++)
-    	//	    drawThickLine(g, xs[i], ys[i], xs[i+1], ys[i+1]);
-    	//	drawThickLine(g, xs[i], ys[i], xs[0], ys[0]);
-    	g.setLineWidth(3.0);
-    	g.drawPolyline(xs, ys, c);
-    	g.setLineWidth(1.0);
-    }
+	static void drawThickPolygon(Graphics g, int[] xs, int[] ys, int c) {
+		//	int i;
+		//	for (i = 0; i != c-1; i++)
+		//	    drawThickLine(g, xs[i], ys[i], xs[i+1], ys[i+1]);
+		//	drawThickLine(g, xs[i], ys[i], xs[0], ys[0]);
+		g.setLineWidth(3.0);
+		g.drawPolyline(xs, ys, c);
+		g.setLineWidth(1.0);
+	}
     
     static void drawThickPolygon(Graphics g, Polygon p) {
     	drawThickPolygon(g, p.xpoints, p.ypoints, p.npoints);
@@ -756,17 +756,17 @@ public abstract class CircuitElm  {
     }
     
     Polygon getSchmittPolygon(float gsize, float ctr) {
-		Point pts[] = newPointArray(6);
-		float hs = 3*gsize;
-		float h1 = 3*gsize;
-		float h2 = h1*2;
+		Point[] pts = newPointArray(6);
+		float hs = 3 * gsize;
+		float h1 = 3 * gsize;
+		float h2 = h1 * 2;
 		double len = distance(lead1, lead2);
-		pts[0] = interpPoint(lead1, lead2, ctr-h2/len, hs);
-		pts[1] = interpPoint(lead1, lead2, ctr+h1/len,  hs);
-		pts[2] = interpPoint(lead1, lead2, ctr+h1/len, -hs);
-		pts[3] = interpPoint(lead1, lead2, ctr+h2/len, -hs);
-		pts[4] = interpPoint(lead1, lead2, ctr-h1/len, -hs);
-		pts[5] = interpPoint(lead1, lead2, ctr-h1/len, hs);
+		pts[0] = interpPoint(lead1, lead2, ctr - h2 / len, hs);
+		pts[1] = interpPoint(lead1, lead2, ctr + h1 / len, hs);
+		pts[2] = interpPoint(lead1, lead2, ctr + h1 / len, -hs);
+		pts[3] = interpPoint(lead1, lead2, ctr + h2 / len, -hs);
+		pts[4] = interpPoint(lead1, lead2, ctr - h1 / len, -hs);
+		pts[5] = interpPoint(lead1, lead2, ctr - h1 / len, hs);
 		return createPolygon(pts); 
     }
 
