@@ -59,9 +59,9 @@ class LogicOutputElm extends CircuitElm {
 	    g.setFont(f);
 	    //g.setColor(needsHighlight() ? selectColor : lightGrayColor);
 	    g.setColor(lightGrayColor);
-	    String s = (volts[0] < threshold) ? "L" : "H";
-	    
-		s = (volts[0] < threshold) ? "0" : "1";
+
+	    //String s = (volts[0] < threshold) ? "L" : "H";
+		String s = (volts[0] < threshold) ? "0" : "1";
 	    value = s;
 	    
 	    setBbox(point1, lead1, 0);

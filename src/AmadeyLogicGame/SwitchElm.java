@@ -29,17 +29,9 @@ package AmadeyLogicGame;
 
 // SPST switch
 class SwitchElm extends CircuitElm {
-    
-	boolean momentary;
+
     // position 0 == closed, position 1 == open
     int position, posCount;
-
-    SwitchElm(int xx, int yy, boolean mm) {
-		super(xx, yy);
-		position = (mm) ? 1 : 0;
-		momentary = mm;
-		posCount = 2;
-    }
     
     public SwitchElm(int xa, int ya, int xb, int yb, int f) {
     	super(xa, ya, xb, yb, f);

@@ -28,6 +28,7 @@ Copyright (C) Paul Falstad and Iain Sharp
 package AmadeyLogicGame;
 
 import javafx.geometry.VPos;
+import javafx.scene.paint.Color;
 import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.LinearGradient;
 import javafx.scene.paint.Stop;
@@ -38,6 +39,7 @@ import javafx.scene.text.TextAlignment;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
+
 
 // circuit element class
 public abstract class CircuitElm  {
@@ -52,7 +54,7 @@ public abstract class CircuitElm  {
 	public ArrayList<Point> OperativePoints = new ArrayList<>();
     
     static CirSim sim;
-    static Color whiteColor, selectColor, lightGrayColor,gray;
+    static Color whiteColor, selectColor, lightGrayColor;
     static Font unitsFont;
 
     static NumberFormat showFormat, shortFormat;//, noCommaFormat;
@@ -135,22 +137,26 @@ public abstract class CircuitElm  {
 		    
 		    if (v < 0) {
 		    	
-				int n1 = (int) (128 * -v) + 127;
-				int n2 = (int) (127 * (1 + v));
-				colorScale[i] = new Color(n1, n2, n2);
+				double n1 = (128 * -v) + 127;
+				double n2 = (127 * (1 + v));
+
+				Color c = Color.color(n1/255,n2/255,n2/255);
+
+				colorScale[i] = c;
 				
 		    } else {
-		    	
-				int n1 = (int) (128 * v) + 127;
-				int n2 = (int) (127 * (1 - v));
+
+				double n1 = (int) (128 * v) + 127;
+				double n2 = (int) (127 * (1 - v));
 				
 				if (altColor) {
-				    colorScale[i] = new Color(n2, n2, n1);
-
+					Color c = Color.color(n2/255,n2/255,n1/255);
+				    colorScale[i] = c;
 				}
 				else 
 				{
-				    colorScale[i] = new Color(n2, n1, n2);
+					Color c = Color.color(n2/255,n1/255,n2/255);
+				    colorScale[i] = c;
 				}
 				
 		    }
@@ -916,8 +922,10 @@ public abstract class CircuitElm  {
 		double w = (w0 < 0) ? -w0 : w0;
 		if (w > 1)
 		    w = 1;
-		int rg = (int) (w*255);
-		g.setColor(new Color(rg, rg, rg));
+		double rg = (w*255);
+
+		Color c = Color.color(rg,rg,rg);
+		g.setColor(c);
     }
     
     double getPower() { return getVoltageDiff()*current;}

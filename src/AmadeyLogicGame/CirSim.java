@@ -27,18 +27,17 @@ Copyright (C) Paul Falstad and Iain Sharp
 
 package AmadeyLogicGame;
 
-import java.util.*;
-import java.lang.Math;
-
 import javafx.animation.AnimationTimer;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
-import javafx.scene.input.*;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.input.MouseButton;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.paint.Color;
+
+import java.util.*;
 
 /*
  Скрипт расчёта схемы, он же UI и управление им.
@@ -521,16 +520,16 @@ public class CirSim {
    
     	}
     	
-    	CircuitElm.selectColor = Color.cyan;
+    	CircuitElm.selectColor = Color.CYAN;
     	
     	if (printableCheckItem.isSelected()) {
-    		CircuitElm.whiteColor = Color.black;
-      	    CircuitElm.lightGrayColor = Color.black;
-      	    g.setColor(Color.white);
+    		CircuitElm.whiteColor = Color.BLACK;
+      	    CircuitElm.lightGrayColor = Color.BLACK;
+      	    g.setColor(Color.WHITE);
     	} else {
-    		CircuitElm.whiteColor = Color.white;
-    		CircuitElm.lightGrayColor = Color.white;
-    		g.setColor(Color.black);
+    		CircuitElm.whiteColor = Color.WHITE;
+    		CircuitElm.lightGrayColor = Color.WHITE;
+    		g.setColor(Color.BLACK);
     	}
 
     	g.fillRect(0, 0, (int)g.context.getCanvas().getWidth(), (int)g.context.getCanvas().getHeight());
@@ -543,9 +542,9 @@ public class CirSim {
     	for (int i = 0; i != elmList.size(); i++) {
     		
     		if(printableCheckItem.isSelected()){
-    			g.setColor(Color.black);	
+    			g.setColor(Color.BLACK);
     		}else {
-    			g.setColor(Color.white);
+    			g.setColor(Color.WHITE);
     		}
     		
     		try {
@@ -559,13 +558,12 @@ public class CirSim {
     	}
     	
     	for (int i = 0; i != postDrawList.size(); i++){
-    		g.setColor(Color.white);
     		CircuitElm.drawPost(g, postDrawList.get(i));
     	}
     	
     	for (int i = 0; i != badConnectionList.size(); i++) {
     	    Point cn = badConnectionList.get(i);
-    	    g.setColor(Color.red);
+    	    g.setColor(Color.RED);
     	    g.fillOval(cn.x-3, cn.y-3, 7, 7);
     	}
 

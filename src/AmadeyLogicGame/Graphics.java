@@ -28,7 +28,7 @@ Copyright (C) Paul Falstad and Iain Sharp
 package AmadeyLogicGame;
 
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.paint.Paint;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 
 public class Graphics {
@@ -43,22 +43,17 @@ public class Graphics {
 	}
 	  
 	  public void setColor(Color color) {
+
 		    if (color != null) {
-		      String colorString = color.getHexValue();
-		      context.setStroke(Paint.valueOf(colorString));
-		      context.setFill(Paint.valueOf(colorString));
+		      context.setStroke(color);
+		      context.setFill(color);
 		    } else {
 		      //System.out.println("Ignoring null-Color");
 		    }
 		    lastColor=color;
+
 	  }
-	  
-	  public void setColor(String color) {
-		  context.setStroke(Paint.valueOf(color));
-		  context.setFill(Paint.valueOf(color));
-	      lastColor=null;
-	  }
-	  
+
 	  public void fillRect(int x, int y, int width, int height) {
 		//  context.beginPath();
 		  context.fillRect(x, y, width, height);
