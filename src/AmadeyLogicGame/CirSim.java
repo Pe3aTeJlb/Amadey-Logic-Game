@@ -379,7 +379,6 @@ public class CirSim {
 				crystal.RestartGif(1);
 				currOutputIndex = 0;
 				currCrystalPosY = FunctionsOutput.get(currOutputIndex).y - 80;
-				CrystalRestart.cancel();
 			}
 		};
 
@@ -449,76 +448,6 @@ public class CirSim {
     	clearRect40K(transform[4], transform[5]); //clear current frame to avoid GIF fall trail
 
     	if(refreshGameState)tickCounter++;
-
-    	if(tickCounter > 6 && refreshGameState && currOutputIndex < FunctionsOutput.size()) {
-    		
-    		currOutput = new ArrayList<>();
-    		
-    		for(int i = 0; i<FunctionsOutput.size(); i++) {
-      			String s = FunctionsOutput.get(i).volts[0] < 2.5 ? "0" : "1";
-      			currOutput.add(s);
-      		}
-
-    		log.append("curr out index " + currOutputIndex + nl);
-			System.out.println("curr out index " + currOutputIndex);
-      		
-      		if(currOutputIndex < FunctionsOutput.size()) {
-
-				System.out.println("currOutput "+currOutput.toString());
-				log.append("currOutput "+currOutput+nl);
-          		
-          		//Условия поигрыша
-	      		if(currOutputIndex != FunctionsOutput.size()-1 && currOutput.get(currOutputIndex).equals("0") && currOutput.get(currOutputIndex+1).equals("0")) {
-
-	      			log.append("Game Over"+nl);
-					System.out.println("Game Over");
-	      			
-	      			//Ищем, сколько платформ кристал должен пролететь прежде чем разбиться
-	      			for(int i = currOutputIndex; i<FunctionsOutput.size(); i++) {	
-	      				if(currOutput.get(i).equals("0")) {
-	      					currOutputIndex += 1;
-	      				}
-	      				else {break;}
-	      				}
-	      			
-	      			lose = true;
-	      			
-	      			if(gameType == "Test")Score -= failPenalty;
-	      			
-	      			crystal.RestartGif(30);
-	      			
-	      		}
-	      		
-	      		//Переход на след платформу
-	      		if(currOutputIndex != FunctionsOutput.size()-1 && currOutput.get(currOutputIndex).equals("0") && currOutput.get(currOutputIndex+1).equals("1")) {
-	      			currOutputIndex++;	
-	      			System.out.println("new curr out index " + currOutputIndex);
-	      		}
-
-	      		//заглушка для последней платформы
-	      		if(currOutputIndex == FunctionsOutput.size()-1 && currOutput.get(currOutputIndex).equals("0")) {
-	      			currOutputIndex++;
-					System.out.println("new curr out index " + currOutputIndex);
-					log.append("new curr out index " + currOutputIndex+nl);
-	      		}
-	      		
-	      		//Переход на след уровень
-	          	if(currOutputIndex == FunctionsOutput.size()) {
-	          		
-	          		currOutputIndex = 0;
-	          		log.append("You Won!"+nl);
-					System.out.println("You Won!");
-	          		elmList.clear();
-	          		level++;
-	          		
-	          		GenerateCircuit();
-	          	}
-
-      		}
-      			    		
-     		refreshGameState = false;
-   
-    	}
     	
     	CircuitElm.selectColor = Color.CYAN;
     	
@@ -567,23 +496,96 @@ public class CirSim {
     	    g.fillOval(cn.x-3, cn.y-3, 7, 7);
     	}
 
-    	
+		if(tickCounter > 6 && refreshGameState && currOutputIndex < FunctionsOutput.size()) {
+
+			currOutput = new ArrayList<>();
+
+			for(int i = 0; i<FunctionsOutput.size(); i++) {
+				String s = FunctionsOutput.get(i).volts[0] < 2.5 ? "0" : "1";
+				currOutput.add(s);
+			}
+
+			log.append("curr out index " + currOutputIndex + nl);
+			System.out.println("curr out index " + currOutputIndex);
+
+			if(currOutputIndex < FunctionsOutput.size()) {
+
+				System.out.println("currOutput "+currOutput.toString());
+				log.append("currOutput "+currOutput+nl);
+
+				//Условия поигрыша
+				if(currOutputIndex != FunctionsOutput.size()-1 && currOutput.get(currOutputIndex).equals("0") && currOutput.get(currOutputIndex+1).equals("0")) {
+
+					log.append("Game Over"+nl);
+					System.out.println("Game Over");
+
+					//Ищем, сколько платформ кристал должен пролететь прежде чем разбиться
+					for(int i = currOutputIndex; i<FunctionsOutput.size(); i++) {
+						if(currOutput.get(i).equals("0")) {
+							currOutputIndex += 1;
+						}
+						else {break;}
+					}
+
+					lose = true;
+
+					if(gameType == "Test")Score -= failPenalty;
+
+					crystal.RestartGif(30);
+
+				}
+
+				if(currOutputIndex != FunctionsOutput.size()) {
+					//Переход на след платформу
+					if (currOutputIndex != FunctionsOutput.size() - 1 && currOutput.get(currOutputIndex).equals("0") && currOutput.get(currOutputIndex + 1).equals("1")) {
+						currOutputIndex++;
+						System.out.println("new curr out index " + currOutputIndex);
+					}
+
+					//заглушка для последней платформы
+					if (currOutputIndex == FunctionsOutput.size() - 1 && currOutput.get(currOutputIndex).equals("0")) {
+						currOutputIndex++;
+						System.out.println("new curr out index " + currOutputIndex);
+						log.append("new curr out index " + currOutputIndex + nl);
+					}
+
+					//Переход на след уровень
+					if (currOutputIndex == FunctionsOutput.size()) {
+
+						currOutputIndex = 0;
+						log.append("You Won!" + nl);
+						System.out.println("You Won!");
+						elmList.clear();
+						level++;
+
+						GenerateCircuit();
+					}
+				}
+			}
+
+			refreshGameState = false;
+
+		}
+
     	//Отрисовка падения кристалла
     	if(currOutputIndex == FunctionsOutput.size()) {
     		
     		canToggle = false;
     		currCrystalPosY += 7;
+
     		if(lose && currCrystalPosY > FunctionsOutput.get(3).y) {
     			crystal.Play();
     		}
     		if(crystal.gifEnded && lose) {RestartLevel();}
-			cvcontext.drawImage(crystal.img, crystal.currX, crystal.currY,crystal.frameWidth,crystal.frameWidth,FunctionsOutput.get(0).x+130,currCrystalPosY,50,50);
 
+			cvcontext.drawImage(crystal.img, crystal.currX, crystal.currY,crystal.frameWidth,crystal.frameWidth,FunctionsOutput.get(0).x+130,currCrystalPosY,50,50);
 
     	}
     	else if(currOutputIndex < FunctionsOutput.size() && currCrystalPosY < FunctionsOutput.get(currOutputIndex).y-67) {
+
     		canToggle = false;
     		currCrystalPosY += 5;
+
 			cvcontext.drawImage(crystal.img, crystal.currX, crystal.currY,crystal.frameWidth,crystal.frameWidth,FunctionsOutput.get(0).x+130,currCrystalPosY,50,50);
 		}
     	else {    
@@ -620,6 +622,8 @@ public class CirSim {
 
 	private void RestartLevel() {
 
+		System.out.println("restart");
+
 		currOutputIndex = 0;
 
 		lose = false;
@@ -628,7 +632,13 @@ public class CirSim {
 			switchElm.position = 0;
 		}
 
-		CrystalRestart.schedule(CrystalRestartTask, 110);
+
+		crystal.RestartGif(1);
+		currOutputIndex = 0;
+		currCrystalPosY = FunctionsOutput.get(currOutputIndex).y - 80;
+
+		//CrystalRestart.schedule(CrystalRestartTask, 110);
+		//CrystalRestart.cancel();
 
 		canToggle = true;
 

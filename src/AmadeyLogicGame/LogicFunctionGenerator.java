@@ -47,18 +47,18 @@ public class LogicFunctionGenerator {
 
     public char[][] VectorFunctions;
     public String[] VarNames,OutNames;
-    private long seed = 1;
+    private final long seed = 1;
     private float maxTruePercent;
     private float minTruePercent;
     private int lastVarIndex = 1;
     char[][] buffVector;
 
-    private String nl = System.getProperty("line.separator");
+    private final String nl = System.getProperty("line.separator");
     private StringBuilder log = new StringBuilder(nl+"<<LogicFunctionGenerator>>"+nl);
 
 	public boolean callOnce = false;
-	private ArrayList<String> prevFunc = new ArrayList<String>();
-	private ArrayList<String> currFunc= new ArrayList<String>();
+	private final ArrayList<String> prevFunc = new ArrayList<>();
+	private final ArrayList<String> currFunc= new ArrayList<>();
     
     public LogicFunctionGenerator(){
     	maxTruePercent = 0.3f;
@@ -84,7 +84,7 @@ public class LogicFunctionGenerator {
         
     	if(sharedVars.size()>0) {
 
-            log.append("Shared var length"+Integer.toString(sharedVars.size())+nl);
+            log.append("Shared var length"+ sharedVars.size() +nl);
 
     		for(int i = 0; i < sharedVars.size(); i++) {
     			VarNames[i] = sharedVars.get(i);
@@ -116,7 +116,7 @@ public class LogicFunctionGenerator {
             	VectorFunctions[0][i] = '1';
             	callOnce = false;
 
-            	 log.append("Function №"+Integer.toString(i) + nl+ "1"+nl);
+            	 log.append("Function №"+ i + nl+ "1"+nl);
             	 
             	 for(int k = 0; k< totalVarCount-1; k++) {
             		 prevFunc.add("0");
@@ -124,7 +124,7 @@ public class LogicFunctionGenerator {
             	 
             }else {
             	VectorFunctions[0][i] = '0';
-                log.append("Function №"+Integer.toString(i) + nl+ "0"+nl);
+                log.append("Function №"+ i + nl+ "0"+nl);
             }
             Generator(totalVarCount);
  
@@ -132,7 +132,7 @@ public class LogicFunctionGenerator {
             for(int j = 1; j < totalVarCount; j++)
             {
                 VectorFunctions[j][i] = buffVector[j][0];
-                log.append(Character.toString(VectorFunctions[j][i])+nl);
+                log.append(VectorFunctions[j][i] +nl);
             }
             log.append("End of Function"+nl);
         }

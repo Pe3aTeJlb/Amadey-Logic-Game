@@ -28,9 +28,7 @@ Copyright (C) Paul Falstad and Iain Sharp
 package AmadeyLogicGame;
 
 class OrGateElm extends GateElm {
-	
-	public OrGateElm(int xx, int yy) { super(xx, yy); }
-	
+
 	public OrGateElm(int xa, int ya, int xb, int yb, int f,int intputcount) {
 	    super(xa, ya, xb, yb, f, intputcount);
 	}
@@ -45,7 +43,7 @@ class OrGateElm extends GateElm {
 	    } else {
 			// 0-15 = top curve, 16 = right, 17-32=bottom curve,
 			// 33-37 = left curve
-			Point triPoints[] = newPointArray(38);
+			Point[] triPoints = newPointArray(38);
 			if (this instanceof XorGateElm)
 			    linePoints = new Point[5];
 			int i;

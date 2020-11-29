@@ -41,20 +41,6 @@ abstract class GateElm extends CircuitElm {
 
 	Random random;
 	
-	public GateElm(int xx, int yy) {
-	    super(xx, yy);
-	    noDiagonal = true;
-	    noDiagonal = true;
-	    inputCount = 2;
-	    
-	    // copy defaults from last gate edited
-	    highVoltage = lastHighVoltage;
-	    if (lastSchmitt)
-		flags |= FLAG_SCHMITT;
-	    
-	    setSize(1);
-	}
-	
 	public GateElm(int xa, int ya, int xb, int yb, int f, int inputcount) {
 	    super(xa, ya, xb, yb, f);
 	    inputCount = inputcount;
@@ -77,8 +63,9 @@ abstract class GateElm extends CircuitElm {
 	    flags |= (s == 1) ? FLAG_SMALL : 0;
 	}
 	
-	public Point inPosts[], inGates[];
-	boolean inputStates[];
+	public Point[] inPosts;
+	public Point[] inGates;
+	boolean[] inputStates;
 	int ww;
 	
 	void setPoints() {
@@ -110,7 +97,7 @@ abstract class GateElm extends CircuitElm {
 	}
 	
 	void createEuroGatePolygon() {
-	    Point pts[] = newPointArray(4);
+	    Point[] pts = newPointArray(4);
 	    interpPoint2(lead1, lead2, pts[0], pts[1], 0, hs2);
 	    interpPoint2(lead1, lead2, pts[3], pts[2], 1, hs2);
 	    gatePoly = createPolygon(pts);
@@ -154,7 +141,8 @@ abstract class GateElm extends CircuitElm {
 	}
 	
 	Polygon gatePoly, schmittPoly;
-	Point pcircle, linePoints[];
+	Point pcircle;
+	Point[] linePoints;
 	
 	int getPostCount() { return inputCount+1; }
 	

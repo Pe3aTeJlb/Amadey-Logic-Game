@@ -33,8 +33,7 @@ class Polygon {
 	public int npoints;
 	public int[] xpoints;
 	public int[] ypoints;
-	
-	
+
 	public Polygon(){
         xpoints = new int[MIN_LENGTH];
         ypoints = new int[MIN_LENGTH];
