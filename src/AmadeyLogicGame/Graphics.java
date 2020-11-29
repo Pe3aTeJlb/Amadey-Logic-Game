@@ -59,25 +59,9 @@ public class Graphics {
 	      lastColor=null;
 	  }
 	  
-	  public void clipRect(int x, int y, int width, int height) {
-		  context.save();
-		  context.rect(x, y, width, height);
-		  context.clip();
-	  }
-	  
-	  public void restore() {
-		  context.restore();
-	  }
-	  
 	  public void fillRect(int x, int y, int width, int height) {
 		//  context.beginPath();
 		  context.fillRect(x, y, width, height);
-		//  context.closePath();
-	  }
-	  
-	  public void drawRect(int x, int y, int width, int height) {
-		//  context.beginPath();
-		  context.strokeRect(x, y, width, height);
 		//  context.closePath();
 	  }
 	  
@@ -115,20 +99,6 @@ public class Graphics {
 		  context.closePath();
 		  context.stroke();
 	  }
-	
-	  
-	  public void fillPolygon(Polygon p) {
-		  int i;
-		  context.beginPath();
-		  for (i=0; i<p.npoints;i++){
-			  if (i==0)
-				  context.moveTo(p.xpoints[i],p.ypoints[i]);
-			  else
-				  context.lineTo(p.xpoints[i],p.ypoints[i]);
-		  }
-		  context.closePath();
-		  context.fill();
-	  }
 	  
 	  public void setFont(Font f){
 		  if (f!=null){
@@ -142,21 +112,10 @@ public class Graphics {
 		  return currentFont;
 	  }
 	  
-	   static int distanceSq(int x1, int y1, int x2, int y2) {
+	  static int distanceSq(int x1, int y1, int x2, int y2) {
 	    	x2 -= x1;
 	    	y2 -= y1;
 	    	return x2*x2+y2*y2;
 	   }
-	  
-	   void setLineDash(int a, int b) {
-	       setLineDash(context, a, b);
-	   }
-	   
-	   native static void setLineDash(GraphicsContext context, int a, int b) /*-{
-	       if (a == 0)
-	           context.setLineDash([]);
-	       else
-	       	   context.setLineDash([a, b]);
-	   }-*/;
 	   
 }

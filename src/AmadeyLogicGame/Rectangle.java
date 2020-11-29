@@ -78,8 +78,7 @@ public class Rectangle {
         return ((w < x || w > X) &&
                 (h < y || h > Y));
     }
-    
-    
+
     public boolean intersects(Rectangle r) {
         int tw = this.width;
         int th = this.height;
@@ -105,7 +104,6 @@ public class Rectangle {
     
     public String toString() { return "Rect(" + x + "," + y + "," + width + "," + height + ")"; }
 
-    
     public boolean equals(Object obj) {
     	
         if (obj instanceof Rectangle) {

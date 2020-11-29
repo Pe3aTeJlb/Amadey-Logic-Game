@@ -30,19 +30,8 @@ package AmadeyLogicGame;
 import javafx.scene.text.Font;
 
 class LogicInputElm extends SwitchElm {
-    	
-	final int FLAG_TERNARY = 1;
-	final int FLAG_NUMERIC = 2;
-	double hiV=5, loV=0;
 
-	
-	public LogicInputElm(int xx, int yy) {
-	    super(xx, yy, false);
-	    numHandles=1;
-	    hiV = 5;
-	    loV = 0;
-	    
-	}
+	double hiV, loV;
 	
 	public LogicInputElm(int xa, int ya, int xb, int yb, int f) {
 	    super(xa, ya, xb, yb, f);
@@ -81,10 +70,6 @@ class LogicInputElm extends SwitchElm {
 	    g.setFont(oldf);
 	    
 	}
-	
-	Rectangle getSwitchRect() {
-	    return new Rectangle(x2-10, y2-10, 20, 20);
-	}	
 
 	void setCurrent(int vs, double c) { current = -c; }
 	

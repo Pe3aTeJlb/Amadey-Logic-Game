@@ -19,7 +19,6 @@
 
 package AmadeyLogicGame;
 
-import java.util.Stack;
 import java.util.*;
 
 /**
@@ -33,7 +32,7 @@ public class ShuntingYard {
     public ArrayList<ArrayList<String>> list = new ArrayList<>();
     public ArrayList<String> out = new ArrayList<>();
 
-    private String nl = System.getProperty("line.separator");
+    private final String nl = System.getProperty("line.separator");
     private StringBuilder log = new StringBuilder(nl+"<<ShuntingYard>>"+nl);
 
     public ShuntingYard(){
@@ -315,8 +314,8 @@ public class ShuntingYard {
 
              String token = tokenizer.nextToken();
              // Операнд.
-             if (!MAIN_MATH_OPERATIONS.keySet().contains(token)) {
-                 stack.push(new String(token));
+             if (!MAIN_MATH_OPERATIONS.containsKey(token)) {
+                 stack.push(token);
                  newTerm++;
              } else {
 
@@ -493,4 +492,5 @@ public class ShuntingYard {
     public StringBuilder getLog(){
         return log;
     }
+
 }

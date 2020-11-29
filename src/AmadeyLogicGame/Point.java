@@ -44,12 +44,7 @@ public class Point {
 		 y=0;
 	}
 	 
-	public void setLocation(Point p) {
-		 x=p.x;
-		 y=p.y;
-	}
-	 
-    public String toString() { return "Point(" + Integer.toString(x) + "," + Integer.toString(y) + ")"; }
+    public String toString() { return "Point(" + x + "," + y + ")"; }
 
     @Override 
     public boolean equals(Object other) {

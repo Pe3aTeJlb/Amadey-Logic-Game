@@ -31,19 +31,13 @@ import javafx.geometry.VPos;
 import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.LinearGradient;
 import javafx.scene.paint.Stop;
-import javafx.scene.shape.ArcType;
 import javafx.scene.shape.StrokeLineCap;
 import javafx.scene.text.Font;
+import javafx.scene.text.TextAlignment;
+
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
-
-import javafx.scene.canvas.GraphicsContext.*;
-import javafx.scene.text.TextAlignment;
-
-//import com.google.gwt.canvas.dom.client.CanvasGradient;
-//import com.google.gwt.canvas.dom.client.Context2d.LineCap;
-//import com.google.gwt.i18n.client.NumberFormat;
 
 // circuit element class
 public abstract class CircuitElm  {
@@ -62,7 +56,7 @@ public abstract class CircuitElm  {
     static Font unitsFont;
 
     static NumberFormat showFormat, shortFormat;//, noCommaFormat;
-    static final double pi = 3.14159265358979323846;
+
     static CircuitElm mouseElmRef = null;
 
     // initial point where user created element.  For simple two-terminal elements, this is the first node/post.

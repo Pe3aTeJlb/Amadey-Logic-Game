@@ -68,7 +68,6 @@ public class Gif {
 				gifEnded = true;
 			}
 
-
 			if(nextX == width) {
 				nextX = 0;
 				nextY += frameWidth+1;

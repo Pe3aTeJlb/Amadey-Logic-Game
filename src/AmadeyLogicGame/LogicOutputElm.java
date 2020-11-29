@@ -30,18 +30,11 @@ package AmadeyLogicGame;
 import javafx.scene.text.Font;
 
 class LogicOutputElm extends CircuitElm {
-    	
-	final int FLAG_TERNARY = 1;
-	final int FLAG_NUMERIC = 2;
+
 	final int FLAG_PULLDOWN = 4;
-	double threshold = 2.5;
+	double threshold;
 	public String value;
 	public Point InputPoint = new Point();
-	
-	public LogicOutputElm(int xx, int yy) {
-	    super(xx, yy);
-	    threshold = 2.5;
-	}
 	
 	public LogicOutputElm(int xa, int ya, int xb, int yb, int f) {
 	    super(xa, ya, xb, yb, f);
@@ -51,8 +44,6 @@ class LogicOutputElm extends CircuitElm {
 	}
 	
 	int getPostCount() { return 1; }
-	
-	boolean isNumeric() { return true; }
 	
 	boolean needsPullDown() { return (flags & FLAG_PULLDOWN) != 0; }
 	
