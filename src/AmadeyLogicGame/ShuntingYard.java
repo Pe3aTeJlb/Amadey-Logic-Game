@@ -20,7 +20,6 @@
 package AmadeyLogicGame;
 
 import java.util.Stack;
-
 import java.util.*;
 
 /**
@@ -49,7 +48,8 @@ public class ShuntingYard {
     public static final Map<String, Integer> MAIN_MATH_OPERATIONS;
 
     static {
-        MAIN_MATH_OPERATIONS = new HashMap<String, Integer>();
+
+        MAIN_MATH_OPERATIONS = new HashMap<>();
 
         //MAIN_MATH_OPERATIONS.put("~", 1);
         MAIN_MATH_OPERATIONS.put("*", 2);
@@ -89,15 +89,15 @@ public class ShuntingYard {
             throw new IllegalStateException("Operations aren't specified.");
 
         // Выходная строка, разбитая на "символы" - операции и операнды..
-        List<String> out = new ArrayList<String>();
+        List<String> out = new ArrayList<>();
         // Стек операций.
-        Stack<String> stack = new Stack<String>();
+        Stack<String> stack = new Stack<>();
 
         // Удаление пробелов из выражения.
         expression = expression.replace(" ", "");
 
         // Множество "символов", не являющихся операндами (операции и скобки).
-        Set<String> operationSymbols = new HashSet<String>(operations.keySet());
+        Set<String> operationSymbols = new HashSet<>(operations.keySet());
         operationSymbols.add(leftBracket);
         operationSymbols.add(rightBracket);
 
@@ -276,7 +276,7 @@ public class ShuntingYard {
 
          log.append(rpn+nl);
 
-         Stack<String> stack = new Stack<String>();
+         Stack<String> stack = new Stack<>();
 
          ArrayList<String> operands = new ArrayList<>();
          int newTerm = 0;

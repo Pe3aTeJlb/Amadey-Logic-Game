@@ -28,8 +28,6 @@ Copyright (C) Paul Falstad and Iain Sharp
 package AmadeyLogicGame;
 
 class AndGateElm extends GateElm {
-    	
-	public AndGateElm(int xx, int yy) { super(xx, yy); }
 	
 	public AndGateElm(int xa, int ya, int xb, int yb, int f, int inputcount) {
 	    super(xa, ya, xb, yb, f, inputcount);

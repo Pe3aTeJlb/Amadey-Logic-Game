@@ -47,17 +47,6 @@ public class Rectangle {
         this.height = height;
     }
     
-    public Rectangle(Point pt) {
-	this.x = pt.x;
-	this.y = pt.y;
-	this.width = 0;
-	this.height = 0;
-    }
-    
-    public Rectangle(Rectangle r) {
-        this(r.x, r.y, r.width, r.height);
-    }
-    
     public void setBounds(int x, int y, int width, int height) {
         this.x = x;
         this.y = y;
@@ -112,49 +101,6 @@ public class Rectangle {
                 (rh < ry || rh > ty) &&
                 (tw < tx || tw > rx) &&
                 (th < ty || th > ry));
-    }
-    
-    public Rectangle union(Rectangle r) {
-    	
-        long tx2 = this.width;
-        long ty2 = this.height;
-        if ((tx2 | ty2) < 0) {
-            // This rectangle has negative dimensions...
-            // If r has non-negative dimensions then it is the answer.
-            // If r is non-existant (has a negative dimension), then both
-            // are non-existant and we can return any non-existant rectangle
-            // as an answer.  Thus, returning r meets that criterion.
-            // Either way, r is our answer.
-            return new Rectangle(r);
-        }
-        long rx2 = r.width;
-        long ry2 = r.height;
-        
-        if ((rx2 | ry2) < 0) {
-            return new Rectangle(this);
-        }
-        
-        int tx1 = this.x;
-        int ty1 = this.y;
-        tx2 += tx1;
-        ty2 += ty1;
-        int rx1 = r.x;
-        int ry1 = r.y;
-        rx2 += rx1;
-        ry2 += ry1;
-        if (tx1 > rx1) tx1 = rx1;
-        if (ty1 > ry1) ty1 = ry1;
-        if (tx2 < rx2) tx2 = rx2;
-        if (ty2 < ry2) ty2 = ry2;
-        tx2 -= tx1;
-        ty2 -= ty1;
-        // tx2,ty2 will never underflow since both original rectangles
-        // were already proven to be non-empty
-        // they might overflow, though...
-        if (tx2 > Integer.MAX_VALUE) tx2 = Integer.MAX_VALUE;
-        if (ty2 > Integer.MAX_VALUE) ty2 = Integer.MAX_VALUE;
-        return new Rectangle(tx1, ty1, (int) tx2, (int) ty2);
-        
     }
     
     public String toString() { return "Rect(" + x + "," + y + "," + width + "," + height + ")"; }

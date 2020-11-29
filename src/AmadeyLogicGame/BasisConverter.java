@@ -58,8 +58,9 @@ public class BasisConverter {
             String[] tmp = func.split("\\+");
 
             for(int i = 0; i < tmp.length; i++){
+
                 operands = new ArrayList<>();
-                String funcName = "";
+                String funcName;
                 String[] t = tmp[i].split("\\*");
 
                 if(tmp[i].length()<=3){
@@ -75,6 +76,7 @@ public class BasisConverter {
                 terms.add(funcName);
                 buffFuncName += funcName + "*";
                 if(operands.size()!=0)list.add(operands);
+
             }
             if(tmp.length>1) {
             buffFuncName = removeByIndex(buffFuncName, buffFuncName.length()-1);

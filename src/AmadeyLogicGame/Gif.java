@@ -82,7 +82,7 @@ public class Gif {
 	};
 
 	
-	public void Play(int frameDelay) {
+	public void Play() {
 		
 		if(!isPlaying) {
 			isPlaying = true;

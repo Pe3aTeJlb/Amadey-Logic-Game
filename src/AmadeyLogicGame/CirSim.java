@@ -31,8 +31,6 @@ import java.util.*;
 import java.lang.Math;
 
 import javafx.animation.AnimationTimer;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -144,7 +142,6 @@ public class CirSim {
      
     private  HashMap<Point,NodeMapEntry> nodeMap;
 	private  HashMap<Point,Integer> postCountMap;
-	private  Vector<WireInfo> wireInfoList;
 
  ////////////////////////
 //Game logic vars and data struct
@@ -214,182 +211,141 @@ public class CirSim {
 		editMenu.setText(localizer.Localize("Edit"));
 
 		centerCircItem.setText(localizer.Localize("CenterCirc"));
-		centerCircItem.setOnAction(new EventHandler<ActionEvent>() {
-			public void handle(ActionEvent event) {
-				centreCircuit();
-			}
-		});
+		centerCircItem.setOnAction(event -> centreCircuit());
 		zoomItem.setText(localizer.Localize("Zoom100"));
-		zoomItem.setOnAction(new EventHandler<ActionEvent>() {
-			public void handle(ActionEvent event) {
-				setCircuitScale(1);
-			}
-		});
+		zoomItem.setOnAction(event -> setCircuitScale(1));
 		zoomInItem.setText(localizer.Localize("ZoomIn"));
-		zoomInItem.setOnAction(new EventHandler<ActionEvent>() {
-			public void handle(ActionEvent event) {
-				zoomCircuit(20);
-			}
-		});
+		zoomInItem.setOnAction(event -> zoomCircuit(20));
 		zoomOutItem.setText(localizer.Localize("ZoomOut"));
-		zoomOutItem.setOnAction(new EventHandler<ActionEvent>() {
-			public void handle(ActionEvent event) {
-				zoomCircuit(-20);
-			}
-		});
+		zoomOutItem.setOnAction(event -> zoomCircuit(-20));
 
 
 		optionsMenu.setText(localizer.Localize("options"));
 
 		printableCheckItem.setText(localizer.Localize("WBack"));
 		alternativeColorCheckItem.setText(localizer.Localize("AltColor"));
-		alternativeColorCheckItem.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent event) {
-				CircuitElm.setColorScale(alternativeColorCheckItem.isSelected());
-			}
-		});
+		alternativeColorCheckItem.setOnAction(event -> CircuitElm.setColorScale(alternativeColorCheckItem.isSelected()));
 
 		toolsMenu.setText(localizer.Localize("Tools"));
 		regenCircItem.setText(localizer.Localize("Regen"));
-		regenCircItem.setOnAction(new EventHandler<ActionEvent>() {
-			public void handle(ActionEvent event) {
-				GenerateCircuit();
-			}
-		});
+		regenCircItem.setOnAction(event -> GenerateCircuit());
 		lvlUpItem.setText(localizer.Localize("LevelUp"));
-		lvlUpItem.setOnAction(new EventHandler<ActionEvent>() {
-			public void handle(ActionEvent event) {
-				level+=1;
-				GenerateCircuit();
-			}
+		lvlUpItem.setOnAction(event -> {
+			level+=1;
+			GenerateCircuit();
 		});
 
 		aboutMenu.setText(localizer.Localize("About"));
 		rulesItem.setText(localizer.Localize("Rules"));
-		rulesItem.setOnAction(new EventHandler<ActionEvent>() {
-			public void handle(ActionEvent event) {
-				Alert alert = new Alert(AlertType.INFORMATION);
-				alert.setTitle(localizer.Localize("Rules"));
-				alert.setHeaderText(localizer.Localize("Rules"));
-				alert.setContentText(localizer.Localize("Rules"));
+		rulesItem.setOnAction(event -> {
+			Alert alert = new Alert(AlertType.INFORMATION);
+			alert.setTitle(localizer.Localize("Rules"));
+			alert.setHeaderText(localizer.Localize("Rules"));
+			alert.setContentText(localizer.Localize("Rules"));
 
-				alert.showAndWait();
-			}
+			alert.showAndWait();
 		});
 		devItem.setText(localizer.Localize("Developers"));
-		devItem.setOnAction(new EventHandler<ActionEvent>() {
-			public void handle(ActionEvent event) {
-				Alert alert = new Alert(AlertType.INFORMATION);
-				alert.setTitle(localizer.Localize("Developers"));
-				alert.setHeaderText(localizer.Localize("Developers"));
-				alert.setContentText(localizer.Localize("Developers"));
+		devItem.setOnAction(event -> {
+			Alert alert = new Alert(AlertType.INFORMATION);
+			alert.setTitle(localizer.Localize("Developers"));
+			alert.setHeaderText(localizer.Localize("Developers"));
+			alert.setContentText(localizer.Localize("Developers"));
 
-				alert.showAndWait();
-			}
+			alert.showAndWait();
 		});
 
 		backToMenu.setText(localizer.Localize("ToMenu"));
-		backToMenu.setOnAction(new EventHandler<ActionEvent>() {
-			public void handle(ActionEvent event) {
-				//Todo: Menu?
-			}
+		backToMenu.setOnAction(event -> {
+			//Todo: Menu?
 		});
 		backToMenu.hide();
 
 		infoMenu.setText(localizer.Localize("Score")+ " " + (int)Score);
 
-		cv.setOnMousePressed(new EventHandler<MouseEvent>() {
-			@Override
-			public void handle(MouseEvent event) {
+		cv.setOnMousePressed(event -> {
 
-				CircuitElm newMouseElm=null;
-				int sx = (int)event.getX();
-				int sy = (int)event.getY();
-				int gx = inverseTransformX(sx);
-				int gy = inverseTransformY(sy);
-				if(event.getButton() == MouseButton.PRIMARY) {
+			CircuitElm newMouseElm=null;
+			int sx = (int)event.getX();
+			int sy = (int)event.getY();
+			int gx = inverseTransformX(sx);
+			int gy = inverseTransformY(sy);
+			if(event.getButton() == MouseButton.PRIMARY) {
 
-					if (mouseElm != null && mouseElm.getHandleGrabbedClose(gx, gy, POSTGRABSQ, MINPOSTGRABSIZE)>=0) {
-						newMouseElm = mouseElm;
-					} else {
+				if (mouseElm != null && mouseElm.getHandleGrabbedClose(gx, gy, POSTGRABSQ, MINPOSTGRABSIZE)>=0) {
+					newMouseElm = mouseElm;
+				} else {
 
-						int bestDist = 100000000;
-						int bestArea = 100000000;
-						for (int i = 0; i != elmList.size(); i++) {
-							CircuitElm ce = getElm(i);
-							if (ce.boundingBox.contains(gx, gy)) {
-								int j;
-								int area = ce.boundingBox.width * ce.boundingBox.height;
-								int jn = ce.getPostCount();
-								if (jn > 2)
-									jn = 2;
-								for (j = 0; j != jn; j++) {
-									Point pt = ce.getPost(j);
-									int dist = Graphics.distanceSq(gx, gy, pt.x, pt.y);
+					int bestDist = 100000000;
+					int bestArea = 100000000;
+					for (int i = 0; i != elmList.size(); i++) {
+						CircuitElm ce = getElm(i);
 
-									// if multiple elements have overlapping bounding boxes,
-									// we prefer selecting elements that have posts close
-									// to the mouse pointer and that have a small bounding
-									// box area.
-									if (dist <= bestDist && area <= bestArea) {
-										bestDist = dist;
-										bestArea = area;
-										newMouseElm = ce;
-									}
-								}
-								// prefer selecting elements that have small bounding box area (for
-								// elements with no posts)
-								if (ce.getPostCount() == 0 && area <= bestArea) {
-									newMouseElm = ce;
+						if(ce!=null)
+						if (ce.boundingBox.contains(gx, gy)) {
+							int j;
+							int area = ce.boundingBox.width * ce.boundingBox.height;
+							int jn = ce.getPostCount();
+							if (jn > 2)
+								jn = 2;
+							for (j = 0; j != jn; j++) {
+								Point pt = ce.getPost(j);
+								int dist = Graphics.distanceSq(gx, gy, pt.x, pt.y);
+
+								// if multiple elements have overlapping bounding boxes,
+								// we prefer selecting elements that have posts close
+								// to the mouse pointer and that have a small bounding
+								// box area.
+								if (dist <= bestDist && area <= bestArea) {
+									bestDist = dist;
 									bestArea = area;
+									newMouseElm = ce;
 								}
+							}
+							// prefer selecting elements that have small bounding box area (for
+							// elements with no posts)
+							if (ce.getPostCount() == 0 && area <= bestArea) {
+								newMouseElm = ce;
+								bestArea = area;
 							}
 						}
 
 					}
 
-					setMouseElm(newMouseElm);
 				}
-				dragScreenX = event.getX();
-				dragScreenY = event.getY();
+
+				setMouseElm(newMouseElm);
+			}
+			dragScreenX = event.getX();
+			dragScreenY = event.getY();
 
 
-				if(event.getButton() == MouseButton.MIDDLE){
-						GenerateCircuit();
-				}
-				if(event.getButton() == MouseButton.SECONDARY){
+			if(event.getButton() == MouseButton.MIDDLE){
+					GenerateCircuit();
+			}
+			if(event.getButton() == MouseButton.SECONDARY){
 
-						level += 1;
-						GenerateCircuit();
-
-				}
+					level += 1;
+					GenerateCircuit();
 
 			}
 
 		});
-		cv.setOnMouseDragged(new EventHandler<MouseEvent>() {
-			@Override
-			public void handle(MouseEvent event) {
-				double dx = event.getX()-dragScreenX;
-				double dy = event.getY()-dragScreenY;
-				if (dx == 0 && dy == 0) {return;}
-				clearRect40K(transform[4],transform[5]);
+		cv.setOnMouseDragged(event -> {
+			double dx = event.getX()-dragScreenX;
+			double dy = event.getY()-dragScreenY;
+			if (dx == 0 && dy == 0) {return;}
+			clearRect40K(transform[4],transform[5]);
 
-				transform[4] += dx;
-				transform[5] += dy;
-				dragScreenX = event.getX();
-				dragScreenY = event.getY();
+			transform[4] += dx;
+			transform[5] += dy;
+			dragScreenX = event.getX();
+			dragScreenY = event.getY();
 
-			}
 		});
-		cv.setOnScroll(new EventHandler<ScrollEvent>() {
-			@Override
-			public void handle(ScrollEvent event) {
-				clearRect40K();
-				zoomCircuit(event.getDeltaY());
-
-			}
+		cv.setOnScroll(event -> {
+			clearRect40K();
+			zoomCircuit(event.getDeltaY());
 		});
 
 
@@ -420,7 +376,7 @@ public class CirSim {
 		CrystalRestartTask = new TimerTask() {
 			@Override
 			public void run() {
-				crystal.RestartGif(1);;
+				crystal.RestartGif(1);
 				currOutputIndex = 0;
 				currCrystalPosY = FunctionsOutput.get(currOutputIndex).y - 80;
 				CrystalRestart.cancel();
@@ -461,8 +417,7 @@ public class CirSim {
 	  			v.Synthesis(width, height, level);
 			}else {
 				Score = 0;
-				v.Synthesis(width, height, level);
-				//v.Synthesis(width, height);
+				v.Synthesis(width, height);
 			}
 
 	  		log = new StringBuilder("Log of level "+level+nl);
@@ -472,7 +427,7 @@ public class CirSim {
 			elmList = v.elmList;
 			FunctionsOutput = v.outElems;
 			FunctionsInput = v.inElems;
-			currOutput = new ArrayList<String>();
+			currOutput = new ArrayList<>();
 			currCrystalPosY = FunctionsOutput.get(currOutputIndex).y - 80;
 			crystal = new Gif("GIF", 1024, 1024, 128, 1);
   		}
@@ -497,7 +452,7 @@ public class CirSim {
 
     	if(tickCounter > 6 && refreshGameState && currOutputIndex < FunctionsOutput.size()) {
     		
-    		currOutput = new ArrayList<String>();
+    		currOutput = new ArrayList<>();
     		
     		for(int i = 0; i<FunctionsOutput.size(); i++) {
       			String s = FunctionsOutput.get(i).volts[0] < 2.5 ? "0" : "1";
@@ -620,7 +575,7 @@ public class CirSim {
     		canToggle = false;
     		currCrystalPosY += 7;
     		if(lose && currCrystalPosY > FunctionsOutput.get(3).y) {
-    			crystal.Play(40);
+    			crystal.Play();
     		}
     		if(crystal.gifEnded && lose) {RestartLevel();}
 			cvcontext.drawImage(crystal.img, crystal.currX, crystal.currY,crystal.frameWidth,crystal.frameWidth,FunctionsOutput.get(0).x+130,currCrystalPosY,50,50);
@@ -636,7 +591,7 @@ public class CirSim {
     		
     		//ожидание окончания гифки и перезапуск уровня. См класс Gif
     		if(lose) {
-    	  		crystal.Play(75);
+    	  		crystal.Play();
     		}else{canToggle = true;}
 
 			cvcontext.drawImage(crystal.img, crystal.currX, crystal.currY,crystal.frameWidth,crystal.frameWidth,FunctionsOutput.get(0).x+130,currCrystalPosY,50,50);
@@ -704,16 +659,7 @@ public class CirSim {
     		NodeMapEntry() { node = -1; }
     		NodeMapEntry(int n) { node = n; }
     }
-    
-    private class WireInfo {
-    		WireElm wire;
-    		Vector<CircuitElm> neighbors;
-    		int post;
-    		WireInfo(WireElm w) {
-    		    wire = w;
-    		}
-    }
-     
+
     private class FindPathInfo {
     	 
     	static final int INDUCT  = 1;
@@ -1281,9 +1227,9 @@ public class CirSim {
 	private void calculateWireClosure() {
     	
     		int i;
-    		nodeMap = new HashMap<Point,NodeMapEntry>();
+    		nodeMap = new HashMap<>();
 //    		int mergeCount = 0;
-    		wireInfoList = new Vector<WireInfo>();
+    		//wireInfoList = new Vector<WireInfo>();
     		
     		for (i = 0; i != elmList.size(); i++) {
     			
@@ -1294,7 +1240,7 @@ public class CirSim {
     		    
     		    WireElm we = (WireElm) ce;
     		    we.hasWireInfo = false;
-    		    wireInfoList.add(new WireInfo(we));
+    		    //wireInfoList.add(new WireInfo(we));
     		    NodeMapEntry cn  = nodeMap.get(ce.getPost(0));
     		    NodeMapEntry cn2 = nodeMap.get(ce.getPost(1));
     		    
@@ -1708,26 +1654,11 @@ public class CirSim {
     }
 
 	private void centreCircuit() {
-    	
-	Rectangle bounds = getCircuitBounds();
-	
-    	double scale = 1;
-    	
-    	if (bounds != null)
-    	    // add some space on edges because bounds calculation is not perfect
-    	    scale = Math.min(circuitArea.width /(double)(bounds.width+140),
-    	    		circuitArea.height/(double)(bounds.height+100));
-    	scale = Math.min(scale, 1.5); // Limit scale so we don't create enormous circuits in big windows
 
     	// calculate transform so circuit fills most of screen
-    	transform[0] = transform[3] = scale;
+    	transform[0] = transform[3] = 1;
     	transform[1] = transform[2] = transform[4] = transform[5] = 0;
-    	
-    	if (bounds != null) {
-    	    transform[4] = (circuitArea.width  -  bounds.width *scale)/2 - bounds.x*scale;
-    	    transform[5] = (circuitArea.height -  bounds.height*scale)/2 - bounds.y*scale;
-    	}
-    	
+
     }
 
 // *****************************************************************
@@ -1776,26 +1707,6 @@ public class CirSim {
 		cvcontext.fillRect(-prevX/transform[0],-prevY/transform[0],cv.getWidth()/transform[0],cv.getHeight()/transform[0]);
 	}
 
-	private Rectangle getCircuitBounds() {
-    	
-    	int i;
-    	int minx = 1000, maxx = 0, miny = 1000, maxy = 0;
-    	
-    	for (i = 0; i != elmList.size(); i++) {
-    		CircuitElm ce = getElm(i);
-    		miny = min(ce.y, min(ce.y2, miny));
-    		maxy = max(ce.y, max(ce.y2, maxy));
-    	}
-
-    	if (minx > maxx) {return null;}
-
-    	return new Rectangle(minx, miny, maxx-minx, maxy-miny);
-    }
-
-	private int min(int a, int b) { return Math.min(a, b); }
-
-	private int max(int a, int b) { return Math.max(a, b); }
-        
     // convert screen coordinates to grid coordinates by inverting circuit transform
     private int inverseTransformX(double x) {
     	return (int) ((x-transform[4])/transform[0]);

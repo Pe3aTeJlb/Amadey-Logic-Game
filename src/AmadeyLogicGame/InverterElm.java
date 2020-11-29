@@ -35,15 +35,6 @@ class InverterElm extends CircuitElm {
 	
 	double timeStep = 5e-6;
 	
-	public InverterElm(int xx, int yy) {
-	    super(xx, yy);
-	    noDiagonal = true;
-	    slewRate = .5;
-	    
-	    // copy defaults from last gate edited
-	    highVoltage = GateElm.lastHighVoltage;
-	}
-	
 	public InverterElm(int xa, int ya, int xb, int yb, int f) {
 		
 	    super(xa, ya, xb, yb, f);

@@ -34,9 +34,7 @@ class OrGateElm extends GateElm {
 	public OrGateElm(int xa, int ya, int xb, int yb, int f,int intputcount) {
 	    super(xa, ya, xb, yb, f, intputcount);
 	}
-	
-	String getGateName() { return "OR gate"; }
-	
+
 	void setPoints() {
 		
 	    super.setPoints();
