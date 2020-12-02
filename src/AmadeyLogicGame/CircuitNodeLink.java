@@ -28,6 +28,8 @@ Copyright (C) Paul Falstad and Iain Sharp
 package AmadeyLogicGame;
 
 class CircuitNodeLink {
+
 	int num;
 	CircuitElm elm;
+
 }

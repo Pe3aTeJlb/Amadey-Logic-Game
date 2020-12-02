@@ -64,15 +64,20 @@ public class BasisConverter {
                 String[] t = tmp[i].split("\\*");
 
                 if(tmp[i].length()<=3){
+
                     funcName = tmp[i];
+
                 }else{
+
                     funcName = "~("+tmp[i]+")";
                     for(int j = 0; j < t.length; j++){
                         operands.add(t[j]);
                     }
                     operands.add("Nand");
                     operands.add(funcName);
+
                 }
+
                 terms.add(funcName);
                 buffFuncName += funcName + "*";
                 if(operands.size()!=0)list.add(operands);
@@ -225,7 +230,7 @@ public class BasisConverter {
             for(int i = 0; i < tmp.length; i++){
                
                 operands = new ArrayList<>();
-                String funcName = "";
+                String funcName;
                 String[] t = tmp[i].split("\\+");
 
                 if(tmp[i].length()<=3){
@@ -275,7 +280,7 @@ public class BasisConverter {
             vectorFunc.add(Integer.parseInt(Character.toString(functionVector[i][row])));
         }
 
-        log.append("Init vf "+ vectorFunc.toString()+nl);
+        log.append("Init vf ").append(vectorFunc.toString()).append(nl);
 
         int m = vectorFunc.size();
         ZhegalikinIndexes.add(vectorFunc.get(0));
@@ -319,7 +324,7 @@ public class BasisConverter {
                             }else{terms.add(operands.get(0));}
 
                             outFunction += tmp+"@";
-                            log.append(outFunction+nl);
+                            log.append(outFunction).append(nl);
                         }
                     }
 
@@ -330,7 +335,7 @@ public class BasisConverter {
            
             vectorFunc.remove(vectorFunc.size()-1);
 
-            log.append(vectorFunc.toString()+nl);
+            log.append(vectorFunc.toString()).append(nl);
 
             ZhegalikinIndexes.add(vectorFunc.get(0));
         }
@@ -362,7 +367,7 @@ public class BasisConverter {
                 }else{terms.add(operands.get(0));}
 
                 outFunction += tmp+"@";
-                log.append(outFunction+nl);
+                log.append(outFunction).append(nl);
         }
 
         outFunction = removeByIndex(outFunction, outFunction.length()-1);
@@ -386,10 +391,7 @@ public class BasisConverter {
         		}
         	}
 
-        log.append(ZhegalikinIndexes.toString()+nl+
-                outFunction+nl+
-                list.toString()+nl
-        );
+        log.append(ZhegalikinIndexes.toString()).append(nl).append(outFunction).append(nl).append(list.toString()).append(nl);
 
     }
 

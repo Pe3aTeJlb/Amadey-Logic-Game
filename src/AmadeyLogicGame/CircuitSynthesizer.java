@@ -67,20 +67,20 @@ public class CircuitSynthesizer {
 	
 	ArrayList<ArrayList<String>> list = new ArrayList<>();
 	
-	private Map<String,CircuitElm> dictionary = new HashMap<String,CircuitElm>();
+	private Map<String,CircuitElm> dictionary = new HashMap<>();
 	
-	public Vector<CircuitElm> elmList = new Vector<CircuitElm>();//все элементы схемы. Нужны для отрисовки
+	public Vector<CircuitElm> elmList = new Vector<>();//все элементы схемы. Нужны для отрисовки
 	
-	private ArrayList<String> splittedWires = new ArrayList<String>();//см логику соединения
+	private ArrayList<String> splittedWires = new ArrayList<>();//см логику соединения
 	
 	//Для удаления неиспользуемых входных переменных
 	private ArrayList<ArrayList<CircuitElm>> UnusedInputs = new ArrayList<>();
 	private ArrayList<String> UnusedVarNames = new ArrayList<>();
-	private ArrayList<ArrayList<String>> allInputs = new ArrayList<ArrayList<String>>(); 
+	private ArrayList<ArrayList<String>> allInputs = new ArrayList<>();
 	
 	//Для игровой логики
-	public ArrayList<SwitchElm> inElems = new ArrayList<SwitchElm>(); //список входных элементов
-	public ArrayList<CircuitElm> outElems = new ArrayList<CircuitElm>(); //список выходных элементов
+	public ArrayList<SwitchElm> inElems = new ArrayList<>(); //список входных элементов
+	public ArrayList<CircuitElm> outElems = new ArrayList<>(); //список выходных элементов
 
 	//AWL = Additional Wire Length
 	private final int AWL = 100;
@@ -93,7 +93,7 @@ public class CircuitSynthesizer {
 	
 	private int wireSplitPoint = 0; //x координата перелома провода
 	
-	private ArrayList<CircuitElm> LastLogElems = new ArrayList<CircuitElm>();//список последнего лог элемента подсхемы нужен для выравнивания платформ
+	private ArrayList<CircuitElm> LastLogElems = new ArrayList<>();//список последнего лог элемента подсхемы нужен для выравнивания платформ
 	
 	private BasisConverter converter = new BasisConverter();
 	private Factorisator_V_2 factorizator = new Factorisator_V_2();
@@ -106,19 +106,19 @@ public class CircuitSynthesizer {
     //Training
 	public void Synthesis(int w, int h) {
 		
-		sharedVars = new ArrayList<String>();	
+		sharedVars = new ArrayList<>();
 		
 		width = w;
 		height = h;
 			
 		int circCount = random(1,6);
 
-		log.append("Circ count "+ circCount + nl);
+		log.append("Circ count ").append(circCount).append(nl);
 
 
 		//minTrue = random(2,6)/10;
 		//maxTrue = minTrue+0.2f;
-		log.append("Circ count "+ circCount + nl + "maxT" + maxTrue+ nl);
+		log.append("Circ count ").append(circCount).append(nl).append("maxT").append(maxTrue).append(nl);
 		
 		for(int i = 0; i < circCount; i++) {
 			
@@ -156,16 +156,16 @@ public class CircuitSynthesizer {
 			funcCount =  random(1,4);
 			//funcCount = random(1,(int)Math.floor(0.5f*Math.log(circDifficult-0.5f)+2));
 
-			log.append(
-					"MDNF " + MDNF + nl+
-					"Factr "+ factorize + nl +
-					"Basis " + basis + nl +
-							"Function count " + funcCount + nl+
-							"Var count " + varCount+ nl
-			);
+			log.append("MDNF ").append(MDNF).append(nl).
+					append("Factr ").append(factorize).append(nl).
+					append("Basis ").append(basis).append(nl).
+					append("Function count ").append(funcCount).append(nl).
+					append("Var count ").append(varCount).append(nl);
+
 					//Add shared input
 					if(i>0 && i < circCount - 1 && circCount>1) {
-						log.append("Include shared vars" + nl);
+
+						log.append("Include shared vars").append(nl);
 
 						int n = random(0,1);
 						
@@ -200,7 +200,7 @@ public class CircuitSynthesizer {
 		height = h;
 	
 		//GetConfigurationFile();
-		sharedVars = new ArrayList<String>();	
+		sharedVars = new ArrayList<>();
 	
 		 MDNF = true;
 		 factorize = true;
@@ -211,12 +211,12 @@ public class CircuitSynthesizer {
 		 funcCount = 2;
 		 varCount = 3;
 
-		log.append(
-				"MDNF " + MDNF + nl+
-						"Basis " + basis + nl +
-						"Function count " + funcCount + nl+
-						"Var count " + varCount+ nl
-		);
+		log.append("MDNF ").
+				append(MDNF).append(nl).
+				append("Basis ").
+				append(basis).append(nl).
+				append("Function count ").append(funcCount).append(nl).
+				append("Var count ").append(varCount).append(nl);
 		
 		InitializeParametrs();
 		DeleteUnusedInputs();
@@ -229,7 +229,7 @@ public class CircuitSynthesizer {
 		
 		generator.callOnce = true;
 		
-		sharedVars = new ArrayList<String>();	
+		sharedVars = new ArrayList<>();
 		
 		width = w;
 		height = h;
@@ -244,12 +244,13 @@ public class CircuitSynthesizer {
 			maxTrue = 0.4f;
 		}
 
-		log.append("Circ count "+ circCount + nl + "maxT" + maxTrue + nl+nl);
+		log.append("Circ count ").append(circCount).append(nl).
+				append("maxT").append(maxTrue).append(nl).append(nl);
 		
 		for(int i = 0; i < circCount; i++) {
 			//dashCirc = 0;
 
-			log.append("Circ №"+i+nl+nl);
+			log.append("Circ №").append(i).append(nl).append(nl);
 
 			int Basis = 0;
 			if(circDifficult < 5) {
@@ -281,7 +282,7 @@ public class CircuitSynthesizer {
 			}else if(Basis == 2) {
 				//Костыль. Т.к. в первой схеме 1 подсхеме всегда 1, мы не можем использовать NOR
 				if(i==0){
-					System.out.println("fixed");
+					System.out.println("fixed cirsynth ");
 					basis = "Nand";
 				}else{
 					basis = "Nor";
@@ -298,19 +299,13 @@ public class CircuitSynthesizer {
 			varCount = (int)(Math.floor(0.0025f*Math.pow((circDifficult-2), 3)+2.9f));
 			funcCount =  (int)Math.floor(0.5f*Math.log(circDifficult-0.5f)+2);
 
-			log.append(
-					"MDNF " + MDNF + nl+
-							"Factr "+ factorize + nl +
-							"Basis " + basis + nl +
-							"Function count " + funcCount + nl+
-							"Var count " + varCount+ nl
-			);
+			log.append("MDNF ").append(MDNF).append(nl).append("Factr ").append(factorize).append(nl).append("Basis ").append(basis).append(nl).append("Function count ").append(funcCount).append(nl).append("Var count ").append(varCount).append(nl);
 
 			//Add shared input
 			if(i>0 && i < circCount - 1 && circCount>1 && circDifficult > 4) {
 						sharedVars.clear();
 
-						log.append("Include Shared Vars"+nl);
+						log.append("Include Shared Vars").append(nl);
 
 						int sharedVarsCount = random(1,varCount-2);
 							
@@ -330,10 +325,10 @@ public class CircuitSynthesizer {
 				if(sharedVars.isEmpty())lastElemPos = 0;
 				
 			}catch(Exception e){
-				log.append(e+nl);
+				log.append(e).append(nl);
 			}
 
-			log.append("End of circuit" + nl+nl);
+			log.append("End of circuit").append(nl).append(nl);
 
 		}
 		
@@ -409,17 +404,25 @@ public class CircuitSynthesizer {
         	freeSpace.x = NextStartPoint.x;
         
 	        if(basis.equals("Default")) {
+
 		        if(MDNF) {
+
 		        	if(factorize) {
+
 			        	factorizator.PrepareData(functions[i], varCount);
-			        	log.append("Factr out"+factorizator.output+nl);
+			        	log.append("Factr out").append(factorizator.output).append(nl);
 			        	shuntingYard.calculateExpression(factorizator.output);
-			        	log.append(shuntingYard.getLog()+nl);
+			        	log.append(shuntingYard.getLog()).append(nl);
+
 		        	}else {
+
 		        		shuntingYard.calculateMDNF(functions[i]);
-		        		log.append(shuntingYard.getLog()+nl);
+		        		log.append(shuntingYard.getLog()).append(nl);
+
 		        	}
+
 		        	list = shuntingYard.list;
+
 		        }
 		        else {
 		        	shuntingYard.calculateMKNF(functions[i]);
@@ -429,17 +432,17 @@ public class CircuitSynthesizer {
 	        }
 	        else if(basis.equals("Nor")) {
 	        	converter.ToNor(functions[i], MDNF);
-				log.append(converter.getLog()+nl);
+				log.append(converter.getLog()).append(nl);
 	        	list = converter.list;
 	        }
 	        else if(basis.equals("Nand")) {
 	        	converter.ToNand(functions[i], MDNF);
-	        	log.append(converter.getLog()+nl);
+	        	log.append(converter.getLog()).append(nl);
 	        	list = converter.list;
 	        }
 	        else if(basis.equals("Zhegalkin")) {
 	        	converter.ToZhegalkinPolynomial(generator.VectorFunctions,i,generator.VarNames);
-				log.append(converter.getLog()+nl);
+				log.append(converter.getLog()).append(nl);
 	        	list = converter.list;
 	        }
 	        
@@ -1044,7 +1047,7 @@ public class CircuitSynthesizer {
 	  				p = p.substring(1,p.length());
 	  			}
 
-	  			log.append(p+nl);
+	  			log.append(p).append(nl);
 	  			
 		  		int IndexToDelete = ((Integer.parseInt(p))-1)*2;
 		  		
@@ -1096,34 +1099,34 @@ public class CircuitSynthesizer {
   	private CircuitElm createCe(String marker, int x1, int y1, int x2, int y2, int f, int inputcount) {
     	
     	if(marker.equals("Wire")) {
-    		return (CircuitElm) new WireElm(x1, y1, x2, y2, f);
+    		return new WireElm(x1, y1, x2, y2, f);
     	}
     	if(marker.equals("*")) {
-        	return (CircuitElm) new AndGateElm(x1, y1, x2, y2, f, inputcount);
+        	return new AndGateElm(x1, y1, x2, y2, f, inputcount);
         }
     	if(marker.equals("Linput")) {
-    		return (CircuitElm) new LogicInputElm(x1, y1, x2, y2, f);
+    		return new LogicInputElm(x1, y1, x2, y2, f);
     	}
     	if(marker.equals("Loutput")) {
-    		return (CircuitElm) new LogicOutputElm(x1, y1, x2, y2, f);
+    		return new LogicOutputElm(x1, y1, x2, y2, f);
     	}
     	if(marker.equals("+")) {
-    		return (CircuitElm) new OrGateElm(x1, y1, x2, y2, f, inputcount);
+    		return new OrGateElm(x1, y1, x2, y2, f, inputcount);
     	}
     	if(marker.equals("Xor")) {
-    		return (CircuitElm) new XorGateElm(x1, y1, x2, y2, f, inputcount);
+    		return new XorGateElm(x1, y1, x2, y2, f, inputcount);
     	}
     	if(marker.equals("Nor")) {
-    		return (CircuitElm) new NorGateElm(x1, y1, x2, y2, f, inputcount);
+    		return new NorGateElm(x1, y1, x2, y2, f, inputcount);
     	}
     	if(marker.equals("Nand")) {
-    		return (CircuitElm) new NandGateElm(x1, y1, x2, y2, f, inputcount);
+    		return new NandGateElm(x1, y1, x2, y2, f, inputcount);
     	}
     	if(marker.equals("Invertor")) {
-    		return (CircuitElm) new InverterElm(x1, y1, x2, y2, f);
+    		return new InverterElm(x1, y1, x2, y2, f);
     	}
     	if(marker.equals("Platform")) {
-    		return (CircuitElm) new Platform(x1, y1, x2, y2, f);
+    		return new Platform(x1, y1, x2, y2, f);
     	}
     	else {return null;}
     	

@@ -114,8 +114,8 @@ public class CirSim {
 
 	private double[] transform;
     
- /////////////////////
-//Events
+
+	//Events
 
 	private double dragScreenX, dragScreenY;
     private CircuitElm mouseElm=null;
@@ -142,8 +142,8 @@ public class CirSim {
     private  HashMap<Point,NodeMapEntry> nodeMap;
 	private  HashMap<Point,Integer> postCountMap;
 
- ////////////////////////
-//Game logic vars and data struct
+
+	//Game logic vars and data struct
 
 	private Vector<CircuitElm> elmList;
     private ArrayList<String> currOutput; //Хранят текущее состояние выходов функций
@@ -171,25 +171,24 @@ public class CirSim {
 
     //Localization
 
-    //private Locale l = Locale.getDefault();
-	private final Locale l = Locale.forLanguageTag("ru_RU");
+
 	private final String bundelName = "Constants";
+	private final Locale l = Locale.getDefault();
+	//private final Locale l = Locale.forLanguageTag("en");
 	private Localizer localizer;
 
-	//Update and GIF Timers
+	//Update
 
 	private AnimationTimer update;
-	private Timer CrystalRestart;
-	private TimerTask CrystalRestartTask;
 
 	//Log
 
 	private final String nl = System.getProperty("line.separator");
 	private StringBuilder log = new StringBuilder();
 
-	////////////////////////
-///////Init/////////////
-
+	/**
+	Init
+	 */
 
 	public CirSim() {
 	}
@@ -199,7 +198,7 @@ public class CirSim {
 
 		theSim = this;
 
-		log.append("Log"+nl);
+		log.append("Log").append(nl);
 
 		localizer = new Localizer(bundelName, l);
 
@@ -371,24 +370,13 @@ public class CirSim {
 			}
 		};
 
-		//Необходим ля синхронизации появления нового кристалл и обноления платформы при рестарте
-		CrystalRestart = new Timer();
-		CrystalRestartTask = new TimerTask() {
-			@Override
-			public void run() {
-				crystal.RestartGif(1);
-				currOutputIndex = 0;
-				currCrystalPosY = FunctionsOutput.get(currOutputIndex).y - 80;
-			}
-		};
-
   	}
 
-  	//Game Logic
+	//Game logic
 
- ////////////////////////
-//Circuit Construction//
-
+	/**
+	 * Circuit cunstrucrion
+	 */
     public void Start(String gType){
 
 
@@ -421,7 +409,7 @@ public class CirSim {
 
 	  		log = new StringBuilder("Log of level "+level+nl);
 	  		log.append(v.getLog());
-			System.out.println(log);
+			//System.out.println(log);
 
 			elmList = v.elmList;
 			FunctionsOutput = v.outElems;
@@ -436,8 +424,9 @@ public class CirSim {
   		}
   	}
 
- // *****************************************************************
-//  Void Update	
+	/**
+	 * Void Update
+	 */
 
 	private void updateCircuit() {
 
@@ -468,8 +457,11 @@ public class CirSim {
 		);
 
 
-    	for (int i = 0; i != elmList.size(); i++) {
-    		
+		//Отрисовываем схему с конца, т.к. fx не может в нормальные слои, а у меня тут бага, что не все жирные точки соединений попадают в
+		//PostDrawList, поэтому пока так будет.
+
+    	//for (int i = 0; i != elmList.size(); i++) {
+		for (int i = elmList.size()-1; i >= 0; i--) {
     		if(printableCheckItem.isSelected()){
     			g.setColor(Color.BLACK);
     		}else {
@@ -481,7 +473,7 @@ public class CirSim {
     	    }catch(Exception ee) {
     	    	ee.printStackTrace();
 				System.out.println("exception while drawing " + ee);
-				log.append("exception while drawing " + ee+nl);
+				log.append("exception while drawing ").append(ee).append(nl);
     	    }
     		
     	}
@@ -500,23 +492,23 @@ public class CirSim {
 
 			currOutput = new ArrayList<>();
 
-			for(int i = 0; i<FunctionsOutput.size(); i++) {
-				String s = FunctionsOutput.get(i).volts[0] < 2.5 ? "0" : "1";
+			for (CircuitElm circuitElm : FunctionsOutput) {
+				String s = circuitElm.volts[0] < 2.5 ? "0" : "1";
 				currOutput.add(s);
 			}
 
-			log.append("curr out index " + currOutputIndex + nl);
+			log.append("curr out index ").append(currOutputIndex).append(nl);
 			System.out.println("curr out index " + currOutputIndex);
 
 			if(currOutputIndex < FunctionsOutput.size()) {
 
 				System.out.println("currOutput "+currOutput.toString());
-				log.append("currOutput "+currOutput+nl);
+				log.append("currOutput ").append(currOutput).append(nl);
 
 				//Условия поигрыша
 				if(currOutputIndex != FunctionsOutput.size()-1 && currOutput.get(currOutputIndex).equals("0") && currOutput.get(currOutputIndex+1).equals("0")) {
 
-					log.append("Game Over"+nl);
+					log.append("Game Over").append(nl);
 					System.out.println("Game Over");
 
 					//Ищем, сколько платформ кристал должен пролететь прежде чем разбиться
@@ -529,7 +521,7 @@ public class CirSim {
 
 					lose = true;
 
-					if(gameType == "Test")Score -= failPenalty;
+					if(gameType.equals("Test"))Score -= failPenalty;
 
 					crystal.RestartGif(30);
 
@@ -546,14 +538,14 @@ public class CirSim {
 					if (currOutputIndex == FunctionsOutput.size() - 1 && currOutput.get(currOutputIndex).equals("0")) {
 						currOutputIndex++;
 						System.out.println("new curr out index " + currOutputIndex);
-						log.append("new curr out index " + currOutputIndex + nl);
+						log.append("new curr out index ").append(currOutputIndex).append(nl);
 					}
 
 					//Переход на след уровень
 					if (currOutputIndex == FunctionsOutput.size()) {
 
 						currOutputIndex = 0;
-						log.append("You Won!" + nl);
+						log.append("You Won!").append(nl);
 						System.out.println("You Won!");
 						elmList.clear();
 						level++;
@@ -613,8 +605,6 @@ public class CirSim {
 		circuitArea = new Rectangle(0, 0, width, height);
 	}
 
-	//Game Logic
-	//also check update method
 	private void GameOverTrigger() {
 		refreshGameState = true;
 		tickCounter = 0;
@@ -646,23 +636,21 @@ public class CirSim {
 
 	private void Exit() {
 
-    	log.append("Exit"+nl);
+    	log.append("Exit").append(nl);
 		System.out.println("Exit");
 
 	}
 
-	//GameLogic End
+	/**
+	 * Solve circuit
+	 */
 
-
-
- // *****************************************************************
-//  SOLVE CIRCUIT
-    
-    private long  lastFrameTime, lastIterTime;
+	//private long  lastFrameTime;
+    private long  lastIterTime;
     private boolean converged;
 
 
-    private class NodeMapEntry {
+    private static class NodeMapEntry {
     		int node;
     		NodeMapEntry() { node = -1; }
     		NodeMapEntry(int n) { node = n; }
@@ -670,7 +658,7 @@ public class CirSim {
 
 	private class FindPathInfo {
 
-		static final int INDUCT = 1;
+		//static final int INDUCT = 1;
 		static final int VOLTAGE = 2;
 		static final int SHORT = 3;
 		static final int CAP_V = 4;
@@ -703,11 +691,13 @@ public class CirSim {
     			CircuitElm ce = getElm(i);
     			if (ce == firstElm)
     			    continue;
-    			if (type == INDUCT) {
+
+    			//if (type == INDUCT) {
     			    // inductors need a path free of current sources
     			    //if (ce instanceof CurrentElm)
     				//continue;
-    			}
+    			//}
+
     			if (type == VOLTAGE) {
     			    // when checking for voltage loops, we only care about voltage sources/wires/ground
     			    if (!(ce.isWire()))
@@ -840,7 +830,8 @@ public class CirSim {
 				for (j = 0; j != circuitMatrixFullSize; j++) {
 
 					RowInfo ri = circuitRowInfo[j];
-					double res = 0;
+					double res;
+
 					if (ri.type == RowInfo.ROW_CONST)
 						res = ri.value;
 					else
@@ -895,7 +886,7 @@ public class CirSim {
     	    lit = tm;
     	    // Check whether enough time has elapsed to perform an *additional* iteration after
     	    // those we have already completed.
-    	    if ((iter+1)*1000 >= steprate*(tm-lastIterTime) || (tm-lastFrameTime > 500))
+    	    if ((iter+1)*1000 >= steprate*(tm-lastIterTime) || (tm > 500))
     		break;
     	    //if (!simRunning)
     		//break;
@@ -909,19 +900,18 @@ public class CirSim {
 	private void analyzeCircuit() {
     	 
     	 if (elmList.isEmpty()) {
-    		    postDrawList = new Vector<Point>();
-    		    badConnectionList = new Vector<Point>();
+    		    postDrawList = new Vector<>();
+    		    badConnectionList = new Vector<>();
     		    return;
-    		}
-    		//stopMessage = null;
-    		//stopElm = null;
+    	 }
+
     		int i, j;
     		int vscount = 0;
-    		nodeList = new Vector<CircuitNode>();
-    		postCountMap = new HashMap<Point,Integer>();
-    		boolean gotGround = false;
-    		boolean gotRail = false;
-    		CircuitElm volt = null;
+    		nodeList = new Vector<>();
+    		postCountMap = new HashMap<>();
+    		//boolean gotGround = false;
+    		//boolean gotRail = false;
+    		//CircuitElm volt = null;
 
     		calculateWireClosure();
     		
@@ -942,15 +932,22 @@ public class CirSim {
 
     		// if no ground, and no rails, then the voltage elm's first terminal
     		// is ground
-    	
-    		if (!gotGround && volt != null && !gotRail) {
-    		} 
+
+			//if(true){
+				CircuitNode cn = new CircuitNode();
+				nodeList.addElement(cn);
+			//}
+
+		/*
+    		if (gotGround && volt == null && gotRail) {
+
+    		}
     		else {
     		    // otherwise allocate extra node for ground
     		    CircuitNode cn = new CircuitNode();
     		    nodeList.addElement(cn);
     		}
-
+*/
     		// allocate nodes and voltage sources
     		//LabeledNodeElm.resetNodeList();
     		for (i = 0; i != elmList.size(); i++) {
@@ -971,7 +968,7 @@ public class CirSim {
     			// of nodes changes circuit behavior and breaks backward compatibility;
     			// the code below to connect unconnected nodes may connect a different node to ground) 
     			if (cln == null || cln.node == -1) {
-    			    CircuitNode cn = new CircuitNode();
+    			    cn = new CircuitNode();
     			    CircuitNodeLink cnl = new CircuitNodeLink();
     			    cnl.num = j;
     			    cnl.elm = ce;
@@ -996,7 +993,7 @@ public class CirSim {
     			}
     		    }
     		    for (j = 0; j != inodes; j++) {
-	    			CircuitNode cn = new CircuitNode();
+	    			cn = new CircuitNode();
 	    			cn.internal = true;
 	    			CircuitNodeLink cnl = new CircuitNodeLink();
 	    			cnl.num = j+posts;
@@ -1149,7 +1146,7 @@ public class CirSim {
     		    // because those are optimized out, so the findPath won't work)
     		    
     		    if (ce.getPostCount() == 2) {
-    			if (ce.isWire() && !(ce instanceof WireElm)) {
+    				if (ce.isWire() && !(ce instanceof WireElm)) {
     			    FindPathInfo fpi = new FindPathInfo(FindPathInfo.VOLTAGE, ce,
     							    ce.getNode(1));
     			    if (fpi.findPath(ce.getNode(0))) {
@@ -1199,8 +1196,8 @@ public class CirSim {
     		}
     		
     		if (!simplifyMatrix(matrixSize)) {return;}
-    		    
-    		
+
+
 
     		// check if we called stop()
     		if (circuitMatrix == null)
@@ -1214,7 +1211,7 @@ public class CirSim {
     			return;
     		    }
     		}
-    		
+
     		// show resistance in voltage sources if there's only one
     		//boolean gotVoltageSource = false;
     		//showResistanceInVoltageSources = true;
@@ -1507,7 +1504,7 @@ public class CirSim {
     }
 
 	private CircuitNode getCircuitNode(int n) {
-    		if (n >= nodeList.size()) {return null;}
+    		//if (n >= nodeList.size()) {return null;}
     		return nodeList.elementAt(n);
     }
 
@@ -1536,9 +1533,8 @@ public class CirSim {
 						//continue;
 						// does this post intersect elm's bounding box?
 
-						if (ce != null)
-							if (!ce.boundingBox.contains(cn.x, cn.y))
-								continue;
+						if (!ce.boundingBox.contains(cn.x, cn.y))
+							continue;
 
 						int k;
 						// does this post belong to the elm?
@@ -1637,8 +1633,9 @@ public class CirSim {
 	 	}
     }
 
-// *****************************************************************
-//  BEHAVIOUR
+	/**
+	BEHAVIOUR
+	*/
 
 	private void zoomCircuit(double dy) {
 
@@ -1676,8 +1673,9 @@ public class CirSim {
 
     }
 
-// *****************************************************************
-//  MOUSE EVENTS
+	/**
+	MOUSE EVENTS
+	*/
 
 	private void setMouseElm(CircuitElm ce) {
     	if (ce!=mouseElm) {
@@ -1698,9 +1696,9 @@ public class CirSim {
     	}
     }
 
-// *****************************************************************
-//  TOOLS    
-
+	/**
+	  TOOLS
+	 */
 	private void clearRect40K()
 	{
 
@@ -1732,7 +1730,7 @@ public class CirSim {
     }
     
     private CircuitElm getElm(int n) {
-		if (n >= elmList.size()){return null;}
+		//if (n >= elmList.size()){return null;}
 		return elmList.elementAt(n);
     }
     

@@ -36,8 +36,6 @@ abstract class GateElm extends CircuitElm {
 	int inputCount = 2;
 	boolean lastOutput;
 	double highVoltage;
-	public static double lastHighVoltage = 5;
-	static boolean lastSchmitt = false;
 
 	Random random;
 	

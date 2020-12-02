@@ -84,14 +84,14 @@ public class LogicFunctionGenerator {
         
     	if(sharedVars.size()>0) {
 
-            log.append("Shared var length"+ sharedVars.size() +nl);
+            log.append("Shared var length").append(sharedVars.size()).append(nl);
 
     		for(int i = 0; i < sharedVars.size(); i++) {
     			VarNames[i] = sharedVars.get(i);
-    			log.append(sharedVars.get(i)+nl);
+    			log.append(sharedVars.get(i)).append(nl);
     		}
 
-    		log.append("End of shared vars"+nl);
+    		log.append("End of shared vars").append(nl);
     	}
 
     	//Создаём имена переменных
@@ -102,7 +102,7 @@ public class LogicFunctionGenerator {
 	            VarNames[i] = varName;
 	            lastVarIndex++;
         	}
-        	log.append(VarNames[i]+nl);
+        	log.append(VarNames[i]).append(nl);
         }
 
         
@@ -116,7 +116,7 @@ public class LogicFunctionGenerator {
             	VectorFunctions[0][i] = '1';
             	callOnce = false;
 
-            	 log.append("Function №"+ i + nl+ "1"+nl);
+            	 log.append("Function №").append(i).append(nl).append("1").append(nl);
             	 
             	 for(int k = 0; k< totalVarCount-1; k++) {
             		 prevFunc.add("0");
@@ -124,7 +124,7 @@ public class LogicFunctionGenerator {
             	 
             }else {
             	VectorFunctions[0][i] = '0';
-                log.append("Function №"+ i + nl+ "0"+nl);
+                log.append("Function №").append(i).append(nl).append("0").append(nl);
             }
             Generator(totalVarCount);
  
@@ -132,9 +132,9 @@ public class LogicFunctionGenerator {
             for(int j = 1; j < totalVarCount; j++)
             {
                 VectorFunctions[j][i] = buffVector[j][0];
-                log.append(VectorFunctions[j][i] +nl);
+                log.append(VectorFunctions[j][i]).append(nl);
             }
-            log.append("End of Function"+nl);
+            log.append("End of Function").append(nl);
         }
         
 
@@ -180,7 +180,7 @@ public class LogicFunctionGenerator {
 
     }
 
-    private static int randomBit(long seed){
+    private int randomBit(long seed){
         return (int) (Math.random() * ++seed);
     }
 

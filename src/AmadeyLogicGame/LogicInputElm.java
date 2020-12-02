@@ -67,6 +67,7 @@ class LogicInputElm extends SwitchElm {
 	    //drawDots(g, point1, lead1, curcount);
 		g.setColor(whiteColor);
 	    drawPosts(g);
+
 	    g.setFont(oldf);
 	    
 	}

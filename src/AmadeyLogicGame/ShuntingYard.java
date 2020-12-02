@@ -38,7 +38,6 @@ public class ShuntingYard {
     public ShuntingYard(){
     }
 
-
 	/**
      * Основные математические операции и их приоритеты.
      *
@@ -79,7 +78,7 @@ public class ShuntingYard {
      * @param rightBracket закрывающая скобка.
      * @return преобразованное выражение в ОПН.
      */
-    public static String sortingStation(String expression, Map<String, Integer> operations, String leftBracket,
+    private static String sortingStation(String expression, Map<String, Integer> operations, String leftBracket,
                                         String rightBracket) {
 
         if (expression == null || expression.length() == 0)
@@ -190,7 +189,7 @@ public class ShuntingYard {
      * Приведенные операторы определены в константе {@link #MAIN_MATH_OPERATIONS}.
      * @return преобразованное выражение в ОПН.
      */
-    public static String sortingStation(String expression, Map<String, Integer> operations) {
+    private static String sortingStation(String expression, Map<String, Integer> operations) {
         return sortingStation(expression, operations, "(", ")");
     }
 
@@ -273,7 +272,7 @@ public class ShuntingYard {
     	 String rpn = sortingStation(expression, MAIN_MATH_OPERATIONS);
          StringTokenizer tokenizer = new StringTokenizer(rpn, " ");
 
-         log.append(rpn+nl);
+         log.append(rpn).append(nl);
 
          Stack<String> stack = new Stack<>();
 
@@ -298,17 +297,7 @@ public class ShuntingYard {
 
           */
 
-        log.append(nl+ "Shunting Yard"+nl+
-                "How to read"+nl+
-                "New iter - means new iteration"+nl+
-                "Current stack"+nl+
-                "prev stack size"+nl+
-                "current stack size"+nl+
-                "operand 1"+nl+
-                "operand 2"+nl+
-                "current operation"+nl+
-                "prev operation"+nl
-                );
+        log.append(nl).append("Shunting Yard").append(nl).append("How to read").append(nl).append("New iter - means new iteration").append(nl).append("Current stack").append(nl).append("prev stack size").append(nl).append("current stack size").append(nl).append("operand 1").append(nl).append("operand 2").append(nl).append("current operation").append(nl).append("prev operation").append(nl);
          
          while (tokenizer.hasMoreTokens()) {
 
@@ -323,30 +312,22 @@ public class ShuntingYard {
                      prevOperation = token;
                  }
 
-                 log.append("New iter"+nl+
-                         stack+nl+
-                         prevStackSize+nl+
-                         startStackSize+nl
-                 );
+                 log.append("New iter").append(nl).append(stack).append(nl).append(prevStackSize).append(nl).append(startStackSize).append(nl);
 
                  startStackSize = stack.size();
                  String operand2 = stack.pop();
                  String operand1 = stack.empty() ? "" : stack.pop();
 
-                 log.append(operand1+nl+
-                         operand2+nl+
-                         token+nl+
-                         "prev op"+prevOperation+nl
-                 );
+                 log.append(operand1).append(nl).append(operand2).append(nl).append(token).append(nl).append("prev op").append(prevOperation).append(nl);
 
                  if(token.equals(prevOperation)){
 
-                     log.append("Like prev"+nl);
+                     log.append("Like prev").append(nl);
                      if(operands.size()>0 && !list.contains(operands)){list.add(operands);}
 
                      if(newTerm>=2){
 
-                         log.append("New term"+nl);
+                         log.append("New term").append(nl);
 
                          if(term.length()>0 && (term.charAt(term.length()-1) == '*' || term.charAt(term.length()-1) == '+'))term = removeByIndex(term, term.length()-1);
 
@@ -361,10 +342,11 @@ public class ShuntingYard {
                          list.add(operands);
                          operands.add(operand1);
                          operands.add(operand2);
+
                          term = "";
                          term = operand1 + token + operand2;
 
-                         log.append("    "+operands+nl);
+                         log.append("    ").append(operands).append(nl);
 
                          stack.push(term);
                          newTerm=0;
@@ -375,13 +357,13 @@ public class ShuntingYard {
                          if(startStackSize>prevStackSize){
                         // if(prevStackSize <= stack.size()-2){
 
-                             log.append("Operands were added to stack"+nl);
+                             log.append("Operands were added to stack").append(nl);
 
                              operands.add(operand2);
                              if(term.length()>2){term += token+operand2;}
                              else {term += token+operand1;}
 
-                             log.append("    " + operands+nl);
+                             log.append("    ").append(operands).append(nl);
 
                              if(term.length()>2){if(term.charAt(term.length()-1) == '*' || term.charAt(term.length()-1) == '+')term = removeByIndex(term, term.length()-1);}
                              stack.push(term);
@@ -392,13 +374,13 @@ public class ShuntingYard {
                          }
                          else{
 
-                             log.append("Stack saw shifted left"+nl);
+                             log.append("Stack saw shifted left").append(nl);
 
                              operands.add(operand1);
                              if(term.length()>2)if(term.charAt(term.length()-1) == '*' || term.charAt(term.length()-1) == '+'){term += operand1;}
                              else {term += token+operand1;}
 
-                             log.append("    "+operands+nl);
+                             log.append("    ").append(operands).append(nl);
 
                              // String NewOperand = operand1.concat(token+operand2);
                              //stack.push(NewOperand);
@@ -416,13 +398,13 @@ public class ShuntingYard {
 
                  }else{
 
-                     log.append("Not like prev"+nl);
+                     log.append("Not like prev").append(nl);
 
                      if(term.length()>2){if(term.charAt(term.length()-1) == '*' || term.charAt(term.length()-1) == '+')term = removeByIndex(term, term.length()-1);}
                      if(!operands.contains(prevOperation) && operands.size()>=2)operands.add(prevOperation);
                      if(!operands.contains(term) && operands.size()>=2)operands.add(term);
 
-                     log.append("Result list "+ operands+nl);
+                     log.append("Result list ").append(operands).append(nl);
 
                      term = "";
 
@@ -430,9 +412,9 @@ public class ShuntingYard {
                      operands = new ArrayList<>();
                      list.add(operands);
 
-                     log.append("New list"+nl);
+                     log.append("New list").append(nl);
 
-                     String NewOperand = "";
+                     String NewOperand;
 
                      if(stack.size()<=2){
 
@@ -448,7 +430,7 @@ public class ShuntingYard {
                          newTerm=0;
                          prevOperation = token;
 
-                         log.append(operands+nl);
+                         log.append(operands).append(nl);
 
                      }
                      else {
@@ -467,7 +449,7 @@ public class ShuntingYard {
                          newTerm=0;
                          prevOperation = token;
 
-                         log.append(term+nl);
+                         log.append(term).append(nl);
                      }
                  }
              }
@@ -476,11 +458,7 @@ public class ShuntingYard {
          operands.add(prevOperation);
          operands.add(term);
 
-         log.append(
-                 operands.toString()+nl+
-                         list.toString()+nl+
-                         "RPN "+rpn+nl
-         );
+         log.append(operands.toString()).append(nl).append(list.toString()).append(nl).append("RPN ").append(rpn).append(nl);
 
     }
     

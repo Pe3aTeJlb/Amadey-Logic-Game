@@ -47,8 +47,6 @@ public class Graphics {
 		    if (color != null) {
 		      context.setStroke(color);
 		      context.setFill(color);
-		    } else {
-		      //System.out.println("Ignoring null-Color");
 		    }
 		    lastColor=color;
 

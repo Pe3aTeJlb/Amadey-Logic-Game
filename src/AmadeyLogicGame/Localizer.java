@@ -32,7 +32,7 @@ import java.util.ResourceBundle;
 
 public class Localizer {
 
-    public ResourceBundle res;
+    private ResourceBundle res;
 
     Localizer(String bundleName, Locale l){
         res = ResourceBundle.getBundle(bundleName, l);
