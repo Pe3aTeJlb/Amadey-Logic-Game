@@ -105,9 +105,7 @@ class Platform extends CircuitElm{
 				    highVol = false;
 				    prevVal = 0;
 	    	}
-	    	
-	    	
-		    
+
 	    }else if(prevVal == 5 && s.equals("0")){
 	    	
 	    	if(sim.tickCounter>5) {

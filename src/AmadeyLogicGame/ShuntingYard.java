@@ -263,7 +263,6 @@ public class ShuntingYard {
      * плавающей точкой, четыре основных математических операндов.
      *
      * @param expression выражение.
-     * @return результат вычисления.
      */
     public void calculateExpression(String expression) {
     	

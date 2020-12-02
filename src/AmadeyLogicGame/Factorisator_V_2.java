@@ -102,7 +102,7 @@ public class Factorisator_V_2 {
             for(int m = l; m<operands.size(); m++){
                 if(operands.get(m).equals(buffer[z])==true && z<buffer.length){
                     binaryString += "1";
-                    if(z!=buffer.length-1){z+=1;};
+                    if(z!=buffer.length-1){z+=1;}
                 }else if(operands.get(m).equals(buffer[z])==false || m>buffer.length) {
                     binaryString += "0";
                 }

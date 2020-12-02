@@ -386,10 +386,10 @@ public class CircuitSynthesizer {
         allInputs.add(lst);
 		CreateInputElm(generator.VarNames);
         
-		String functions[] = sol.getSolution().split("\n");
+		String[] functions = sol.getSolution().split("\n");
 		
 		for(int i = 0; i<functions.length; i++) {
-	      		log.append(functions[i]+nl);
+	      		log.append(functions[i]).append(nl);
 	      }
 		log.append(nl);
 		
@@ -637,7 +637,7 @@ public class CircuitSynthesizer {
 					for(int j = 0; j<list.get(i).size(); j++) {
 						ll+=list.get(i).get(j) + "  ";
 					}
-					log.append(ll+nl);
+					log.append(ll).append(nl);
 
 				if(!dictionary.containsKey(blockName)) {
 				
@@ -726,12 +726,12 @@ public class CircuitSynthesizer {
 							}
 							else 
 							{
-								log.append("He he he, error somewhere/ line 142 " + list.get(i).get(j)+nl);
+								log.append("He he he, error somewhere/ line 142 ").append(list.get(i).get(j)).append(nl);
 								ConnectElements(dictionary.get(list.get(i).get(j)), dictionary.get(blockName),list.get(i).get(j),false,false);
 							}
 					  }
 
-					log.append("End of block"+nl);
+					log.append("End of block").append(nl);
 				}
 				
 		}
@@ -754,7 +754,7 @@ public class CircuitSynthesizer {
 		LastLogElems.add(dictionary.get(blockName));
 		//CreateCircuitOutput(blockName);
 
-		log.append("End of subCirc"+nl+nl);
+		log.append("End of subCirc").append(nl).append(nl);
 	}
 	
 	/*
@@ -1034,7 +1034,7 @@ public class CircuitSynthesizer {
 	
   	private void DeleteUnusedInputs() {
 
-		log.append("unused vars "+UnusedVarNames.toString()+nl);
+		log.append("unused vars ").append(UnusedVarNames.toString()).append(nl);
   		
   		if(UnusedVarNames.size()>0) {
   		

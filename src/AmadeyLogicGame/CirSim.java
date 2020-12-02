@@ -462,9 +462,10 @@ public class CirSim {
 
     	//for (int i = 0; i != elmList.size(); i++) {
 		for (int i = elmList.size()-1; i >= 0; i--) {
-    		if(printableCheckItem.isSelected()){
+
+			if(printableCheckItem.isSelected()){
     			g.setColor(Color.BLACK);
-    		}else {
+    		}else{
     			g.setColor(Color.WHITE);
     		}
     		
@@ -475,7 +476,7 @@ public class CirSim {
 				System.out.println("exception while drawing " + ee);
 				log.append("exception while drawing ").append(ee).append(nl);
     	    }
-    		
+
     	}
     	
     	for (int i = 0; i != postDrawList.size(); i++){
