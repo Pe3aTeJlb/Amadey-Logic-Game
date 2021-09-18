@@ -27,6 +27,10 @@ Copyright (C) Paul Falstad and Iain Sharp
 
 package AmadeyLogicGame;
 
+import AmadeyLogicGame.Util.IconsManager;
+import AmadeyLogicGame.Util.LC_gui;
+
+import AmadeyLogicGame.Util.Localizer;
 import javafx.animation.AnimationTimer;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
@@ -36,6 +40,7 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
+import javafx.stage.Stage;
 
 import java.util.*;
 
@@ -170,12 +175,8 @@ public class CirSim {
     private final int maxLevelCount = 10;
 
     //Localization
+	private final Localizer lc = LC_gui.getInstance();
 
-
-	private final String bundelName = "Constants";
-	private final Locale l = Locale.getDefault();
-	//private final Locale l = Locale.forLanguageTag("en");
-	private Localizer localizer;
 
 	//Update
 
@@ -200,67 +201,69 @@ public class CirSim {
 
 		log.append("Log").append(nl);
 
-		localizer = new Localizer(bundelName, l);
-
 	 	transform = new double[6];
 	 
 	 	CircuitElm.initClass(this);
 	 	elmList = new Vector<>();
 
-		editMenu.setText(localizer.Localize("Edit"));
+		editMenu.textProperty().bind(lc.createStringBinding("Edit"));
 
-		centerCircItem.setText(localizer.Localize("CenterCirc"));
+		centerCircItem.textProperty().bind(lc.createStringBinding("CenterCirc"));
 		centerCircItem.setOnAction(event -> centreCircuit());
-		zoomItem.setText(localizer.Localize("Zoom100"));
+		zoomItem.textProperty().bind(lc.createStringBinding("Zoom100"));
 		zoomItem.setOnAction(event -> setCircuitScale(1));
-		zoomInItem.setText(localizer.Localize("ZoomIn"));
+		zoomInItem.textProperty().bind(lc.createStringBinding("ZoomIn"));
 		zoomInItem.setOnAction(event -> zoomCircuit(20));
-		zoomOutItem.setText(localizer.Localize("ZoomOut"));
+		zoomOutItem.textProperty().bind(lc.createStringBinding("ZoomOut"));
 		zoomOutItem.setOnAction(event -> zoomCircuit(-20));
 
 
-		optionsMenu.setText(localizer.Localize("options"));
+		optionsMenu.textProperty().bind(lc.createStringBinding("options"));
 
-		printableCheckItem.setText(localizer.Localize("WBack"));
-		alternativeColorCheckItem.setText(localizer.Localize("AltColor"));
+		printableCheckItem.textProperty().bind(lc.createStringBinding("WBack"));
+		alternativeColorCheckItem.textProperty().bind(lc.createStringBinding("AltColor"));
 		alternativeColorCheckItem.setOnAction(event -> CircuitElm.setColorScale(alternativeColorCheckItem.isSelected()));
 
-		toolsMenu.setText(localizer.Localize("Tools"));
-		regenCircItem.setText(localizer.Localize("Regen"));
+		toolsMenu.textProperty().bind(lc.createStringBinding("Tools"));
+		regenCircItem.textProperty().bind(lc.createStringBinding("Regen"));
 		regenCircItem.setOnAction(event -> GenerateCircuit());
-		lvlUpItem.setText(localizer.Localize("LevelUp"));
+		lvlUpItem.textProperty().bind(lc.createStringBinding("LevelUp"));
 		lvlUpItem.setOnAction(event -> {
 			level+=1;
 			GenerateCircuit();
 		});
 
-		aboutMenu.setText(localizer.Localize("About"));
-		rulesItem.setText(localizer.Localize("Rules"));
+		aboutMenu.textProperty().bind(lc.createStringBinding("About"));
+		rulesItem.textProperty().bind(lc.createStringBinding("Rules"));
 		rulesItem.setOnAction(event -> {
 			Alert alert = new Alert(AlertType.INFORMATION);
-			alert.setTitle(localizer.Localize("Rules"));
-			alert.setHeaderText(localizer.Localize("Rules"));
-			alert.setContentText(localizer.Localize("Rules"));
+			alert.setTitle(lc.get("RulesTitle"));
+			alert.setHeaderText(lc.get("Rules"));
+			alert.setContentText(lc.get("RulesBody"));
+
+			((Stage) alert.getDialogPane().getScene().getWindow()).getIcons().add(IconsManager.AmadayLogicGame);
 
 			alert.showAndWait();
 		});
-		devItem.setText(localizer.Localize("Developers"));
+		devItem.textProperty().bind(lc.createStringBinding("Developers"));
 		devItem.setOnAction(event -> {
 			Alert alert = new Alert(AlertType.INFORMATION);
-			alert.setTitle(localizer.Localize("Developers"));
-			alert.setHeaderText(localizer.Localize("Developers"));
-			alert.setContentText(localizer.Localize("Developers"));
+			alert.setTitle(lc.get("DevelopersTitle"));
+			alert.setHeaderText("A Pplos Studio Game");
+			alert.setContentText(lc.get("DevelopersBody"));
+
+			((Stage) alert.getDialogPane().getScene().getWindow()).getIcons().add(IconsManager.AmadayLogicGame);
 
 			alert.showAndWait();
 		});
 
-		backToMenu.setText(localizer.Localize("ToMenu"));
+		backToMenu.textProperty().bind(lc.createStringBinding("ToMenu"));
 		backToMenu.setOnAction(event -> {
 			//Todo: Menu?
 		});
 		backToMenu.hide();
 
-		infoMenu.setText(localizer.Localize("Score")+ " " + (int)Score);
+		infoMenu.setText(lc.get("Score")+ " " + (int)Score);
 
 		cv.setOnMousePressed(event -> {
 
@@ -365,7 +368,7 @@ public class CirSim {
 			public void handle(long now) {
 				Score -= penaltyPerFrame;
 				TimeSpend += 0.015;
-				infoMenu.setText(localizer.Localize("Score") + " " + (int)Score);
+				infoMenu.setText(lc.get("Score") + " " + (int)Score);
 				updateCircuit();
 			}
 		};
@@ -377,9 +380,9 @@ public class CirSim {
 	/**
 	 * Circuit cunstrucrion
 	 */
-    public void Start(String gType){
+    public void Start(Stage stage, String gType){
 
-
+    	stage.setOnHidden(event -> update.stop());
 
         gameType = gType;
 

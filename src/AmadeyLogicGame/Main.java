@@ -24,6 +24,8 @@ Copyright (C) Pplos Studio
 
 package AmadeyLogicGame;
 
+import AmadeyLogicGame.Util.IconsManager;
+import AmadeyLogicGame.Util.LC_gui;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -42,9 +44,10 @@ public class Main extends Application {
         FXMLLoader loader =  new FXMLLoader(getClass().getResource("ALG.fxml"));
         Parent root = loader.load();
         CirSim sim = loader.getController();
-        sim.Start("Test");
+        sim.Start(primaryStage, "Test");
 
-        //primaryStage.setTitle("Hello World");
+        primaryStage.titleProperty().bind(LC_gui.getInstance().createStringBinding("Title"));
+        primaryStage.getIcons().add(IconsManager.AmadayLogicGame);
         primaryStage.setScene(new Scene(root, 800, 600));
         primaryStage.show();
 

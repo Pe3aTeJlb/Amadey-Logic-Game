@@ -24,6 +24,7 @@ Copyright (C) Pplos Studio
 
 package AmadeyLogicGame;
 
+import AmadeyLogicGame.Util.IconsManager;
 import javafx.animation.AnimationTimer;
 import javafx.scene.image.Image;
 
@@ -50,9 +51,8 @@ public class Gif {
 		frameCount = fCount;
 		
 		nextX = currX + frameWidth;
-				
-		String tmp =  fileName + ".png";
-		img = new Image(tmp);
+
+		img = IconsManager.getImage(fileName+ ".png");
 		
 	}
 
