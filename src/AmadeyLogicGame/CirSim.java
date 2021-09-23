@@ -33,12 +33,14 @@ import AmadeyLogicGame.Util.LC_gui;
 import AmadeyLogicGame.Util.Localizer;
 import javafx.animation.AnimationTimer;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
@@ -422,7 +424,6 @@ public class CirSim {
 			crystal = new Gif("GIF", 1024, 1024, 128, 1);
   		}
   		else {
-  			
   			Exit();
   		}
   	}
@@ -639,6 +640,15 @@ public class CirSim {
 	}
 
 	private void Exit() {
+
+		Alert alert = new Alert(AlertType.INFORMATION);
+		alert.setTitle(lc.get("Title"));
+		alert.setHeaderText(lc.get("TheEnd"));
+
+		alert.getDialogPane().setContent(IconsManager.getImageView("Shrek.png"));
+		((Stage) alert.getDialogPane().getScene().getWindow()).getIcons().add(IconsManager.AmadayLogicGame);
+
+		alert.showAndWait();
 
     	log.append("Exit").append(nl);
 		System.out.println("Exit");
