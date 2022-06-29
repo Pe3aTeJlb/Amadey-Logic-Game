@@ -33,8 +33,8 @@ import javafx.scene.text.Font;
 
 public class Graphics {
 	
-	GraphicsContext context;
-	int currentFontSize;
+	public GraphicsContext context;
+	public int currentFontSize;
 	Font currentFont = null;
 	Color lastColor;
 	
@@ -101,14 +101,14 @@ public class Graphics {
 		  }
 	  }
 	  
-	  Font getFont(){
+	  public Font getFont(){
 		  return currentFont;
 	  }
 	  
-	  static int distanceSq(int x1, int y1, int x2, int y2) {
+	  public static int distanceSq(int x1, int y1, int x2, int y2) {
 	    	x2 -= x1;
 	    	y2 -= y1;
 	    	return x2*x2+y2*y2;
-	   }
+	  }
 	   
 }

@@ -24,7 +24,7 @@ Copyright (C) Pplos Studio
 
 package AmadeyLogicGame;
 
-import AmadeyLogicGame.Util.IconsManager;
+import AmadeyLogicGame.util.IconsManager;
 import javafx.animation.AnimationTimer;
 import javafx.scene.image.Image;
 
@@ -39,7 +39,7 @@ public class Gif {
 	public boolean isPlaying = false;
 	public int currX, currY, nextX, nextY;
 
-	Gif(String file, int w, int h, int frameW, int fCount){
+	public Gif(String file, int w, int h, int frameW, int fCount){
 
 		fileName = file;
 		
@@ -57,12 +57,12 @@ public class Gif {
 	}
 
 	public AnimationTimer timer = new AnimationTimer() {
+
 		@Override
 		public void handle(long now) {
+
 			if (currX < width && currFrame < frameCount) {
-
 				nextX += frameWidth;
-
 			}else {
 				timer.stop();
 				gifEnded = true;
@@ -78,6 +78,7 @@ public class Gif {
 			currX = nextX;
 			currY = nextY;
 		}
+
 	};
 
 	
