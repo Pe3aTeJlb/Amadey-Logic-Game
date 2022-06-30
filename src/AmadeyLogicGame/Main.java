@@ -403,12 +403,14 @@ public class Main extends Application {
 
             if(debug) {
 
+              //  System.out.println(inverseTransformX((int)event.getX()) + " " + inverseTransformY((int)event.getY()));
+
                 if (event.getButton() == MouseButton.MIDDLE) {
                     generateCircuit();
                 }
 
                 if (event.getButton() == MouseButton.SECONDARY) {
-                    level += 1;
+                    if(isTest)level += 1;
                     generateCircuit();
                 }
 
@@ -447,7 +449,7 @@ public class Main extends Application {
             @Override
             public void handle(long now) {
 
-                Score -= penaltyPerFrame;
+                if(isTest)Score -= penaltyPerFrame;
                 TimeSpend += 0.015;
                 infoMenu.setText(lc.get("Score") + " " + (int)Score);
                 updateCircuit();
@@ -472,6 +474,7 @@ public class Main extends Application {
 
         gamePause = false;
         lose = false;
+        level = 1;
 
         mainmenuVBox.setDisable(true);
         mainmenuVBox.setVisible(false);
@@ -496,6 +499,12 @@ public class Main extends Application {
 
         if(debug) {
             System.out.println(log);
+        }
+
+        //Update circuit 10 times before game start to populate circ volts matrix
+        for(int i = 0; i < 10; i++){
+            cirSim.runCircuit();
+            cirSim.analyzeCircuit();
         }
 
         updater.start();
@@ -877,7 +886,6 @@ public class Main extends Application {
                 se.toggle();
                 gameOverTrigger();
             }
-            //TODO GameOverTrigger replace here
         }
 
     }

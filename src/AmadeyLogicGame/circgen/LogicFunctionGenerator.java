@@ -25,6 +25,8 @@ Copyright (C) Pplos Studio
 package AmadeyLogicGame.circgen;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 
 /*
 Создание столбца для таблицы истинности
@@ -66,7 +68,8 @@ public class LogicFunctionGenerator {
     }
 
     //генератор логической функции в виде таблицы истинности
-    public void GenerateVectorFunction(int varCount, int funcCount, ArrayList<String> sharedVars, float min, float max) {
+    public void GenerateVectorFunction(int varCount, int funcCount, ArrayList<String> sharedVars,
+                                       float min, float max, boolean zhegalkin) {
 
         log = new StringBuilder(nl+"<<LogicFunctionGenerator>>"+nl);
 
@@ -117,7 +120,7 @@ public class LogicFunctionGenerator {
 
             	 log.append("Function №").append(i).append(nl).append("1").append(nl);
             	 
-            	 for(int k = 0; k< totalVarCount-1; k++) {
+            	 for(int k = 0; k < totalVarCount - 1; k++) {
             		 prevFunc.add("0");
             	 }
             	 
@@ -125,8 +128,13 @@ public class LogicFunctionGenerator {
             	VectorFunctions[0][i] = '0';
                 log.append("Function №").append(i).append(nl).append("0").append(nl);
             }
-            Generator(totalVarCount);
- 
+
+            if(zhegalkin){
+                ZhegalkinGenerator(totalVarCount, i);
+            }else {
+                Generator(totalVarCount);
+            }
+
             //заполняем выходной масссив
             for(int j = 1; j < totalVarCount; j++) {
                 VectorFunctions[j][i] = buffVector[j][0];
@@ -147,12 +155,16 @@ public class LogicFunctionGenerator {
 
         for(int j = 1; j < totalVarCount; j++) {
             int random = randomBit(seed);
-            if(random == 1){unitCounter++;}
+            if(random == 1){
+                unitCounter++;
+            }
             buffVector[j][0] = Integer.toString(random).charAt(0);
             currFunc.add(Character.toString(buffVector[j][0]));
-        }
 
-        //Если функция тривиальна (1 или 0 на всех значениях) или слишком мало комбинаци на которых функция принимает значение истина, то генерируем заново
+        }
+        //System.out.println(VectorFunctions[0][0]+ "" +currFunc.toString());
+        //Если функция тривиальна (1 или 0 на всех значениях) или
+        // слишком мало комбинаци на которых функция принимает значение истина, то генерируем заново
         if(     unitCounter == 0 || unitCounter == totalVarCount
                 || unitCounter > Math.floor(maxTruePercent*totalVarCount)
                 || unitCounter < Math.floor(minTruePercent*totalVarCount)
@@ -162,7 +174,6 @@ public class LogicFunctionGenerator {
         }else{
         
         	//текущий вектор не должен совпадать с вектором предыдущей функции
-       
         	//Глубокое копирование Текущая функция становится предыдущей
         	prevFunc.clear();
             for(String obj : currFunc) {
@@ -170,6 +181,66 @@ public class LogicFunctionGenerator {
                 prevFunc.add(b);
             }
         	
+        }
+
+    }
+
+    //Реализация Генератора
+    private void ZhegalkinGenerator (int totalVarCount, int head) {
+
+        ArrayList<Integer> vector = new ArrayList<>();
+        ArrayList<Integer> ZhegalikinIndexes = new ArrayList<>();
+
+        currFunc.clear();
+        buffVector = new char[totalVarCount][1];
+        vector.add(Integer.parseInt(Character.toString(VectorFunctions[0][head])));
+
+        int unitCounter = 0;
+
+        for(int j = 1; j < totalVarCount; j++) {
+            int random = randomBit(seed);
+            if(random == 1){
+                unitCounter++;
+            }
+            buffVector[j][0] = Integer.toString(random).charAt(0);
+            currFunc.add(Character.toString(buffVector[j][0]));
+            vector.add(random);
+        }
+
+        ZhegalikinIndexes.add(vector.get(0));
+
+        for(int k = 0; k < vector.size()-1; k++) {
+
+            for (int i = 1; i < vector.size(); i++) {
+                int j = vector.get(i - 1) ^ vector.get(i);
+                vector.set(i - 1, j);
+            }
+
+            vector.remove(vector.size()-1);
+            ZhegalikinIndexes.add(vector.get(0));
+        }
+
+        ZhegalikinIndexes.removeAll(Collections.singleton(0));
+
+        //Если функция тривиальна (1 или 0 на всех значениях) или
+        // слишком мало комбинаци на которых функция принимает значение истина, то генерируем заново
+        if(     unitCounter == 0 || unitCounter == totalVarCount
+                || unitCounter > Math.floor(maxTruePercent*totalVarCount)
+                || unitCounter < Math.floor(minTruePercent*totalVarCount)
+                || currFunc.equals(prevFunc)
+                || ZhegalikinIndexes.size() <= 1
+        ){
+            ZhegalkinGenerator(totalVarCount, head);
+        } else {
+
+            //текущий вектор не должен совпадать с вектором предыдущей функции
+            //Глубокое копирование Текущая функция становится предыдущей
+            prevFunc.clear();
+            for(String obj : currFunc) {
+                String b = obj;
+                prevFunc.add(b);
+            }
+
         }
 
     }

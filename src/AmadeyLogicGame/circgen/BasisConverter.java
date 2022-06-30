@@ -276,7 +276,7 @@ public class BasisConverter {
         ArrayList<Integer> vectorFunc = new ArrayList<>();
         ArrayList<Integer> ZhegalikinIndexes = new ArrayList<>();
 
-        for(int i = 0; i<functionVector.length;i++){
+        for(int i = 0; i < functionVector.length; i++){
             vectorFunc.add(Integer.parseInt(Character.toString(functionVector[i][row])));
         }
 
@@ -303,7 +303,9 @@ public class BasisConverter {
                         //dmp+=v+"\n";
                         String tmp = "";
                         int y = 0;
-                        //Если мы берём нулевую комбинацию, то всё разваливается. с другой стороны, в Жегалкине 0 комбинация станет константной единицей в схеме, что не реализовано, а это делать мне лень
+                        //Если мы берём нулевую комбинацию, то всё разваливается. с другой стороны,
+                        // в Жегалкине 0 комбинация станет константной единицей в схеме, что не реализовано, а это делать мне лень
+                        //Пы. сы. когда-то я это сделал lolxd
                         if(!v.equals("0")) {
 	                        for(int l = varNames.length-v.length(); l<varNames.length; l++){
 	                            if(v.charAt(y) == '1'){
@@ -321,7 +323,9 @@ public class BasisConverter {
                                 operands.add(tmp);
                                 terms.add(tmp);
                                 list.add(operands);
-                            }else{terms.add(operands.get(0));}
+                            }else{
+                                terms.add(operands.get(0));
+                            }
 
                             outFunction += tmp+"@";
                             log.append(outFunction).append(nl);
@@ -349,7 +353,7 @@ public class BasisConverter {
 
             String tmp = "";
             int y = 0;
-            for(int l = varNames.length-v.length(); l<varNames.length; l++){
+            for(int l = varNames.length-v.length(); l < varNames.length; l++){
                 if(v.charAt(y) == '1'){
                     tmp += varNames[l]+"*";
                     operands.add(varNames[l]);
@@ -390,9 +394,9 @@ public class BasisConverter {
 	        			String tmp2 = list.get(list.size()-1).get(j+1);
 	        			list.get(list.size()-1).set(j, tmp2);
 	        			list.get(list.size()-1).set(j+1, tmp);
-        			}
         		}
         	}
+        }
 
         log.append(ZhegalikinIndexes.toString()).append(nl).append(outFunction).append(nl).append(list.toString()).append(nl);
 
