@@ -50,6 +50,8 @@ import java.util.Vector;
 
 public class Main extends Application {
 
+    private Stage stage;
+
     //AnchorPane
     private AnchorPane root;
 
@@ -121,11 +123,12 @@ public class Main extends Application {
 
         root = new AnchorPane();
 
-        primaryStage.titleProperty().bind(LC_gui.getInstance().createStringBinding("Title"));
-        primaryStage.getIcons().add(IconsManager.AmadayLogicGame);
-        primaryStage.setScene(new Scene(root, 800, 600));
-        //primaryStage.setOnHidden(event -> updater.stop());
-        primaryStage.show();
+        stage = primaryStage;
+
+        stage.titleProperty().bind(LC_gui.getInstance().createStringBinding("Title"));
+        stage.getIcons().add(IconsManager.AmadayLogicGame);
+        stage.setScene(new Scene(root, 800, 600));
+        stage.show();
 
         cirSim = new CirSim();
 
@@ -135,26 +138,6 @@ public class Main extends Application {
 
         //initialize wire color
         CircuitElm.setColorScale(alternativeColorCheckItem.isSelected());
-/*
-        for(int i = 0; i < 1000; i++){
-            System.out.println(i);
-            startGame(false);
-            stopGame();
-        }
-
- */
-        /*
-        for(int i = 7; i < 11; i++){
-            int m = i;
-            level = m;
-            for(int j = 0; j < 100; j++){
-                System.out.println(i+" "+j);
-                startGame(false);
-                stopGame();
-            }
-        }
-
-         */
 
     }
 
@@ -321,6 +304,11 @@ public class Main extends Application {
 
     }
 
+    private final long[] frameTimes = new long[100];
+    private int frameTimeIndex = 0 ;
+    private boolean arrayFilled = false ;
+    private int frameCap = 1;
+
     private void createCanvas() {
 
         transform = new double[6];
@@ -330,10 +318,12 @@ public class Main extends Application {
         root.getChildren().add(cv);
 
         root.widthProperty().addListener((observable, oldValue, newValue) ->{
+            System.out.println("losl");
            setCanvasSize();
            clearRect40K(transform[4],transform[5]);
         });
         root.heightProperty().addListener((observable, oldValue, newValue) ->{
+            System.out.println("losl2");
             setCanvasSize();
             clearRect40K(transform[4],transform[5]);
         });
@@ -403,10 +393,12 @@ public class Main extends Application {
 
             if(debug) {
 
-              //  System.out.println(inverseTransformX((int)event.getX()) + " " + inverseTransformY((int)event.getY()));
-
                 if (event.getButton() == MouseButton.MIDDLE) {
+                    System.out.println(nl+nl+nl+nl+nl);
                     generateCircuit();
+                    if(debug) {
+                        System.out.println(log);
+                    }
                 }
 
                 if (event.getButton() == MouseButton.SECONDARY) {
@@ -446,13 +438,35 @@ public class Main extends Application {
         penaltyPerFrame = Score / (testTime * 60 * 60);
 
         updater = new AnimationTimer() {
+
+            int frames = 0;
+
             @Override
             public void handle(long now) {
 
                 if(isTest)Score -= penaltyPerFrame;
                 TimeSpend += 0.015;
                 infoMenu.setText(lc.get("Score") + " " + (int)Score);
-                updateCircuit();
+
+                if(frames % frameCap == 0) {
+                    updateCircuit();
+/*
+                    long oldFrameTime = frameTimes[frameTimeIndex] ;
+                    frameTimes[frameTimeIndex] = now ;
+                    frameTimeIndex = (frameTimeIndex + 1) % frameTimes.length ;
+                    if (frameTimeIndex == 0) {
+                        arrayFilled = true ;
+                    }
+                    if (arrayFilled) {
+                        long elapsedNanos = now - oldFrameTime ;
+                        long elapsedNanosPerFrame = elapsedNanos / frameTimes.length ;
+                        double frameRate = 1_000_000_000.0 / elapsedNanosPerFrame ;
+                        System.out.println(String.format("Current frame rate: %.3f", frameRate));
+                    }
+
+ */
+
+                }
 
                 if(isTest && Score < 0 && !lose){
                     Platform.runLater (() -> {
@@ -461,8 +475,19 @@ public class Main extends Application {
                     });
                 }
 
+                frames++;
+                if(frames == 60) frames = 0;
+
             }
         };
+
+        stage.iconifiedProperty().addListener((observable, oldValue, newValue) ->{
+            if(observable.getValue().booleanValue()){
+                updater.stop();
+            }else{
+                updater.start();
+            }
+        });
 
         clearRect40K();
 

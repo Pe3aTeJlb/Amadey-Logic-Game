@@ -162,7 +162,7 @@ public class LogicFunctionGenerator {
             currFunc.add(Character.toString(buffVector[j][0]));
 
         }
-        //System.out.println(VectorFunctions[0][0]+ "" +currFunc.toString());
+        log.append(VectorFunctions[0][0]).append(currFunc.toString()).append(nl);
         //Если функция тривиальна (1 или 0 на всех значениях) или
         // слишком мало комбинаци на которых функция принимает значение истина, то генерируем заново
         if(     unitCounter == 0 || unitCounter == totalVarCount
@@ -170,6 +170,7 @@ public class LogicFunctionGenerator {
                 || unitCounter < Math.floor(minTruePercent*totalVarCount)
                 || currFunc.equals(prevFunc)
         ){
+            log.append("regen").append(nl);
             Generator(totalVarCount);
         }else{
         
@@ -208,8 +209,9 @@ public class LogicFunctionGenerator {
         }
 
         ZhegalikinIndexes.add(vector.get(0));
+        int m = vector.size();
 
-        for(int k = 0; k < vector.size()-1; k++) {
+        for(int k = 0; k < m - 1; k++) {
 
             for (int i = 1; i < vector.size(); i++) {
                 int j = vector.get(i - 1) ^ vector.get(i);
@@ -221,6 +223,10 @@ public class LogicFunctionGenerator {
         }
 
         ZhegalikinIndexes.removeAll(Collections.singleton(0));
+        int zhegalkinIndexesLen = ZhegalikinIndexes.size();
+        if(VectorFunctions[0][head] == '1'){
+            zhegalkinIndexesLen -= 1;
+        }
 
         //Если функция тривиальна (1 или 0 на всех значениях) или
         // слишком мало комбинаци на которых функция принимает значение истина, то генерируем заново
@@ -228,7 +234,7 @@ public class LogicFunctionGenerator {
                 || unitCounter > Math.floor(maxTruePercent*totalVarCount)
                 || unitCounter < Math.floor(minTruePercent*totalVarCount)
                 || currFunc.equals(prevFunc)
-                || ZhegalikinIndexes.size() <= 1
+                || zhegalkinIndexesLen <= 1
         ){
             ZhegalkinGenerator(totalVarCount, head);
         } else {

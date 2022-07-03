@@ -99,7 +99,7 @@ public class CircuitSynthesizer {
 	private ArrayList<CircuitElm> LastLogElems = new ArrayList<>();//список последнего лог элемента подсхемы нужен для выравнивания платформ
 	
 	private BasisConverter converter = new BasisConverter();
-	private Factorisator_V_2 factorizator = new Factorisator_V_2();
+	private Factorizator factorizator = new Factorizator();
     private ShuntingYard shuntingYard = new ShuntingYard();
     private LogicFunctionGenerator generator = new LogicFunctionGenerator();
 
@@ -257,7 +257,7 @@ public class CircuitSynthesizer {
 		//basis = "Nor";
 		//basis = "Nand";
 		// basis = "Zhegalkin";
-		funcCount = 2;
+		funcCount = 1;
 		varCount = 3;
 
 	}
@@ -438,7 +438,8 @@ public class CircuitSynthesizer {
 
 		        	if(factorize) {
 
-			        	factorizator.PrepareData(functions[i], varCount);
+			        	factorizator.prepareData(functions[i]);
+			        	log.append(factorizator.getLog()).append(nl);
 			        	log.append("Factr out").append(factorizator.output).append(nl);
 			        	shuntingYard.calculateExpression(factorizator.output);
 			        	log.append(shuntingYard.getLog()).append(nl);
@@ -470,7 +471,7 @@ public class CircuitSynthesizer {
 				log.append(converter.getLog()).append(nl);
 	        	list = converter.list;
 	        }
-	        
+
 	        CreateCircuit(list);
         }
         
@@ -482,15 +483,15 @@ public class CircuitSynthesizer {
 
 		String blockName = "";
 		
-		String ll2 = "";
+		StringBuilder ll2 = new StringBuilder();
 		for(int i = 0; i < list.size(); i++) {
 			for(int j = 0; j < list.get(i).size(); j++) {
-				ll2 += list.get(i).get(j) + "  ";
+				ll2.append(list.get(i).get(j)).append(" ");
+				//ll2 += list.get(i).get(j) + "  ";
 			}
-			ll2 += " endl "+nl;
+			ll2.append(" endl ").append(nl);
 		}
-		log.append(ll2);
-		
+		log.append("blocks: "+nl+ll2.toString());
 		int Yaccum = 1;
 		int MaxFreeSpaceY = 0;
 		int prevBlockLength = 1;
@@ -500,7 +501,9 @@ public class CircuitSynthesizer {
 			int inputCount = list.get(i).size()-2;
 			String operation= list.get(i).get(list.get(i).size()-2);
 			blockName = list.get(i).get(list.get(i).size()-1);
-			int blockLen = blockName.replace("~", "").length();
+			String sb = blockName;
+
+			int blockLen = sb.replace("~", "").length();
 
 			/*
 			 * Общий смысл алгоритма расположения
@@ -515,8 +518,6 @@ public class CircuitSynthesizer {
 				 * При факторизации выражения:
 				 * Если есть два блока вида [x1 x2 * x1*x2] и [x3 x1*x2 +* x3+*x1*x2] второй блок будет сдвинут вправо-вниз
 				 */
-
-				//System.out.println(list.get(i).toString());
 
 				if(i < list.size() - 1) {
 
@@ -535,7 +536,7 @@ public class CircuitSynthesizer {
 						freeSpace.x += 160;
 						freeSpace.y = (dictionary.get(list.get(i).get(0)).y
 								+ dictionary.get(list.get(i).get(list.get(i).size() - 3)).y)/2;
-						if(prevBlockLength < blockLen) freeSpace.y -= 20;
+						//if(prevBlockLength < blockLen) freeSpace.y -= 20;
 					}
 
 					//Костыль
@@ -670,11 +671,12 @@ public class CircuitSynthesizer {
 			}
 
 
-			String ll = "";
+			StringBuilder ll = new StringBuilder();
 			for(int j = 0; j < list.get(i).size(); j++) {
-				ll+=list.get(i).get(j) + "  ";
+				ll.append(list.get(i).get(j)).append(" ");
+				//ll+=list.get(i).get(j) + "  ";
 			}
-			log.append(ll).append(nl);
+			log.append(ll.toString()).append(nl);
 
 			if(!dictionary.containsKey(blockName)) {
 
