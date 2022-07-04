@@ -306,8 +306,8 @@ public class Main extends Application {
 
     private final long[] frameTimes = new long[100];
     private int frameTimeIndex = 0 ;
-    private boolean arrayFilled = false ;
-    private int frameCap = 1;
+    private boolean arrayFilled = false;
+    private int frameCap = 3;
 
     private void createCanvas() {
 
@@ -318,12 +318,10 @@ public class Main extends Application {
         root.getChildren().add(cv);
 
         root.widthProperty().addListener((observable, oldValue, newValue) ->{
-            System.out.println("losl");
-           setCanvasSize();
-           clearRect40K(transform[4],transform[5]);
+            setCanvasSize();
+            clearRect40K(transform[4],transform[5]);
         });
         root.heightProperty().addListener((observable, oldValue, newValue) ->{
-            System.out.println("losl2");
             setCanvasSize();
             clearRect40K(transform[4],transform[5]);
         });
@@ -390,7 +388,6 @@ public class Main extends Application {
             dragScreenX = event.getX();
             dragScreenY = event.getY();
 
-
             if(debug) {
 
                 if (event.getButton() == MouseButton.MIDDLE) {
@@ -411,9 +408,12 @@ public class Main extends Application {
         });
 
         cv.setOnMouseDragged(event -> {
+
             double dx = event.getX() - dragScreenX;
             double dy = event.getY() - dragScreenY;
-            if (dx == 0 && dy == 0) {return;}
+            if (dx == 0 && dy == 0) {
+                return;
+            }
             clearRect40K(transform[4],transform[5]);
 
             transform[4] += dx;
@@ -448,9 +448,12 @@ public class Main extends Application {
                 TimeSpend += 0.015;
                 infoMenu.setText(lc.get("Score") + " " + (int)Score);
 
-                if(frames % frameCap == 0) {
-                    updateCircuit();
+                updateCircuit();
 /*
+                if(frames % frameCap == 0) {
+
+                    updateCircuit();
+
                     long oldFrameTime = frameTimes[frameTimeIndex] ;
                     frameTimes[frameTimeIndex] = now ;
                     frameTimeIndex = (frameTimeIndex + 1) % frameTimes.length ;
@@ -464,10 +467,9 @@ public class Main extends Application {
                         System.out.println(String.format("Current frame rate: %.3f", frameRate));
                     }
 
- */
 
                 }
-
+*/
                 if(isTest && Score < 0 && !lose){
                     Platform.runLater (() -> {
                         updater.stop();
@@ -479,9 +481,10 @@ public class Main extends Application {
                 if(frames == 60) frames = 0;
 
             }
+
         };
 
-        stage.iconifiedProperty().addListener((observable, oldValue, newValue) ->{
+        stage.iconifiedProperty().addListener((observable, oldValue, newValue) -> {
             if(observable.getValue().booleanValue()){
                 updater.stop();
             }else{
@@ -589,6 +592,7 @@ public class Main extends Application {
     /**VOID UPDATE**/
 
     private void updateCircuit() {
+
 
         setCanvasSize();
         cirSim.runCircuit();
@@ -786,8 +790,13 @@ public class Main extends Application {
             height = (int)(root.getHeight() - menuBar.getPrefHeight());
         }
 
+        //костыль для обхода бесконечного fps
+        //Почему-то, если высота холста 0, то fps улетает в космос и греет проц,
+        //а буфер canvas начинает забивать память
         cv.setWidth(width);
-        cv.setHeight(height);
+        if(height > 0) {
+            cv.setHeight(height);
+        }
 
         circuitArea = new Rectangle(0, 0, width, height);
     }
@@ -926,6 +935,7 @@ public class Main extends Application {
         } else {
             cvcontext.setFill(Color.BLACK);
         }
+        
         cvcontext.fillRect(0, 0, (cv.getWidth() / transform[0]) * 2, (cv.getHeight() / transform[0]) * 2);
 
     }
